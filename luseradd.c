@@ -1,6 +1,6 @@
 /*
  * UNIX Directory Service POSIX User Account Add
- * (c) 2008 Michael Brown
+ * (c) 2008-2010 Michael Brown
  *
  *   Part of:
  *
