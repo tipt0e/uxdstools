@@ -257,19 +257,19 @@ void file_chkerr(FILE *fp)
             break;
         case EACCES:
             fprintf(stderr, "EACCES - permission denied to open log %s\n",
-                    fp);
+                    UXDS_LOG);
             break;
         case EDEADLK:
             fprintf(stderr,
                     "EDEADLK - resource deadlock would occur opening %s\n",
-                    fp);
+                    UXDS_LOG);
             break;
         case ENAMETOOLONG:
             fprintf(stderr, "ENAMETOOLONG - file name too long\n");
             break;
         case ENOLCK:
             fprintf(stderr, "ENOLCK - no record locks available for %s\n",
-                    fp);
+                    UXDS_LOG);
             break;
         case ENOSYS:
             fprintf(stderr, "ENOSYS - function not implemented\n");
@@ -277,7 +277,7 @@ void file_chkerr(FILE *fp)
         case ELOOP:
             fprintf(stderr,
                     "ELOOP - too many symbolic links encountered opening %s\n",
-                    fp);
+                    UXDS_LOG);
             break;
         default:
             fprintf(stderr, "ERRNO is %i\n", errno);
