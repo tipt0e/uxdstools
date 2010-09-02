@@ -1,0 +1,5 @@
+* ldap.c - need to refactor the functions - especially uxds_ldap_add()
+           probably split into a varadic function whose last arg is a callback
+           or two
+
+* better data structures, period.

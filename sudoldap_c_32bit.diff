@@ -1,5 +1,5 @@
 --- sudoldap.c	2010-09-02 02:20:01.901436589 -0700
-+++ sudoldap_32.c	2010-09-02 02:19:34.626340468 -0700
++++ attic/sudoldap_32.c	2010-09-02 02:19:34.626340468 -0700
 @@ -39,7 +39,7 @@ int uxds_sudo_add(authzdata auth, struct
      }
      center_free(cbuf);
