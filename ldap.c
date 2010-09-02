@@ -296,49 +296,6 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
 	    if (auth.ldif != NULL) {
 		fp = fopen(auth.ldif, "w");
                 file_chkerr(fp);
-#if 0
-		if (fp == NULL) {
-		    switch (errno) {
-		    case EINVAL:
-			fprintf(stderr,
-				"EINVAL - invalid value passed to the function\n");
-			break;
-		    case EACCES:
-			fprintf(stderr,
-				"EACCES - permission denied to open log %s\n",
-				auth.ldif);
-			break;
-		    case EDEADLK:
-			fprintf(stderr,
-				"EDEADLK - resource deadlock would occur opening %s\n",
-				auth.ldif);
-			break;
-		    case ENAMETOOLONG:
-			fprintf(stderr,
-				"ENAMETOOLONG - file name too long\n");
-			break;
-		    case ENOLCK:
-			fprintf(stderr,
-				"ENOLCK - no record locks available for %s\n",
-				auth.ldif);
-			break;
-		    case ENOSYS:
-			fprintf(stderr,
-				"ENOSYS - function not implemented\n");
-			break;
-		    case ELOOP:
-			fprintf(stderr,
-				"ELOOP - too many symbolic links encountered opening %s\n",
-				auth.ldif);
-			break;
-		    default:
-			fprintf(stderr, "ERRNO is %i\n", errno);
-			break;
-		    }
-		    fprintf(stderr, "ditching on * %i *......\n", errno);
-		    exit(errno);
-		}
-#endif
 		fprintf(fp, "# ------ uxdstools LDIF export -------\n");
 		fprintf(fp, "# %s Account: %s\n", accttype, auth.pxacct);
 		fprintf(fp, "dn: %s\n", dn);
