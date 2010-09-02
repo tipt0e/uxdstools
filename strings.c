@@ -8,7 +8,7 @@
  */
 
 #include "uxds.h"
-#include "strings.h"
+#include "uxds_strings.h"
 
 /* input hider for getpwd  */
 int inpwd(void)

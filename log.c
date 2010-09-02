@@ -1,10 +1,10 @@
 /* log functions */
 
 #include "uxds.h"
-#include "strings.h"
-#include "log.h"
+#include "uxds_strings.h"
+#include "uxds_log.h"
 #ifdef HAVE_LDAP_SASL_GSSAPI
-#include "krb5.h"
+#include "uxds_krb5.h"
 #endif
 
 #ifdef TOOL_LOG

@@ -12,11 +12,10 @@ endif
 lacctparse_SOURCES = 
 	config.h \
 	uxds.h \
-	ldap.h \
-	sasl.h \
-	krb5.h \
-	log.h \
-	strings.h \
+	uxds_sasl.h \
+	uxds_krb5.h \
+	uxds_log.h \
+	uxds_strings.h \
 	strings.c \
 	args.c \
 	log.c \
@@ -28,10 +27,10 @@ lacctparse_SOURCES =
 luseradd_SOURCES = 
 	config.h \
 	uxds.h \
-        sasl.h \
-        krb5.h \
-	log.h \
-	strings.h \
+        uxds_sasl.h \
+        uxds_krb5.h \
+	uxds_log.h \
+	uxds_strings.h \
 	strings.c \
 	args.c \
 	log.c \
@@ -43,10 +42,10 @@ luseradd_SOURCES =
 lgroupadd_SOURCES =
 	config.h \
 	uxds.h \
-        sasl.h \
-        krb5.h \
-	log.h \
-        strings.h \
+        uxds_sasl.h \
+        uxds_krb5.h \
+	uxds_log.h \
+        uxds_strings.h \
 	args.c \
 	strings.c \
 	log.c \
@@ -60,10 +59,10 @@ lgroupadd_SOURCES =
 luserdel_SOURCES =
 	config.h \
 	uxds.h \
-	sasl.h \
-        krb5.h \
-        log.h \
-        strings.h \
+	uxds_sasl.h \
+        uxds_krb5.h \
+        uxds_log.h \
+        uxds_strings.h \
 	args.c \
 	strings.c \
 	log.c \
@@ -75,10 +74,10 @@ luserdel_SOURCES =
 lgroupdel_SOURCES =
 	config.h \
 	uxds.h \
-        sasl.h \
-        krb5.h \
-        log.h \
-        strings.h \
+        uxds_sasl.h \
+        uxds_krb5.h \
+        uxds_log.h \
+        uxds_strings.h \
 	args.c \
 	strings.c \
 	log.c \
@@ -90,10 +89,10 @@ lgroupdel_SOURCES =
 lusermod_SOURCES =
 	config.h \
 	uxds.h \
-        sasl.h \
-        krb5.h \
-        log.h \
-        strings.h \
+        uxds_sasl.h \
+        uxds_krb5.h \
+        uxds_log.h \
+        uxds_strings.h \
 	args.c \
 	log.c \
 	ldap.c \
@@ -105,10 +104,10 @@ lusermod_SOURCES =
 lgroupmod_SOURCES =
 	config.h \
 	uxds.h \
-        sasl.h \
-        krb5.h \
-        log.h \
-        strings.h \
+        uxds_sasl.h \
+        uxds_krb5.h \
+        uxds_log.h \
+        uxds_strings.h \
 	args.c \
 	log.c \
 	ldap.c \
@@ -120,10 +119,10 @@ lgroupmod_SOURCES =
 lsudoadd_SOURCES =
 	config.h \
 	uxds.h \
-        sasl.h \
-        krb5.h \
-        log.h \
-        strings.h \
+        uxds_sasl.h \
+        uxds_krb5.h \
+        uxds_log.h \
+        uxds_strings.h \
 	args.c \
 	log.c \
 	ldap.c \
@@ -136,10 +135,10 @@ lsudoadd_SOURCES =
 lsudodel_SOURCES =
 	config.h \
 	uxds.h \
-        sasl.h \
-        krb5.h \
-        log.h \
-        strings.h \
+        uxds_sasl.h \
+        uxds_krb5.h \
+        uxds_log.h \
+        uxds_strings.h \
 	args.c \
 	log.c \
 	ldap.c \
@@ -152,10 +151,10 @@ lsudodel_SOURCES =
 lsudomod_SOURCES =
 	config.h \
 	uxds.h \
-        sasl.h \
-        krb5.h \
-        log.h \
-        strings.h \
+        uxds_sasl.h \
+        uxds_krb5.h \
+        uxds_log.h \
+        uxds_strings.h \
 	args.c \
 	log.c \
 	ldap.c \
@@ -167,7 +166,7 @@ lsudomod_SOURCES =
 
 man_MANS = lacctparse.1 luseradd.1 lusermod.1 luserdel.1 lgroupadd.1 lgroupmod.1 lgroupdel.1 lsudoadd.1 lsudomod.1 lsudodel.1
 
-SRCS = uxds.h sasl.h krb5.h log.h strings.h strings.c sasl.c krb5.c ldap.c sudoldap.c 
+SRCS = uxds.h uxds_sasl.h uxds_krb5.h uxds_log.h uxds_strings.h strings.c sasl.c krb5.c ldap.c sudoldap.c 
 
 if SASL
 OBJS = -lkrb5 args.o strings.o sasl.o krb5.o ldap.o log.o
@@ -243,25 +242,25 @@ endif
 luseradd_debug: ${OBJS} luseradd.o
 	${CC} ${DEBUG} ${LDFLAGS} ${OBJS} luseradd.o -o luseradd
 
-strings.o: uxds.h strings.h strings.c
+strings.o: uxds.h uxds_strings.h strings.c
 	${CC} ${DEBUG} ${CFLAGS} strings.c
 
-log.o: uxds.h log.h log.c
+log.o: uxds.h uxds_log.h log.c
 	${CC} ${DEBUG} ${CFLAGS} log.c
 
-base64.o: uxds.h strings.h base64.c
+base64.o: uxds.h uxds_strings.h base64.c
 	${CC} ${DEBUG} ${CFLAGS} base64.c
 
-sasl.o: uxds.h sasl.h sasl.c
+sasl.o: uxds.h uxds_sasl.h sasl.c
 	${CC} ${DEBUG} ${CFLAGS} sasl.c
 
-krb5.o: uxds.h krb5.h krb5.c 
+krb5.o: uxds.h uxds_krb5.h krb5.c 
 	${CC} ${DEBUG} ${CFLAGS} krb5.c
 
-ldap.o: uxds.h strings.h ldap.c
+ldap.o: uxds.h uxds_strings.h ldap.c
 	${CC} ${DEBUG} ${CFLAGS} ldap.c
 
-args.o: uxds.h strings.h args.c
+args.o: uxds.h uxds_strings.h args.c
 	${CC} ${DEBUG} ${CFLAGS} args.c
 
 lacctparse.o: uxds.h lacctparse.c

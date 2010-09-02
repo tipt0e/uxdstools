@@ -1,12 +1,12 @@
 /* sudo ldap functions */
 
 #include "uxds.h"
-#include "strings.h"
+#include "uxds_strings.h"
 #ifdef HAVE_LDAP_SASL_GSSAPI
-#include "krb5.h"
+#include "uxds_krb5.h"
 #endif  /* HAVE_LDAP_SASL_GSSAPI */
 #ifdef TOOL_LOG
-#include "log.h"
+#include "uxds_log.h"
 #endif  /* TOOL_LOG */
 
 int rc;

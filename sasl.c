@@ -3,7 +3,7 @@
 #include "uxds.h"
 #ifdef HAVE_LDAP_SASL
 #include <sasl/sasl.h>
-#include "sasl.h"
+#include "uxds_sasl.h"
 
 /* get SASL callbacks */
 int authz_sasl_interact(LDAP * ld, unsigned flags, void *defaults,

@@ -1,9 +1,9 @@
 /* Command line parse functions */
 
 #include "uxds.h"
-#include "strings.h"
+#include "uxds_strings.h"
 #ifdef HAVE_LDAP_SASL_GSSAPI
-#include "krb5.h"
+#include "uxds_krb5.h"
 #endif
 
 void optmask(char *argt, usrt type, struct cmdopts opts, optflag flag)

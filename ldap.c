@@ -1,18 +1,22 @@
 /* LDAP functions */
 
 #include "uxds.h"
-#include "strings.h"
-#ifdef HAVE_LDAP_SASL_GSSAPI
-#include "krb5.h"
-#endif	/* HAVE_LDAP_SASL_GSSAPI */
+#include "uxds_strings.h"
+#ifdef HAVE_LDAP_SASL
+#include "uxds_sasl.h"
+# ifdef HAVE_LDAP_SASL_GSSAPI
+# include "uxds_krb5.h"
+# endif	/* HAVE_LDAP_SASL_GSSAPI */
+#endif 	/* HAVE_LDAP_SASL */
 #ifdef PTS
-#include "afs.h"
+#include "uxds_afs.h"
 #endif 	/* PTS */
 #ifdef TOOL_LOG
-#include "log.h"
+#include "uxds_log.h"
 #endif 	/* TOOL_LOG */
 
 int rc;
+char *cbuf = NULL;
 char *res = "ERROR";
 struct berval **vals;
 
@@ -153,6 +157,7 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
     char *attr = NULL;
     char *fbuf = NULL;
     char *filter = NULL;
+    char *kuser = NULL;
     char *accttype = NULL;
     enum { s, S, G };
     /* only pull these values */
