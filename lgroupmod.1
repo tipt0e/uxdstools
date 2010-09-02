@@ -1,0 +1,111 @@
+.TH lgroupmod 1 "February 1, 2008" uxdstools uxdstools
+.Sh NAME
+lgroupmod -- Modify POSIX group accounts in LDAP stores
+
+.SH SYNOPSIS
+.TP 10
+lgroupmod [\-H <host URI>] [\-m <SASL mech>] [\-u <authcid>] [\-D bind DN] [\-p passwd] [\-P]
+
+[\-G <groupname> \-I <description> [\-M|\-R <memberUid>]] [\-N <gidNumber>]
+
+.SH DESCRIPTION
+.ul
+lgroupmod
+is used to modify a POSIX group account located in an LDAP datastore. The idea is provide easy access to data that may be modified often.
+
+SASL authentication support is available if OpenLDAP libraries are linked against Cyrus\-SASL and are intact at compile time. This is mostly untested (except GSSAPI) but should be working with any mech the server has available (depending on your local SASL install). Krb5/GSSAPI support is available if Heimdal kerberos libraries are avaliable at compile time. Upon authentication, a kerberos ticket can be obtained and placed in the default or a custom credentials cache, and used for subsequent authentication calls with this or other programs (or any GSSAPI enabled client for that matter) in the uxdstools suite.
+
+The program takes arguments to fill in neccesary data in order to correctly modify the POSIX group account.
+
+.SH OPTIONS
+.TP
+\-D
+.ul
+DN
+
+Distinguished name to used to bind to LDAP directory. If no SASL support is intact, this defaults to a simple bind operation. This can also be used with a be used with a mech (see \-m below as an authorization bind identity (authzid).
+.TP
+\-p
+.ul
+passwd
+
+Use passwd as password for authentication (Simple or SASL).
+.TP
+\-P
+Prompt for password, used instead of specifying the password on the command line. With GSSAPI support, this input will be used to obtain a kerberos tgt.
+.TP
+\-H
+.ul
+host URI
+
+LDAP server URI to access, optional as it default to what is in ldap.conf. "ldaps://" and "ldapi://" URIs are OK, as long as your underlying OpenLDAP libs support this. e.g. "ldap://server.example.com"
+.TP
+\-m
+.ul
+mech
+
+Mechanism used for SASL auth, e.g DIGEST-MD5, GSSAPI.
+.TP
+\-u
+.ul
+authcid
+
+SASL auth identity used to gain access to the LDAP directory service. Format depends on the SASL mech being used... With GSSAPI no mech is required, this input will be used as the short principal name to gain a kerberos ticket granting ticket for auth.
+.TP
+\-r
+.ul
+realm
+
+Realm for SASL identity, some callbacks need this.  Not really tested at this point.
+.TP
+\-c
+.ul
+ccache
+
+Location for krb5 credentials cache. This can be a path, e.g. /tmp/krb5cc100 or preceded by 'METHOD:', as in FILE:/tmp/krb5cc100 or KCM:100. This is optional and if not selected will yield to the default kerberos context.
+.TP
+\-G 
+.ul
+group 
+
+Name (cn attribute) of the group you wish to modify.  Required. 
+.TP
+\-I
+.ul
+description
+
+Brief description of group. Modifies the description attribute of the POSIX group account.
+.TP
+\-M
+.ul
+memberUid
+
+User account(s) to add to group. Adds and populates a memberUid attribute to the POSIX group account. If multiple adds are desired then separate with commas: e.g -M user1,user2,user3,...
+.TP
+\-R
+.ul
+memberUid
+
+User account to delete from group. Deletes the corresponding memberUid attribute from the POSIX group acccount.  If multiple deletes are desired then separate with commas: e.g -R user1,user2,user3,...
+.TP
+\-N
+.ul
+gidNumber
+
+GID number for the group. Modifies the gidNumber attribute of the POSIX group account. 
+.TP
+\-v|\-\-version
+
+Shows the version info and exits.
+.TP
+\-h|\-\-help
+
+Shows verbose output of options and exits.
+.TP
+\-d
+
+Shows some debugging output from the command.
+
+
+.SH AUTHOR
+Michael Brown <mikal@mikro\-net.com>

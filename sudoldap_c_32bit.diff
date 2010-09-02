@@ -1,0 +1,47 @@
+--- sudoldap.c	2010-09-02 02:20:01.901436589 -0700
++++ sudoldap_32.c	2010-09-02 02:19:34.626340468 -0700
+@@ -39,7 +39,7 @@ int uxds_sudo_add(authzdata auth, struct
+     }
+     center_free(cbuf);
+     if (auth.debug)
+-	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
++	fprintf(stderr, "filter is %s, len %i\n", filter, strlen(filter));
+     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
+                           NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
+         ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+@@ -130,7 +130,7 @@ int uxds_sudo_add(authzdata auth, struct
+ 		      ",ou=sudoers,"), auth.basedn);
+     fprintf(stderr, "DN is %s\n", su_dn);
+     if (ldap_add_ext_s(ld, su_dn, sudoadd, NULL, NULL) != LDAP_SUCCESS) {
+-	fprintf(stderr, "Attempted DN: %s, len %lu\n", su_dn,
++	fprintf(stderr, "Attempted DN: %s, len %i\n", su_dn,
+ 		strlen(su_dn));
+ #ifdef TOOL_LOG
+ 	log_event(su_dn, SUDOER, ADD, "attempt FAILED");
+@@ -165,7 +165,7 @@ int uxds_sudo_del(authzdata auth, struct
+     filter =
+ 	strdup(center(cbuf, center(cbuf, SUDOUSER, su->sudoer), "))"));
+     if (auth.debug)
+-	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
++	fprintf(stderr, "filter is %s, len %i\n", filter, strlen(filter));
+     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0, 
+                           NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
+         ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+@@ -224,7 +224,7 @@ int uxds_sudo_mod(authzdata auth, struct
+     filter =
+ 	strdup(center(cbuf, center(cbuf, SUDOUSER, su->sudoer), "))"));
+     if (auth.debug)
+-	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
++	fprintf(stderr, "filter is %s, len %i\n", filter, strlen(filter));
+     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
+                           NULL, NULL, NULL, 0,  &msg) != LDAP_SUCCESS) {
+         ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+@@ -313,7 +313,7 @@ int uxds_sudo_mod(authzdata auth, struct
+ 		      ",ou=sudoers,"), auth.basedn);
+ 
+     if (ldap_modify_ext_s(ld, su_dn, sudomod, NULL, NULL) != LDAP_SUCCESS) {
+-	fprintf(stdout, "Attempted DN: %s, len %lu\n", su_dn,
++	fprintf(stdout, "Attempted DN: %s, len %i\n", su_dn,
+ 		strlen(su_dn));
+ #ifdef TOOL_LOG
+ 	log_event(su_dn, SUDOER, MOD, "attempt FAILED");

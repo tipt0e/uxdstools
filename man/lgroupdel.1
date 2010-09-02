@@ -1,0 +1,122 @@
+.TH lgroupdel 1 "February 1, 2008" uxdstools uxdstools
+.SH NAME
+lgroupdel \- Delete POSIX group accounts in LDAP stores
+
+.SH SYNOPSIS
+.TP 10 
+lgroupdel [\-H <host URI>] [\-m <SASL mech>] [\-u <authcid>] [\-D <bind DN>] [\-p <passwd>] [\-P]
+
+[\-U <groupname>]
+
+.SH DESCRIPTION
+.ul
+lgroupdel 
+is used to delete a POSIX group account located in an LDAP datastore. It deletes the DN and all associated attributes.
+
+.ul
+Nota Bene!
+Unless this is allowed by your local directory service, no user account can have the group as part of their "DN", an " 
+.ul
+operation not allowed on non\-leaf
+" error will occur on the attempt.
+
+SASL authentication support is available if OpenLDAP libraries are linked against Cyrus\-SASL and are intact at compile time. This is mostly untested (except GSSAPI) but should be working with any mech the server has available (depending on your local SASL install). Krb5/GSSAPI support is available if Heimdal kerberos libraries are avaliable at compile time. Upon authentication, a kerberos ticket can be obtained and placed in the default or a custom credentials cache, and used for subsequent authentication calls with this or other programs (or any GSSAPI enabled client for that matter) in the uxdstools suite.
+
+This program only takes one account argument, the cn name of the group account to be deleted.
+
+.SH OPTIONS
+.TP
+\-D
+.ul
+DN
+
+Distinguished name to used to bind to LDAP directory. If no SASL support is intact, this defaults to a simple bind operation. This can also be used with a be used with a mech (see \-m below as an authorization bind identity (authzid).
+.TP
+\-p
+.ul
+passwd
+
+Use passwd as password for authentication (Simple or SASL).
+.TP
+\-P
+Prompt for password, used instead of specifying the password on the command line. With GSSAPI support, this input will be used to obtain a kerberos tgt.
+.TP
+\-H
+.ul
+host URI
+
+LDAP server URI to access, optional as it default to what is in ldap.conf. "ldaps://" and "ldapi://" URIs are OK, as long as your underlying OpenLDAP libs support this. e.g. "ldap://server.example.com"
+.TP
+\-m
+.ul
+mech
+
+Mechanism used for SASL auth, e.g DIGEST-MD5, GSSAPI.
+.TP
+\-u
+.ul
+authcid
+
+SASL auth identity used to gain access to the LDAP directory service. Format depends on the SASL mech being used... With GSSAPI no mech is required, this input will be used as the short principal name to gain a kerberos ticket granting ticket for auth.
+.TP
+\-r
+.ul
+realm
+
+Realm for SASL identity, some callbacks need this.  Not really tested at this point.
+.TP
+\-c
+.ul
+ccache
+
+Location for krb5 credentials cache. This can be a path, e.g. /tmp/krb5cc100 or preceded by 'METHOD:', as in FILE:/tmp/krb5cc100 or KCM:100. This is optional and if not selected will yield to the default kerberos context.
+.TP
+\-G 
+.ul
+group 
+
+Name (cn attribute) of the group you wish to delete.  Required. 
+
+.TP
+\-v|\-\-version
+
+Shows the version info and exits.
+.TP
+\-h|\-\-help
+
+Shows verbose output of options and exits.
+.TP
+\-d
+
+Shows some debugging output from the command.
+
+.SH CAVEAT
+.BR
+As stated above, there can be no user accounts that are subordinate to the DN of the group to be deleted, unless your particular directory service allows this.  You will recieve output like this if not:
+
+$ lgroupdel -m gssapi -G luserz
+
+SASL/GSSAPI authentication started
+
+SASL username: ldapbofh@FOOBAR.PVT
+
+SASL SSF: 56
+
+SASL data security layer installed.
+
+ldap_sasl_interactive_bind_s: Success (0)
+
+ldap_search_s: Success (0)
+
+Matched DN: cn=luserz,ou=unix,dc=foobar,dc=pvt
+
+Deleting POSIX group account - luserz....
+
+ldap_delete: Operation not allowed on non-leaf (66)
+
+        additional info: subordinate objects must be deleted first
+
+POSIX Account deletion UNSUCCESSFUL.
+
+.SH AUTHOR
+Michael Brown <mikal@mikro\-net.com>
