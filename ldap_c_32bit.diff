@@ -1,5 +1,9 @@
 --- ldap.c	2010-09-02 02:06:31.604289492 -0700
+<<<<<<< HEAD
 +++ attic/ldap_32.c	2010-09-02 02:19:07.775229875 -0700
+=======
++++ ldap_32.c	2010-09-02 02:19:07.775229875 -0700
+>>>>>>> 9960386ae8de6a22a6305742059c38f2f8968df7
 @@ -119,7 +119,7 @@ int uxds_user_authz(int select, authzdat
  	if (!ldap_get_option(ld, LDAP_OPT_X_SASL_SSF, &ssf)) {
  	    val = (unsigned long) ssf;
