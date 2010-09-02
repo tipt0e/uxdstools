@@ -1,0 +1,144 @@
+uxdstools 0.5.3
+---------------
+
+2008-07-30	Michael Brown <mikal@mikro-net.com>
+
+	* resolv.sh: added logic to detect machine type through `uname -m`
+		as the strlen references channged in 0.5.2 are only applicable
+		to x86_64 arch
+
+
+uxdstools 0.5.2
+---------------
+
+2008-07-24	Michael Brown <mikal@mikro-net.com>
+
+	* ldap.c, sudoldap.c: changed format to unsigned long for sizeof and
+			and strlen() references to silence compiler warnings
+			for gcc > 4.3.0
+
+
+uxdstools 0.5.1
+---------------
+
+2008-03-08	Michael Brown <mikal@mikro-net.com>
+
+	* krb5.c, args.c, ldap.c, sudoldap.c: removed unused LDAPMod structs
+	        and other variables to fix gcc warnings
+			
+	* ltools.h: added missing header includes ctype.h, err.h and
+	            parse_time.h
+
+	* Makefile.am:  added -Wall and -DLDAP_DEPRECATED=1 to gcc arguments
+	
+
+uxdstools 0.5
+---------------
+
+2008-02-20	Michael Brown <mikal@mikro-net.com>
+
+	* krb5.c: added setpwd() for -y switch with gssapi - sets pass from 
+	          argument to krb5Key attribute - used with randstr() for now
+	          changed get_tkts() to use auth.password with
+		  krb5_get_init_creds_opt_set_pa_password()
+		  changed get_krbname() for parse arg to switch return char
+		  with either principal short name or creds cache location for
+		  putenv() calls
+
+	* configure.in: added logic for sudoers enable (--enable-sudoers)
+	   		added logic for logging enable (--enable-log)
+			added logic for Qmail attrs enable (--enable-qmail)
+			added logic for ssh-lpk attrs enable (--enable-sshlpk)
+
+	* Makefile.am: added logic for sudoers enable
+
+	* log.c: added logging function log_event() and curdate()
+
+	* strings.c: fixed passget() to put everything on one line and handle
+	             backspace character correctly, and strdup() on return
+		     for better string handle
+		     added randstr() for 8 character random password gen
+		     added base64() for krb5Key attribute LDIF export
+
+	* lsudomod.c: created - calls uxds_sudo_mod()
+
+	* lsudodel.c: created - calls uxds_sudo_del()
+
+	* lsudoadd.c: created - calls uxds_sudo_add()
+
+	* sudoldap.c: created - functions for lsudoadd, lsudodel, lsudomod -
+	              uxds_sudo_add(), uxds_sudo_del(), uxds_sudo_mod()
+		      added ifdefs for logging enable
+
+	* args.c: removed huge bug in parse_argvs() - arg binary[] wtf??
+	          added -y for password set with gssapi
+	          changed _optmask() from ugly if statements to switch for 
+	          flag determination
+		  added sudoers arguments
+		  added baseDN argument for base DN choice
+		  added -V or SASL output INTERACTIVE may move to debug
+		  added get_tkts() call for -y switch to grab kadmin/changepw
+		  added -e for account expiry
+		  principal: sets mdata.cpw to 1
+		  added -L for LDIF export in lacctparse
+
+
+	* ltools.h: changed prototype for parse_argvs()
+	            added #include sys/errno.h for codes for logging
+		    and ENOMEM
+	            added basedn to authzdata for choice [-b] switch
+		    added cpw to mod_data structure for change pw flag
+		    added ldif to authzdata structure for LDIF path
+
+	* ldap.c: removed some for loops that used ldap_get_attributes(),
+	          went straight to ldap_get_values() for what was needed
+		  instead in uxds_acct_add() and uxds_acct_mod()
+	          - much needed cleanup of the LDAPMod structure
+	          handling, doing this eliminated ~50 lines of code -
+		  - this affected uxds_acct_add(), uxds_acct_mod(), and
+		  uxds_grp_mem()
+		  added ifdefs for logging enable, qmail & sshlpk attrs
+		  added logic for multiple members add with lgroupadd and
+		  add/delete with lgroupmod
+		  added setpwd() calls in uxds_acct_add() & uxds_acct_mod() for
+		  the user add/mod operations
+		  added listing all selected accounts in directory in
+		  uxds_acct_parse() if no account argument was input
+		  added uxds_user_expire() for account expiry using either
+		  krb5PasswordEnd or pwdReset - with logic for Samba & AD
+		  for future use
+		  added base64() call for uxds_acct_parse() when GSSAPI
+		  enabled - base64's the krb5Key attribute when LDIF export is
+		  chosen
+
+uxdstools 0.4
+-------------
+
+	* lacctparse.c: eliminated the argument parsing out of main() and
+	                moved into the fold using args.c
+
+	* args.c: cleaned up parse_argvs() and _optmask() for lacctparse.c
+		  acceptance, added putenv() call for kerb ccache location
+		  choice
+
+	* ldap.c: calculate new gidNumber from chosen group and modify
+	          gidNumber attr to reflect change in user modrdn portion of
+		  uxds_acct_mod(),
+	          - fixed uxds_acct_parse() for lacctparse to use args.c
+	          functions and the new vars in authzdata
+		  - added uxds_grp_mem() to handle memberUid adds/deletes
+		  from group accounts
+
+	* ltools.h: eliminated parsedata, cleaned up prototypes
+
+	* strings.c: added realmtodn() for future use
+
+	* lacctparse.1, luseradd.1, lusermod.1, luserdel.1,
+	  lgroupadd.1, lgroupmod.1, lgroupdel.1: all created manpages
+
+
+uxdstools 0.3
+-------------
+Initial release (what happened to 0.1 and 0.2????)
+Really wan't completely finished I realized to my dismay.
+But hey, this is alpha stuff.

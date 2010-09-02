@@ -1,0 +1,101 @@
+--- ldap.c	2008-07-30 11:54:15.000000000 -0700
++++ ldap_32.c	2008-07-30 11:54:15.000000000 -0700
+@@ -206,7 +206,7 @@ int uxds_acct_parse(int bindtype, authzd
+ 	    kuser = get_krbname(auth, 0);
+ 	    if (auth.debug)
+ 		fprintf(stderr,
+-			"user account filter half returned: %s, size %lu len %lu\n",
++			"user account filter half returned: %s, size %i len %i\n",
+ 			kuser, sizeof(kuser), strlen(kuser));
+ 	    filter = strdup(center(fbuf, "uid=", kuser));
+ 	    center_free(fbuf);
+@@ -483,7 +483,7 @@ int uxds_acct_add(usrt pxtype, struct mo
+     filter = center(cbuf, center(cbuf, POSIXGROUP, mdata.group), "))");
+     //center_free(cbuf);
+     if (auth.debug)
+-	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
++	fprintf(stderr, "filter is %s, len %i\n", filter, strlen(filter));
+     if (ldap_search_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0, &msg)
+ 	!= LDAP_SUCCESS) {
+ 	ldap_perror(ld, "ldap_search_s");
+@@ -514,7 +514,7 @@ int uxds_acct_add(usrt pxtype, struct mo
+     vals = ldap_get_values(ld, entry, "description");
+     if (vals[0] != NULL) {
+ 	if (auth.debug)
+-	    fprintf(stderr, "%s : role, len %lu\n", vals[0],
++	    fprintf(stderr, "%s : role, len %i\n", vals[0],
+ 		    strlen(vals[0]));
+ 	role = strdup(vals[0]);
+     }
+@@ -524,7 +524,7 @@ int uxds_acct_add(usrt pxtype, struct mo
+     char *gidnum = NULL;
+     if (vals[0] != NULL) {
+ 	if (auth.debug)
+-	    fprintf(stderr, "%s : gidNumber, len %lu\n", vals[0],
++	    fprintf(stderr, "%s : gidNumber, len %i\n", vals[0],
+ 		    strlen(vals[0]));
+ 	gidnum = strdup(vals[0]);
+     }
+@@ -728,7 +728,7 @@ int uxds_acct_add(usrt pxtype, struct mo
+ 		    mdata.user, mdata.group, mdata.uidnum, ge_cos);
+ 
+ 	if (ldap_add_s(ld, user_dn, useradd) != LDAP_SUCCESS) {
+-	    fprintf(stderr, "Attempted DN: %s, len %lu\n", user_dn,
++	    fprintf(stderr, "Attempted DN: %s, len %i\n", user_dn,
+ 		    strlen(user_dn));
+ 	    ldap_perror(ld, "ldap_add_s");
+ #ifdef TOOL_LOG
+@@ -863,7 +863,7 @@ int uxds_acct_del(usrt pxtype, struct mo
+ 	break;
+     }
+     if (auth.debug)
+-	fprintf(stderr, "search filter used: %s, len %lu\n", filter,
++	fprintf(stderr, "search filter used: %s, len %i\n", filter,
+ 		strlen(filter));
+     if (ldap_search_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0, &msg)
+ 	!= LDAP_SUCCESS) {
+@@ -963,7 +963,7 @@ int uxds_acct_mod(usrt pxtype, struct mo
+     }
+     center_free(fbuf);
+     if (auth.debug)
+-	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
++	fprintf(stderr, "filter is %s, len %i\n", filter, strlen(filter));
+     if (ldap_search_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0, &msg)
+ 	!= LDAP_SUCCESS) {
+ 	ldap_perror(ld, "ldap_search_s");
+@@ -1010,7 +1010,7 @@ int uxds_acct_mod(usrt pxtype, struct mo
+ 	vals = ldap_get_values(ld, entry, "givenName");
+ 	if (vals[0] != NULL) {
+ 	    if (auth.debug)
+-		fprintf(stderr, "%s : first name, len %lu\n", vals[0],
++		fprintf(stderr, "%s : first name, len %i\n", vals[0],
+ 			strlen(vals[0]));
+ 	    mdata.firstname = strdup(vals[0]);
+ 	    ldap_value_free(vals);
+@@ -1020,7 +1020,7 @@ int uxds_acct_mod(usrt pxtype, struct mo
+ 	vals = ldap_get_values(ld, entry, "sn");
+ 	if (vals[0] != NULL) {
+ 	    if (auth.debug)
+-		fprintf(stderr, "%s : sn, len %lu\n", vals[0],
++		fprintf(stderr, "%s : sn, len %i\n", vals[0],
+ 			strlen(vals[0]));
+ 	    mdata.lastname = strdup(vals[0]);
+ 	    ldap_value_free(vals);
+@@ -1029,7 +1029,7 @@ int uxds_acct_mod(usrt pxtype, struct mo
+     vals = ldap_get_values(ld, entry, "gecos");
+     if (vals[0] != NULL) {
+ 	if (auth.debug)
+-	    fprintf(stderr, "%s : gecos, len %lu\n", vals[0],
++	    fprintf(stderr, "%s : gecos, len %i\n", vals[0],
+ 		    strlen(vals[0]));
+ 	old_gecos = strdup(vals[0]);
+     }
+@@ -1144,7 +1144,7 @@ int uxds_acct_mod(usrt pxtype, struct mo
+ 	    return 1;
+ 	}
+ 	if (ldap_modify_s(ld, mod_dn, usermod) != LDAP_SUCCESS) {
+-	    fprintf(stdout, "Attempted DN: %s, len %lu\n", mod_dn,
++	    fprintf(stdout, "Attempted DN: %s, len %i\n", mod_dn,
+ 		    strlen(mod_dn));
+ #ifdef TOOL_LOG
+ 	    log_event(mod_dn, USER, MOD, "FAILED");

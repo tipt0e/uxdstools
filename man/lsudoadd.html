@@ -1,0 +1,165 @@
+Content-type: text/html
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML><HEAD><TITLE>Man page of lsudoadd</TITLE>
+<style type="text/css">
+  body { color: white; background: black; }
+  :link { text-decoration: none; color: #8cff8c; }
+  :visited { text-decoration: none; color: #8cff8c; }
+  :hover { text-decoration: none; color: green; }
+</style>
+</HEAD><BODY>
+<font face="arial">
+<H1>lsudoadd</H1>
+Section: User Commands  (1)<BR>Updated: uxdstools<BR><A HREF="#index">Index</A>
+<A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+
+<P>
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+lsudoadd - Add SUDOer accounts in LDAP stores
+<P>
+<A NAME="lbAC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+<DL COMPACT>
+<DT>lsudoadd [-H &lt;host URI&gt;] [-m &lt;SASL mech&gt;] [-u &lt;authcid&gt;] [-D &lt;bind DN&gt;] [-p &lt;passwd&gt;] [-P]<DD>
+<P>
+[-U &lt;user&gt; | -G &lt;group&gt;] [-C &lt;cmd&gt;,...] [-O &lt;option&gt;,...]
+<P>
+</DL>
+<A NAME="lbAD">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+
+lsudoadd
+is used to add a SUDOer account into an LDAP datastore.  The imported account includes all attributes neccesary to use sudo on UNIX systems.  It requires that the sudo.schema sudoers LDAP schema be loaded into your LDAP directory service.
+<P>
+SASL authentication support is available if OpenLDAP libraries are linked against Cyrus-SASL and are intact at compile time. This is mostly untested (except GSSAPI) but should be working with any mech the server has available (depending on your local SASL install). Krb5/GSSAPI support is available if Heimdal kerberos libraries are avaliable at compile time. Upon authentication, a kerberos ticket can be obtained and placed in the default or a custom credentials cache, and used for subsequent authentication calls with this or other programs (or any GSSAPI enabled client for that matter) in the uxdstools suite.
+<P>
+The program takes arguments to fill in neccesary data in order to correctly create the SUDOer account.  This includes commands and options desired for the account.  The selected account must exist as a POSIX user or group the LDAP tree, and if group is selected the '%' is automatically prepended to the account name, signifying a group SUDOer.
+<P>
+<A NAME="lbAE">&nbsp;</A>
+<H2>OPTIONS</H2>
+
+<DL COMPACT>
+<DT>-D<DD>
+
+DN
+<P>
+Distinguished name to used to bind to LDAP directory. If no SASL support is intact, this defaults to a simple
+bind operation. This can also be used with a be used with a mech (see -m below as an authorization bind ident
+ity (authzid).
+<DT>-p<DD>
+
+passwd
+<P>
+Use passwd as password for authentication (Simple or SASL).
+<DT>-P<DD>
+Prompt for password, used instead of specifying the password on the command line. With GSSAPI support, this in
+put will be used to obtain a kerberos tgt.
+<DT>-H<DD>
+
+host URI
+<P>
+LDAP server URI to access, optional as it default to what is in ldap.conf. &quot;ldaps://&quot; and &quot;ldapi://&quot; URIs are
+OK, as long as your underlying OpenLDAP libs support this. e.g. &quot;<A HREF="ldap://server.example.com">ldap://server.example.com</A>&quot;
+<DT>-m<DD>
+
+mech
+<P>
+Mechanism used for SASL auth, e.g DIGEST-MD5, GSSAPI.
+<DT>-u<DD>
+
+authcid
+<P>
+SASL auth identity used to gain access to the LDAP directory service. Format depends on the SASL mech being used... With GSSAPI no mech is required, this input will be used as the short principal name to gain a kerberos ticket granting ticket for auth.
+<DT>-r<DD>
+
+realm
+<P>
+Realm for SASL identity, some callbacks need this.  Not really tested at this point.
+<DT>-c<DD>
+
+ccache
+<P>
+Location for krb5 credentials cache. This can be a path, e.g. /tmp/krb5cc100 or preceded by 'METHOD:', as in FILE:/tmp/krb5cc100 or KCM:100. This is optional and if not selected will yield to the default kerberos context.
+<DT>-U <DD>
+
+user 
+<P>
+Name (uid attribute) of the POSIX user you wish to create a SUDOer account for.
+<DT>-G <DD>
+
+group 
+<P>
+Name (cn attribute) of the POSIX group you wish to create a SUDOer account for.  If selected, the arbitrary '%' is automatically prepended to the sudoRole and cn attributes of the SUDOer account, e.g. &quot;group&quot; becomes &quot;%group&quot;, as sudo expects.
+<DT>-C<DD>
+
+sudoCommand(s)
+<P>
+Commands the users is allowed to run as root (or whatever user).  This populates the sudoCommand attribute with the input values.  If multiple commands are desired, then separate them with commas (if using ! to exclude commands enclose the whole string in
+
+single
+quotes): e.g. -C 'ALL,!/bin/sh,!/bin/ksh'  At least one command is required to create a SUDOer.
+<DT>-O<DD>
+
+sudoOption(s)
+<P>
+Options within sudo assinged to the account. This populates the sudoOption attribute with the input values.  If multiple options are desired, then separate them with commas (if using ! to use excluding options enclose the whole string in
+
+single
+quotes): e.g. -C '!authenticate,env_reset'
+<DT>-v|--version <DD>
+<P>
+Shows the version info and exits.
+<DT>-h|--help <DD>
+<P>
+Shows verbose output of options and exits.
+<DT>-d  Shows some debugging output from the command.<DD>
+<P>
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>SUDOER STRUCTURE</H2>
+
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;default&nbsp;sudoer's&nbsp;ldif&nbsp;looks&nbsp;something&nbsp;like&nbsp;this:
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;%luserz,&nbsp;sudoers,&nbsp;unix,&nbsp;foobar.pvt
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;dn:&nbsp;cn=%luserz,ou=sudoers,ou=unix,dc=foobar,dc=pvt
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;objectClass:&nbsp;top
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;objectClass:&nbsp;sudoRole&nbsp;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;cn:&nbsp;%luserz
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;sudoUser:&nbsp;%sysadmin
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;sudoHost:&nbsp;ALL
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;sudoCommand:&nbsp;/sbin/reboot
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;sudoCommand:&nbsp;/sbin/halt
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;sudoOption:&nbsp;!authenticate
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;sudoer&nbsp;is&nbsp;allowed&nbsp;to&nbsp;use&nbsp;halt&nbsp;and&nbsp;reboot&nbsp;without&nbsp;a&nbsp;password&nbsp;as&nbsp;root.
+<P>
+<A NAME="lbAG">&nbsp;</A>
+<H2>AUTHOR</H2>
+
+Michael Brown &lt;<A HREF="mailto:mikal@mikro-net.com">mikal@mikro-net.com</A>&gt;
+<P>
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
+<DT><A HREF="#lbAE">OPTIONS</A><DD>
+<DT><A HREF="#lbAF">SUDOER STRUCTURE</A><DD>
+<DT><A HREF="#lbAG">AUTHOR</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 21:39:32 GMT, February 13, 2008
+</BODY>
+</HTML>

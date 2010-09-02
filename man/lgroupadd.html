@@ -1,0 +1,157 @@
+Content-type: text/html
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML><HEAD><TITLE>Man page of lgroupadd</TITLE>
+<style type="text/css">
+  body { color: white; background: black; }
+  :link { text-decoration: none; color: #8cff8c; }
+  :visited { text-decoration: none; color: #8cff8c; }
+  :hover { text-decoration: none; color: green; }
+</style>
+</HEAD><BODY>
+<font face="arial">
+<H1>lgroupadd</H1>
+Section: User Commands  (1)<BR>Updated: uxdstools<BR><A HREF="#index">Index</A>
+<A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+lgroupadd - Add POSIX group accounts in LDAP stores
+<P>
+<A NAME="lbAC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+<DL COMPACT>
+<DT>lgroupadd [-H &lt;host URI&gt;] [-m &lt;SASL mech&gt;] [-u &lt;authcid&gt;]<DD>
+<P>
+[-D &lt;bind DN&gt;] [[-p &lt;passwd&gt;] [-P]]
+<P>
+[-G &lt;group&gt; -I &lt;description&gt; [-M &lt;memberUid&gt;]]
+<P>
+[-N &lt;gidNumber&gt;]
+<P>
+</DL>
+<A NAME="lbAD">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+
+lgroupadd
+is used to add a POSIX group account in an LDAP datastore.  The imported account includes all attributes neccesary to access and use UNIX systems.
+<P>
+SASL authentication support is available if OpenLDAP libraries are linked against Cyrus-SASL and are intact at compile time. This is mostly untested (except GSSAPI) but should be working with any mech the server has available (depending on your local SASL install). Krb5/GSSAPI support is available if Heimdal kerberos libraries are avaliable at compile time. Upon authentication, a kerberos ticket can be obtained and placed in the default or a custom credentials cache, and used for subsequent authentication calls with this or other programs (or any GSSAPI enabled client for that matter) in the uxdstools suite.
+<P>
+The program takes arguments to fill in neccesary data in order to correctly create the POSIX group account.  If -M is selected, that account uid name is then added as a memberUid attribute to this group account in the LDAP tree (multiple entries if separated by commas).
+<P>
+<A NAME="lbAE">&nbsp;</A>
+<H2>OPTIONS</H2>
+
+<DL COMPACT>
+<DT>-D<DD>
+
+DN
+<P>
+Distinguished name to used to bind to LDAP directory. If no SASL support is intact, this defaults to a simple bind operation. This can also be used with a be used with a mech (see -m below as an authorization bind identity (authzid).
+<DT>-p<DD>
+
+passwd
+<P>
+Use passwd as password for authentication (Simple or SASL).
+<DT>-P<DD>
+Prompt for password, used instead of specifying the password on the command line. With GSSAPI support, this input will be used to obtain a kerberos tgt.
+<DT>-H<DD>
+
+host URI
+<P>
+LDAP server URI to access, optional as it default to what is in ldap.conf. &quot;ldaps://&quot; and &quot;ldapi://&quot; URIs are OK, as long as your underlying OpenLDAP libs support this. e.g. &quot;<A HREF="ldap://server.example.com">ldap://server.example.com</A>&quot;
+<DT>-m<DD>
+
+mech
+<P>
+Mechanism used for SASL auth, e.g DIGEST-MD5, GSSAPI.
+<DT>-u<DD>
+
+authcid
+<P>
+SASL auth identity used to gain access to the LDAP directory service. Format depends on the SASL mech being used... With GSSAPI no mech is required, this input will be used as the short principal name to gain a kerberos ticket granting ticket for auth.
+<DT>-r<DD>
+
+realm
+<P>
+Realm for SASL identity, some callbacks need this.  Not really tested at this point.
+<DT>-c<DD>
+
+ccache
+<P>
+Location for krb5 credentials cache. This can be a path, e.g. /tmp/krb5cc100 or preceded by 'METHOD:', as in FILE:/tmp/krb5cc100 or KCM:100. This is optional and if not selected will yield to the default kerberos context.
+<DT>-G <DD>
+
+group
+<P>
+Name (cn attribute) of the user you wish to add.  Required.
+<DT>-I<DD>
+
+description
+<P>
+Brief description of group. Required, populates the description attribute of the POSIX group account.
+<DT>-M<DD>
+
+memberUid
+<P>
+User account to add to group.  Optional, can be left empty. Adds and populates a memberUid attribute to the POSIX group account.  If multiple entries are desired, then separate with commas: e.g. -M usr1,usr2,usr3,...
+<DT>-N<DD>
+
+gidNumber
+<P>
+GID number for the group.  Optional, there is a search done for the highest gidnumber in the directory, and one is added to this numeric to produce the default gidNumber populated.
+<DT>-v|--version<DD>
+<P>
+Shows the version info and exits.
+<DT>-h|--help<DD>
+<P>
+Shows verbose output of options and exits.
+<DT>-d<DD>
+<P>
+Shows some debugging output from the command.
+<P>
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>GROUP STRUCTURE</H2>
+
+<P>
+A default group's ldif looks something like this:
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;slakaz,&nbsp;unix,&nbsp;foobar.pvt
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;dn:&nbsp;cn=slakaz,ou=unix,dc=foobar,dc=pvt
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;cn:&nbsp;slakaz
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;description:&nbsp;SLAKAZ&nbsp;System&nbsp;Group
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;objectClass:&nbsp;top
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;objectClass:&nbsp;posixGroup
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;gidNumber:&nbsp;1111
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;memberUid:&nbsp;luser
+<P>
+<P>
+<A NAME="lbAG">&nbsp;</A>
+<H2>AUTHOR</H2>
+
+Michael Brown &lt;<A HREF="mailto:mikal@mikro-net.com">mikal@mikro-net.com</A>&gt;
+<P>
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
+<DT><A HREF="#lbAE">OPTIONS</A><DD>
+<DT><A HREF="#lbAF">GROUP STRUCTURE</A><DD>
+<DT><A HREF="#lbAG">AUTHOR</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 10:48:01 GMT, February 13, 2008
+</BODY>
+</HTML>

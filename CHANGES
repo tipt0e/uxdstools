@@ -1,0 +1,22 @@
+uxdstools 0.4
+-------------
+You can now add and delete memberUids from group accounts
+with lgroupmod.
+
+Created man pages for each executable.  They are not formatted
+correctly, but they display OK.  TODO: fix this.
+
+Password options (-p/-P) work now with -c when GSSAPI is enabled.
+The cache will be placed where the -c arg input tells it to.
+(basically using putenv() when needed with KRB5CCNAME)
+
+Moved lacctparse.c in line with the rest of the code to use args.c.
+This involved eliminating the parsedata struct and two char*'s that
+didn't need to be in a struct anyway.
+
+
+uxdstools 0.3
+-------------
+Initial release (what happened to 0.1 and 0.2????)
+Really wan't completely finished I realized to my dismay.
+But hey, this is alpha stuff.
