@@ -56,6 +56,7 @@ int log_event(char *acct, usrt type, toolop op, char *text)
 
     FILE *fp;
     fp = fopen(UXDS_LOG, "a");
+    file_chkerr(fp);
 #if 0
     if (fp == NULL) {
 	switch (errno) {

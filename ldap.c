@@ -295,6 +295,8 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
 	    fprintf(stderr, "%s matched DN: %s\n\n", accttype, dn);
 	    if (auth.ldif != NULL) {
 		fp = fopen(auth.ldif, "w");
+                file_chkerr(fp);
+#if 0
 		if (fp == NULL) {
 		    switch (errno) {
 		    case EINVAL:
@@ -336,6 +338,7 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
 		    fprintf(stderr, "ditching on * %i *......\n", errno);
 		    exit(errno);
 		}
+#endif
 		fprintf(fp, "# ------ uxdstools LDIF export -------\n");
 		fprintf(fp, "# %s Account: %s\n", accttype, auth.pxacct);
 		fprintf(fp, "dn: %s\n", dn);

@@ -27,5 +27,8 @@ int isnum(int c);
 /* check if string is a pure numeral */
 int strnum(char *str);
 
+/* check for file I/O errors */
+void file_chkerr(FILE *fp);
+
 /* convert string to base64 */
 char *base64(char *str, int len);
