@@ -94,7 +94,8 @@
 #define GIDNUM        "(&(objectclass=posixGroup)(gidNumber=*))"
 
 /* boolean for parsing - get_krbname() */
-typedef enum { FALSE, TRUE } bool;
+#define FALSE	0
+#define TRUE	1
 
 /* account type */
 typedef enum { SELF, USER, GROUP, SUDOER } usrt;
