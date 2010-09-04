@@ -1523,6 +1523,10 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
         return 1;
     } else if (pid == 0) {
         pts_str = (char**)calloc(9, sizeof(char*)); 
+        if (pts_str[0] == (char *) NULL) {
+            fprintf(stderr, "malloc ERROR!\n");
+            exit(ENOMEM);
+        }
         pts_str[0] = "pts";
         switch (flag) {
         case PTSCRT:
