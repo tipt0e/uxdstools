@@ -6,7 +6,7 @@
 #include "uxds_sasl.h"
 
 /* get SASL callbacks */
-int authz_sasl_interact(LDAP * ld, unsigned flags, void *defaults,
+int uxds_sasl_interact(LDAP * ld, unsigned flags, void *defaults,
 			void *in)
 {
     authzdata *auth = (authzdata *) defaults;
@@ -25,7 +25,7 @@ int authz_sasl_interact(LDAP * ld, unsigned flags, void *defaults,
 	case SASL_CB_GETREALM:
 	    if (auth->debug)
 		fprintf(stderr,
-			"authz_sasl_interact asked for SASL_CB_GETREALM, returned %s\n",
+			"uxds_sasl_interact asked for SASL_CB_GETREALM, returned %s\n",
 			auth->realm);
 	    interact->defresult = auth->realm;
 	    //dflt = auth->realm;
@@ -33,7 +33,7 @@ int authz_sasl_interact(LDAP * ld, unsigned flags, void *defaults,
 	case SASL_CB_AUTHNAME:
 	    if (auth->debug)
 		fprintf(stderr,
-			"authz_sasl_interact asked for SASL_CB_AUTHNAME, returned %s\n",
+			"uxds_sasl_interact asked for SASL_CB_AUTHNAME, returned %s\n",
 			auth->binddn);
 	    interact->defresult = auth->binddn;
 	    //dflt = auth->binddn;
@@ -41,7 +41,7 @@ int authz_sasl_interact(LDAP * ld, unsigned flags, void *defaults,
 	case SASL_CB_PASS:
 	    if (auth->debug)
 		fprintf(stderr,
-			"authz_sasl_interact asked for SASL_CB_PASS, returned <HIDDEN>\n");
+			"uxds_sasl_interact asked for SASL_CB_PASS, returned <HIDDEN>\n");
 	    /* auth->password); */
 	    interact->defresult = auth->password->bv_val;
 	    //dflt = auth->password;
@@ -49,7 +49,7 @@ int authz_sasl_interact(LDAP * ld, unsigned flags, void *defaults,
 	case SASL_CB_USER:
 	    if (auth->debug)
 		fprintf(stderr,
-			"authz_sasl_interact asked for SASL_CB_USER, returned %s\n",
+			"uxds_sasl_interact asked for SASL_CB_USER, returned %s\n",
 			auth->username);
 	    interact->defresult = auth->username;
 	    //dflt = auth->username;
@@ -61,7 +61,7 @@ int authz_sasl_interact(LDAP * ld, unsigned flags, void *defaults,
 	default:
 	    if (auth->debug)
 		fprintf(stderr,
-			"authz_sasl_interact asked for unknown %lu\n",
+			"uxds_sasl_interact asked for unknown %lu\n",
 			interact->id);
 	    break;
 	}
