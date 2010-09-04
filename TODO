@@ -4,7 +4,7 @@
 
 * better data structures, period.
 
-* move stuff into src/* directories
+* move stuff into src/* directories - DONE 0.6.0
 
 * make a shared lib and ditch the crap I have - libuxds
 
