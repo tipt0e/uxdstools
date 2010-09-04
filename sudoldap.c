@@ -10,7 +10,11 @@
 #endif  /* TOOL_LOG */
 
 int rc;
+int a;
+int i;
+char *dn;
 char *res;
+char *filter = NULL;
 struct berval **vals;
 
 int uxds_sudo_add(authzdata auth, struct sudoers *su, LDAP * ld)
@@ -18,13 +22,9 @@ int uxds_sudo_add(authzdata auth, struct sudoers *su, LDAP * ld)
     LDAPMessage *msg;
     LDAPMessage *entry;
 
-    int i;
-    int a;
-    char *dn;
     char *cbuf = NULL;
     char **cmds;
     char **opts = NULL;
-    char *filter = NULL;
     char *su_dn;
 
     if (su->type == USER) {
@@ -158,9 +158,7 @@ int uxds_sudo_del(authzdata auth, struct sudoers *su, LDAP * ld)
     LDAPMessage *msg;
     LDAPMessage *entry;
 
-    char *dn;
     char *cbuf = NULL;
-    char *filter = NULL;
 
     filter =
 	strdup(center(cbuf, center(cbuf, SUDOUSER, su->sudoer), "))"));
@@ -211,15 +209,11 @@ int uxds_sudo_mod(authzdata auth, struct sudoers *su, LDAP * ld)
     LDAPMessage *msg;
     LDAPMessage *entry;
 
-    int i;
-    int a;
     int c;
-    char *dn;
-    char *cbuf = NULL;
     char *su_dn;
+    char *cbuf = NULL;
     char **cmds = NULL;
     char **opts = NULL;
-    char *filter = NULL;
 
     filter =
 	strdup(center(cbuf, center(cbuf, SUDOUSER, su->sudoer), "))"));
