@@ -117,6 +117,12 @@ UID number for the user.  Optional, there is a search done for the highest uidnu
 
 With GSSAPI enabled, this will set an 8 character random string into the krb5Key (password) attribute of the user account.  This operation requires a ticket from the kadmin/changepw kerberos principal. This will obtain the ticket from that principal and place it into a cache located in /tmp/kacache_%uid (the user id) if used in combination with the -P option.  Further calls can be made for the lifetime of the ticket (5 minutes) using the -m gssapi option without a password.
 .TP
+\-z
+.ul
+passwd
+
+With GSSAPI enabled, this will set the krb5Key (password) attribute of the user account to the string <passwd>. The operation is performed identically to the -y switch above, with the exception that the password is arbitrarily set, rather than being a random string.
+.TP
 -e
 
 With GSSAPI enabled, this will set the krb5PasswordEnd attribute to "20071231235959Z", effectively expiring the kerberos password of the account.
@@ -132,6 +138,20 @@ Shows the version info and exits.
 Shows verbose output of options and exits.
 .TP
 \-d  Shows some debugging output from the command.
+.SH QMAIL
+    With Qmail attributes enabled there are two additional options:
+.TP
+\-Q
+.ul
+fqdn
+
+FQDN of mail host for Qmail.  Populates the mailHost attribute.
+.TP
+\-W
+.ul
+email
+
+Alternative email address for use with Qmail.  Poplulates the mailAlternativeAddress attribute.
 
 .SH USER STRUCTURE
 

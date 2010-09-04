@@ -8,7 +8,7 @@ lacctparse \- parse posix accounts in LDAP stores
 .TP 11 
 lacctparse [\-H <host URI>] [\-m <SASL mech>] [\-u <authcid>] [\-D <bind DN>] [\-p <passwd>] [\-P] 
 
-[\-U <username> \-G <groupname> [\-S <sudoer>]]
+[\-U <username> \-G <groupname> [\-S <sudoer>]] [\-L <filename>]
 
 .SH DESCRIPTION
 .ul
@@ -83,6 +83,12 @@ Name (cn attribute) of the group you wish to parse.  If this is given with no ar
 sudoer
 
 Name (sudoUser attribute) of the sudoer you wish to parse.  If this is given with no argument, then it will give a listing of the DN's of all SUDOer accounts in the directory using the search filter (&(objectClass=sudoRole)(sudoUser=*)).
+.TP
+\-L
+.ul
+filename
+
+Export LDIF of account selected to filename, which is a path: e.g. -L /tmp/myuser.ldif - will exit with an error if that path is not writable by the user executing the command. Any binary attributes (i.e. krb5Key) will be represented in base64 notation. 
 .TP
 \-v|\-\-version 
 
@@ -163,8 +169,4 @@ sudoOption: !authenticate
 
 
 .SH AUTHOR
-Michael Brown <mikal@mikro\-net.com>>
-
-
-
-uxdstools-0.4       January 28, 2008         lacctparse(1)
+Michael Brown <mikal@mikro\-net.com>

@@ -4,8 +4,8 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.61)
 AC_INIT(uxdstools,0.6-dev,mikal@mikro-net.com) 
 
-AC_CONFIG_SRCDIR([krb5.c])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_SRCDIR([src/krb5.c])
+AC_CONFIG_HEADER([src/config.h])
 
 AC_ARG_ENABLE(sasl,
 [  --enable-sasl           compile with support for Cyrus SASL],
@@ -25,6 +25,7 @@ AC_ARG_ENABLE(gssapi,
 [  --enable-gssapi         compile with support for Heimdal Kerberos],
     [GSSAPI="$enableval"],
     [GSSAPI="yes"
+    KRB5="yes"
     if test "$SASL" = "no"; then
         GSSAPI="no"
         echo "SASL disabled, disabling support for GSSAPI....."
@@ -166,5 +167,5 @@ if test "$PTS" = "yes"; then
     AC_DEFINE_UNQUOTED(PTS_BIN, "$AFSPTS", [OpenAFS pts binary path])
 fi
 
-AC_CONFIG_FILES(Makefile)
+AC_CONFIG_FILES(Makefile src/Makefile man/Makefile)
 AC_OUTPUT

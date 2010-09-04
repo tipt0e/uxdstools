@@ -60,6 +60,7 @@ echo "/* end realm.h */" >> realm.h
 
 MACHINE=`uname -m`
 if [ ${MACHINE} != "x86_64" ]; then
+    cd src
     patch < ldap_c_32bit.diff
     patch < sudoldap_c_32bit.diff
 fi
