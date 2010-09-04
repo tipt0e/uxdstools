@@ -46,7 +46,7 @@ int log_event(char *acct, usrt type, toolop op, char *text)
 
 #ifdef HAVE_LDAP_SASL_GSSAPI
     if (auth.username == NULL) {
-	admin = strdup(get_krbname(auth, 0));
+	admin = strdup(get_krbname(auth, FALSE));
     } else {
 	admin = strdup(auth.username);
     }

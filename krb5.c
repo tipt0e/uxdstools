@@ -6,7 +6,7 @@
 /* get user principal name or ccache location 
  * from krb5 ccache (parse = 0|1)
  */
-char *get_krbname(authzdata auth, short parse)
+char *get_krbname(authzdata auth, int parse)
 {
     krb5_context context;
     krb5_error_code error;

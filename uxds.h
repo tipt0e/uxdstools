@@ -93,6 +93,9 @@
 #define UIDNUM        "(&(objectclass=posixAccount)(uidNumber=*))"
 #define GIDNUM        "(&(objectclass=posixGroup)(gidNumber=*))"
 
+/* boolean for parsing - get_krbname() */
+typedef enum { FALSE, TRUE } bool;
+
 /* account type */
 typedef enum { SELF, USER, GROUP, SUDOER } usrt;
 

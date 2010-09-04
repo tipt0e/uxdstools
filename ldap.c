@@ -210,7 +210,7 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
 	    break;
 #ifdef HAVE_LDAP_SASL_GSSAPI
 	case G:
-	    kuser = get_krbname(auth, 0);
+	    kuser = get_krbname(auth, FALSE);
 	    if (auth.debug)
 		fprintf(stderr,
 			"user account filter half returned: %s, size %lu len %lu\n",
@@ -725,7 +725,7 @@ int uxds_acct_add(usrt pxtype, struct mod_data mdata, LDAP * ld)
 	}
 #ifdef HAVE_LDAP_SASL_GSSAPI
 	if ((mdata.cpw == 1) || (mdata.setpass != NULL)) {
-	    char *name = get_krbname(auth, 0);
+	    char *name = get_krbname(auth, FALSE);
 	    putenv(center(cbuf, "KRB5CCNAME=/tmp/kacache_", name));
             if (mdata.cpw == 1) {
 	        if (setpwd(mdata.user, randstr()) != 0) {
@@ -1172,7 +1172,7 @@ int uxds_acct_mod(usrt pxtype, struct mod_data mdata, LDAP * ld)
 #ifdef HAVE_LDAP_SASL_GSSAPI
       skipmod:;
 	if (mdata.cpw == 1) {
-	    char *name = get_krbname(auth, 0);
+	    char *name = get_krbname(auth, FALSE);
 	    putenv(center(cbuf, "KRB5CCNAME=/tmp/kacache_", name));
 	    if (setpwd(mdata.user, randstr()) != 0) {
 		fprintf(stderr, "Password not set for %s\n", mdata.user);
