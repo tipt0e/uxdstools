@@ -1,0 +1,16 @@
+LDAP Schemas are located in the schema directory.
+
+These are only provided as a convenience to the user, the
+framework _must_ be in place in order to use these effectively.
+
+The openssh-lpk project can be found at:
+
+http://code.google.com/p/openssh-lpk/
+
+Heimdal can be found at:
+
+http://www.h5l.org/
+
+Qmail-LDAP is available at:
+
+http://www.qmail-ldap.org/
