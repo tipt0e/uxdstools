@@ -190,6 +190,9 @@ all-debug: lacctparse_debug luseradd_debug
 lacctparse_debug: ${OBJS} lacctparse.o
 	${CC} ${DEBUG} ${LDFLAGS} ${OBJS} lacctparse.o -o lacctparse
 
+lacctparse: ${OBJS} lacctparse.o
+	${CC} ${LDFLAGS} ${OBJS} lacctparse.o -o lacctparse
+
 luseradd: ${OBJS} luseradd.o
 	${CC} ${LDFLAGS} ${OBJS} luseradd.o -o luseradd
 
