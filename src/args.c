@@ -279,6 +279,7 @@ void usage(useout mflag, char *binary, usrt atype, toolop op)
     }
 }
 
+
 /* command line parser */
 int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		int arg_n, authzdata * auth, struct mod_data *mdata,
@@ -304,6 +305,9 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
     auth->pxacct = NULL;
     auth->basedn = NULL;
     auth->ldif = NULL;
+    auth->password = calloc(1, sizeof(struct berval));
+    auth->password->bv_val = NULL;
+    auth->password->bv_len = 0;
     if ((atype == SELF) || (atype == SUDOER)) {
 	goto parse;
     }
@@ -814,7 +818,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		i--;
 		break;
 	    case 'P':		/* enter password on command line */
-		i++;
+                i++;
 		if ((sflag == 2)) {
 		    fprintf(stderr,
 			    "option -P is unnecessary with GSSAPI\n\n");
@@ -844,6 +848,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		    fprintf(stdout,
 			    "KINIT with SASL/GSSAPI Bind selected.\n");
 		    auth->password->bv_val = strdup(getpwd(auth->username));
+                    auth->password->bv_len = strlen(auth->password->bv_val);
 		    break;
 #endif				/*HAVE_LDAP_SASL_GSSAPI */
 #endif				/*HAVE_LDAP_SASL */
@@ -855,6 +860,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 
 		if (auth->username == NULL) {
 		    auth->password->bv_val = strdup(getpwd("Your DN"));
+                    auth->password->bv_len = strlen(auth->password->bv_val);
 		}
 /* if GSSAPI enabled we let 
  * krb5_posix_prompter take care if it
@@ -862,6 +868,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 #ifndef HAVE_LDAP_SASL_GSSAPI
 		else {
 		    auth->password->bv_val = strdup(getpwd(auth->username));
+                    auth->password->bv_len = strlen(auth->password->bv_val);
 		}
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 		break;
@@ -1008,7 +1015,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 			auth->s_mech);
 	    break;
 	case 2:
-	    if (auth->password != NULL) {
+	    if (auth->password->bv_val != NULL) {
 		fprintf(stderr,
 			"-m GSSAPI is INCOMPATIBLE with [-u] and [-p -P]\n");
 		exit(EXIT_FAILURE);

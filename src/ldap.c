@@ -98,6 +98,7 @@ int uxds_user_authz(int select, authzdata auth, LDAP * ld)
 #endif				/* HAVE_LDAP_SASL */
     case LDAP_AUTH_SIMPLE:
     default:
+	auth.password->bv_len = strlen(auth.password->bv_val);
 	rc = ldap_sasl_bind_s(ld, auth.binddn, NULL, auth.password,
                               NULL, NULL, NULL);
 	break;
@@ -414,11 +415,15 @@ int uxds_acct_add(usrt pxtype, struct mod_data mdata, LDAP * ld)
 	if (pxtype == USER) {
 	    if (ldap_sort_entries(ld, &entry, "uidNumber", strcmp))
                 ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-                fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+                if (auth.debug) {
+                    fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+                }
 	} else if (pxtype == GROUP) {
 	    if (ldap_sort_entries(ld, &entry, "gidNumber", strcmp))
                 ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-                fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+                if (auth.debug) {
+                    fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+                }
 	}
 	for (attr = ldap_first_attribute(ld, entry, &ber);
 	     attr != NULL; attr = ldap_next_attribute(ld, entry, ber)) {
@@ -619,6 +624,7 @@ int uxds_acct_add(usrt pxtype, struct mod_data mdata, LDAP * ld)
 #ifdef SSH_LPK
 	n = n + 1;
 #endif				/* SSH_LPK */
+        n = n + 1;
 
 	LDAPMod **useradd;
 	useradd = (LDAPMod **) calloc(n, sizeof(LDAPMod *));
