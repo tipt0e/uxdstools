@@ -39,7 +39,7 @@ int uxds_user_authz(int select, authzdata auth, LDAP * ld)
     }
 #ifdef HAVE_LDAP_SASL
 /* SASL authentication chosen */
-    if (select > 0) {
+    if (select > 0 || auth.pkcert) {
 	authmethod = LDAP_AUTH_SASL;
 	sasl_mech = ber_strdup(auth.s_mech);
 	if (auth.verb == 1) {
@@ -58,7 +58,7 @@ int uxds_user_authz(int select, authzdata auth, LDAP * ld)
     }
 #endif				/* HAVE_LDAP_SASL */
     /* simple authentication chosen */
-    if (select == 0) {
+    if (select == 0 || !auth.pkcert) {
 	authmethod = LDAP_AUTH_SIMPLE;
     }
 

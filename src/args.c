@@ -130,7 +130,7 @@ void usage(useout mflag, char *binary, usrt atype, toolop op)
 #ifdef HAVE_LDAP_SASL
 	fprintf(stdout, "SASL support available.\n");
 #ifdef HAVE_LDAP_SASL_GSSAPI
-	fprintf(stdout, "GSSAPI support availiable.\n");
+	fprintf(stdout, "GSSAPI support available.\n");
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 #endif				/* HAVE_LDAP_SASL */
 	exit(EXIT_SUCCESS);
@@ -454,7 +454,8 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 	    case 'u':		/* SASL authentication identity */
 		i++;
 #ifdef HAVE_LDAP_SASL_GSSAPI
-		if ((sflag != 2) && (auth->s_mech == NULL)) {
+		if ((sflag != 2 && auth->s_mech == NULL)
+                    || auth->pkcert != NULL) {
 		    sflag = 3;
 		}
 #else
@@ -479,6 +480,22 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		auth->ldif = strdup(argv[i]);
 		i--;
 		break;
+#ifdef HAVE_LDAP_SASL_GSSAPI
+            case 'K':           /* PK-INIT */
+                i++;
+                optmask("<filename>", atype, opts, c);
+                if (auth->username == NULL) {
+                    fprintf(stderr, "MUST HAVE -u option for -K option\n");
+                    usage(U, argv[0], atype, op);
+                }
+                if ((sflag < 3) || (auth->s_mech) || (auth->binddn)) {
+                    fprintf(stderr, "-D|-P|-m options CONFLICT with -K option\n");
+                    usage(U, argv[0], atype, op);
+                }
+                auth->pkcert = strdup(argv[i]);
+                i--;
+                break;
+#endif                          /* HAVE_LDAP_SASL_GSSAPI */
 	    case 'U':		/* user account select */
 		i++;
 		switch (atype) {
@@ -819,9 +836,9 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		break;
 	    case 'P':		/* enter password on command line */
                 i++;
-		if ((sflag == 2)) {
+		if ((sflag == 2) || (auth->pkcert != NULL)) {
 		    fprintf(stderr,
-			    "option -P is unnecessary with GSSAPI\n\n");
+			    "option -P is unnecessary with GSSAPI or PKINIT\n\n");
 		    usage(U, argv[0], atype, op);
 		}
 		if (argv[i] != NULL) {
@@ -1003,7 +1020,8 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 
     }
 #ifdef HAVE_LDAP_SASL_GSSAPI
-    if (auth->password != NULL) {
+    if (auth->password != NULL || auth->pkcert != NULL) {
+        printf("%s is cert\n", auth->pkcert);
 	switch (sflag) {
 	case 0:
 	    if (auth->debug)

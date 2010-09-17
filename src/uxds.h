@@ -110,8 +110,13 @@ typedef struct {
     char *username;		/* SASL authcid */
     struct berval *password;	/* Simple or SASL Bind */
     char *binddn;		/* Simple bind DN or SASL authzid when "dn:DN" */
+#ifdef HAVE_LDAP_SASL
     char *s_mech;		/* SASL mechanism */
+#ifdef HAVE_LDAP_SASL_GSSAPI
     char *credcache;		/* Krb5 credentials cache */
+    char *pkcert;               /* PK-INIT certificate */
+#endif  /* HAVE_LDAP_SASL_GSSAPI */
+#endif  /* HAVE_LDAP_SASL */
     usrt acct;			/* account type marker */
     char *pxacct;		/* account to parse */
     char *basedn;		/* base dn for ops */
