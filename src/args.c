@@ -174,8 +174,8 @@ void usage(useout mflag, char *binary, usrt atype, toolop op)
 		"              can be a path, e.g. /tmp/krb5cc_100 or preceded by 'METHOD:'\n");
 	fprintf(stdout,
 		"              as in FILE:/tmp/krb5cc_100 or KCM:100\n");
-        fprintf(stdout,
-                "   -K cert    Certificate file to use for PKINIT\n"); 
+	fprintf(stdout,
+		"   -K cert    Certificate file to use for PKINIT\n");
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 	fprintf(stdout, "Options for Target %s Account %s:\n", acct, oper);
 	switch (atype) {
@@ -198,8 +198,8 @@ void usage(useout mflag, char *binary, usrt atype, toolop op)
 #ifdef HAVE_LDAP_SASL_GSSAPI
 		fprintf(stdout,
 			"   -y         reset password (krb5Key) to random string\n");
-                fprintf(stdout,
-			"   -z passwd  set password (krb5Key) to string (passwd)\n"); 
+		fprintf(stdout,
+			"   -z passwd  set password (krb5Key) to string (passwd)\n");
 		fprintf(stdout,
 			"   -e         expire account password (krb5PasswordEnd)\n");
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
@@ -292,7 +292,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *cbuf = NULL;
-#endif  /* HAVE_LDAP_SASL_GSSAPI */
+#endif				/* HAVE_LDAP_SASL_GSSAPI */
     opts.binary = binary;
     auth->debug = 0;
     auth->verb = 0;
@@ -455,7 +455,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		i++;
 #ifdef HAVE_LDAP_SASL_GSSAPI
 		if ((sflag != 2 && auth->s_mech == NULL)
-                    || auth->pkcert != NULL) {
+		    || auth->pkcert != NULL) {
 		    sflag = 3;
 		}
 #else
@@ -481,21 +481,22 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		i--;
 		break;
 #ifdef HAVE_LDAP_SASL_GSSAPI
-            case 'K':           /* PK-INIT */
-                i++;
-                optmask("<filename>", atype, opts, c);
-                if (auth->username == NULL) {
-                    fprintf(stderr, "MUST HAVE -u option for -K option\n");
-                    usage(U, argv[0], atype, op);
-                }
-                if ((sflag < 3) || (auth->s_mech) || (auth->binddn)) {
-                    fprintf(stderr, "-D|-P|-m options CONFLICT with -K option\n");
-                    usage(U, argv[0], atype, op);
-                }
-                auth->pkcert = strdup(argv[i]);
-                i--;
-                break;
-#endif                          /* HAVE_LDAP_SASL_GSSAPI */
+	    case 'K':		/* PK-INIT */
+		i++;
+		optmask("<filename>", atype, opts, c);
+		if (auth->username == NULL) {
+		    fprintf(stderr, "MUST HAVE -u option for -K option\n");
+		    usage(U, argv[0], atype, op);
+		}
+		if ((sflag < 3) || (auth->s_mech) || (auth->binddn)) {
+		    fprintf(stderr,
+			    "-D|-P|-m options CONFLICT with -K option\n");
+		    usage(U, argv[0], atype, op);
+		}
+		auth->pkcert = strdup(argv[i]);
+		i--;
+		break;
+#endif				/* HAVE_LDAP_SASL_GSSAPI */
 	    case 'U':		/* user account select */
 		i++;
 		switch (atype) {
@@ -592,7 +593,8 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		}
 		if (op == ADD) {
 		    fprintf(stderr,
-			    "%s: [-A] Relevant for SUDOER ADD ONLY\n", binary);
+			    "%s: [-A] Relevant for SUDOER ADD ONLY\n",
+			    binary);
 		    exit(EXIT_FAILURE);
 		}
 		optmask("<sudoer>", atype, opts, c);
@@ -729,7 +731,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		if ((atype != USER) || (op == DEL)) {
 		    fprintf(stderr,
 			    "-W only used with POSIX USER ADD or MODIFY\n\n");
-                    usage(U, argv[0], atype, op);
+		    usage(U, argv[0], atype, op);
 		}
 		optmask("<email>", atype, opts, c);
 		mdata->altaddr = strdup(argv[i]);
@@ -740,7 +742,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		if ((atype != USER) || (op == DEL)) {
 		    fprintf(stderr,
 			    "-Q only used with POSIX USER ADD or MODIFY\n\n");
-	            usage(U, argv[0], atype, op);
+		    usage(U, argv[0], atype, op);
 		}
 		optmask("<fqdn>", atype, opts, c);
 		mdata->mhost = strdup(argv[i]);
@@ -770,12 +772,12 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		break;
 	    case 'y':		/* set flag for passwd resets */
 		i++;
-                if (mdata->setpass != NULL) {
-                    fprintf(stderr,
-                            "option -z cannot be used with option -y\n\n");
-                    usage(U, argv[0], atype, op);
-                    break;
-                }
+		if (mdata->setpass != NULL) {
+		    fprintf(stderr,
+			    "option -z cannot be used with option -y\n\n");
+		    usage(U, argv[0], atype, op);
+		    break;
+		}
 		if ((op == DEL) || (atype != USER)) {
 		    fprintf(stderr,
 			    "option -y only used with USER ADD or MODIFY\n\n");
@@ -787,25 +789,25 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		}
 		i--;
 		break;
-            case 'z':
-                i++;
-                if (mdata->cpw == 1) {
-                    fprintf(stderr,
-                            "option -z cannot be used with option -y\n\n");
-                    usage(U, argv[0], atype, op);
-                    break;
-                }
-                if ((op == DEL) || (atype != USER)) {
-                    fprintf(stderr,
-                            "option -z only used with USER ADD or MODIFY\n\n");
-                    usage(U, argv[0], atype, op);
-                    break;
-                }
-                optmask("<password>", atype, opts, c);
-                mdata->setpass = (char*)malloc(sizeof(char));
-                mdata->setpass = strdup(argv[i]);
-                i--;
-                break;
+	    case 'z':
+		i++;
+		if (mdata->cpw == 1) {
+		    fprintf(stderr,
+			    "option -z cannot be used with option -y\n\n");
+		    usage(U, argv[0], atype, op);
+		    break;
+		}
+		if ((op == DEL) || (atype != USER)) {
+		    fprintf(stderr,
+			    "option -z only used with USER ADD or MODIFY\n\n");
+		    usage(U, argv[0], atype, op);
+		    break;
+		}
+		optmask("<password>", atype, opts, c);
+		mdata->setpass = (char *) malloc(sizeof(char));
+		mdata->setpass = strdup(argv[i]);
+		i--;
+		break;
 	    case 'e':		/* expire password - sets to 12/31/2007 */
 		i++;
 		if ((op == DEL) || (atype != USER)) {
@@ -821,9 +823,9 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		break;
 	    case 'p':		/* Password for SASL or SIMPLE bind */
 		i++;
-		if (sflag == 2) {
+		if ((sflag == 2) || (auth->pkcert != NULL)) {
 		    fprintf(stderr,
-			    "option -p is unnecessary with GSSAPI\n\n");
+			    "option -p is unnecessary with GSSAPI or PKINIT\n\n");
 		    usage(U, argv[0], atype, op);
 		}
 		if (argv[i] == NULL) {
@@ -835,7 +837,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		i--;
 		break;
 	    case 'P':		/* enter password on command line */
-                i++;
+		i++;
 		if ((sflag == 2) || (auth->pkcert != NULL)) {
 		    fprintf(stderr,
 			    "option -P is unnecessary with GSSAPI or PKINIT\n\n");
@@ -864,8 +866,10 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		case 3:
 		    fprintf(stdout,
 			    "KINIT with SASL/GSSAPI Bind selected.\n");
-		    auth->password->bv_val = strdup(getpwd(auth->username));
-                    auth->password->bv_len = strlen(auth->password->bv_val);
+		    auth->password->bv_val =
+			strdup(getpwd(auth->username));
+		    auth->password->bv_len =
+			strlen(auth->password->bv_val);
 		    break;
 #endif				/*HAVE_LDAP_SASL_GSSAPI */
 #endif				/*HAVE_LDAP_SASL */
@@ -877,15 +881,18 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 
 		if (auth->username == NULL) {
 		    auth->password->bv_val = strdup(getpwd("Your DN"));
-                    auth->password->bv_len = strlen(auth->password->bv_val);
+		    auth->password->bv_len =
+			strlen(auth->password->bv_val);
 		}
 /* if GSSAPI enabled we let 
  * krb5_posix_prompter take care if it
  */
 #ifndef HAVE_LDAP_SASL_GSSAPI
 		else {
-		    auth->password->bv_val = strdup(getpwd(auth->username));
-                    auth->password->bv_len = strlen(auth->password->bv_val);
+		    auth->password->bv_val =
+			strdup(getpwd(auth->username));
+		    auth->password->bv_len =
+			strlen(auth->password->bv_val);
 		}
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 		break;
@@ -1010,10 +1017,12 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 	if (mdata->su->sudoer == NULL) {
 	    if (op == ADD) {
 		fprintf(stderr,
-			"%s: A POSIX USER or GROUP account MUST be chosen for SUDOER OPS\n", binary);
+			"%s: A POSIX USER or GROUP account MUST be chosen for SUDOER OPS\n",
+			binary);
 	    } else {
 		fprintf(stderr,
-			"%s: A SUDOER Account MUST be chosen for SUDOER OPS\n", binary);
+			"%s: A SUDOER Account MUST be chosen for SUDOER OPS\n",
+			binary);
 	    }
 	    exit(EXIT_FAILURE);
 	}
@@ -1021,7 +1030,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
     }
 #ifdef HAVE_LDAP_SASL_GSSAPI
     if (auth->password != NULL || auth->pkcert != NULL) {
-        printf("%s is cert\n", auth->pkcert);
+	printf("Using PK-INIT with x509 cert: %s\n", auth->pkcert);
 	switch (sflag) {
 	case 0:
 	    if (auth->debug)
