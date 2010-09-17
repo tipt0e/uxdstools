@@ -36,6 +36,12 @@ Use passwd as password for authentication (Simple or SASL).
 \-P
 Prompt for password, used instead of specifying the password on the command line. With GSSAPI support, this input will be used to obtain a kerberos tgt.
 .TP        
+\-K
+.ul
+FILE:/path/to/x509_certificate
+
+With GSSAPI enabled, this allows for rudimentary PK-INIT authentication using an x509 certificate.  At this time it does not accept passphrases for private keys.  In all other ways it is identical to using the -p|-P options.
+.TP
 \-H 
 .ul
 host URI 
