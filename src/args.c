@@ -403,21 +403,15 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		break;
 #ifdef HAVE_LDAP_SASL
 	    case 'm':		/* SASL mechanism  */
-		i++;
 		optmask("<SASLMECH> or NONE for", atype, opts, c);
-		sflag++;
-		auth->s_mech = argv[i];
-#ifdef HAVE_LDAP_SASL_GSSAPI
-		if (!(strncasecmp("GSSAPI", argv[i], 4))) {
-		    sflag++;
+		auth->s_mech = argv[i + 1];
+		if (!(strncasecmp("GSSAPI", argv[i + 1], 4))) {
+		    sflag = 2;
 		    auth->username = NULL;
 		    auth->binddn = NULL;
-		}
-#endif				/* HAVE_LDAP_SASL_GSSAPI */
-		if (!(strncasecmp("NONE", argv[i], strlen("NONE")))) {
-		    sflag--;
-		}
-		i--;
+		} else {
+		    sflag = 1;
+                }
 		break;
 #endif				/* HAVE_LDAP_SASL */
 	    case 'D':		/* LDAP authorization DN */
@@ -494,6 +488,8 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		    usage(U, argv[0], atype, op);
 		}
 		auth->pkcert = strdup(argv[i]);
+                fprintf(stdout, "Using PK-INIT with x509 cert: %s\n",
+                        auth->pkcert);
 		i--;
 		break;
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
@@ -1029,8 +1025,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 
     }
 #ifdef HAVE_LDAP_SASL_GSSAPI
-    if (auth->password != NULL || auth->pkcert != NULL) {
-	printf("Using PK-INIT with x509 cert: %s\n", auth->pkcert);
+    if ((auth->password != NULL) || (auth->pkcert != NULL)) {
 	switch (sflag) {
 	case 0:
 	    if (auth->debug)

@@ -58,7 +58,7 @@ int uxds_user_authz(int select, authzdata auth, LDAP * ld)
     }
 #endif				/* HAVE_LDAP_SASL */
     /* simple authentication chosen */
-    if (select == 0 || !auth.pkcert) {
+    if ((select == 0) || (!auth.pkcert)) {
 	authmethod = LDAP_AUTH_SIMPLE;
     }
 
