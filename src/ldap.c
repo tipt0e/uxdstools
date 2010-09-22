@@ -4,16 +4,16 @@
 #include "uxds_strings.h"
 #ifdef HAVE_LDAP_SASL
 #include "uxds_sasl.h"
-# ifdef HAVE_LDAP_SASL_GSSAPI
-# include "uxds_krb5.h"
-# endif	/* HAVE_LDAP_SASL_GSSAPI */
-#endif 	/* HAVE_LDAP_SASL */
+#ifdef HAVE_LDAP_SASL_GSSAPI
+#include "uxds_krb5.h"
+#endif				/* HAVE_LDAP_SASL_GSSAPI */
+#endif				/* HAVE_LDAP_SASL */
 #ifdef PTS
 #include "uxds_afs.h"
-#endif 	/* PTS */
+#endif				/* PTS */
 #ifdef TOOL_LOG
 #include "uxds_log.h"
-#endif 	/* TOOL_LOG */
+#endif				/* TOOL_LOG */
 
 int rc;
 char *cbuf = NULL;
@@ -39,7 +39,7 @@ int uxds_user_authz(int select, authzdata auth, LDAP * ld)
     }
 #ifdef HAVE_LDAP_SASL
 /* SASL authentication chosen */
-    if (select > 0 || auth.pkcert) {
+    if ((select > 0) || (auth.pkcert)) {
 	authmethod = LDAP_AUTH_SASL;
 	sasl_mech = ber_strdup(auth.s_mech);
 	if (auth.verb == 1) {
@@ -58,9 +58,12 @@ int uxds_user_authz(int select, authzdata auth, LDAP * ld)
     }
 #endif				/* HAVE_LDAP_SASL */
     /* simple authentication chosen */
-    if ((select == 0) || (!auth.pkcert)) {
+#ifdef HAVE_LDAP_SASL_GSSAPI
+    if ((select == 0) && (!auth.pkcert))
+#else
+    if (select == 0)
+#endif				/* HAVE_LDAP_SASL_GSSAPI */
 	authmethod = LDAP_AUTH_SIMPLE;
-    }
 
     proto = LDAP_VERSION3;
 
@@ -98,15 +101,24 @@ int uxds_user_authz(int select, authzdata auth, LDAP * ld)
 #endif				/* HAVE_LDAP_SASL */
     case LDAP_AUTH_SIMPLE:
     default:
-	auth.password->bv_len = strlen(auth.password->bv_val);
-	rc = ldap_sasl_bind_s(ld, auth.binddn, NULL, auth.password,
-                              NULL, NULL, NULL);
+	if (auth.password->bv_val != NULL) {
+	    auth.password->bv_len = strlen(auth.password->bv_val);
+	    rc = ldap_sasl_bind_s(ld, auth.binddn, NULL, auth.password,
+				  NULL, NULL, NULL);
+	} else {
+	    /* XXX */
+	    fprintf(stderr,
+		    "FATAL: need to fix in args.c - exiting with no SIMPLE BIND passwd\n");
+	    fprintf(stderr, "Need [-p <password>] or [-P] option\n");
+
+	    return 1;
+	}
 	break;
     }
 
     if (rc != LDAP_SUCCESS) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	ldap_unbind_ext_s(ld, NULL, NULL);
 	return 1;
     }
@@ -124,8 +136,8 @@ int uxds_user_authz(int select, authzdata auth, LDAP * ld)
     }
 #endif				/* HAVE_LDAP_SASL */
     if (auth.debug) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
     }
     return 0;
 }
@@ -189,7 +201,7 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
 
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *kuser = NULL;
-#endif  /* HAVE_LDAP_SASL_GSSAPI */
+#endif				/* HAVE_LDAP_SASL_GSSAPI */
 
     base = NULL;
     if (auth.debug)
@@ -264,13 +276,13 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
     if (ldap_search_ext_s
 	(ld, base, LDAP_SCOPE_SUBTREE, filter, attr_mask, 0,
 	 NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
     if (auth.debug) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	fprintf(stderr, "The number of entries returned was %d\n",
 		ldap_count_entries(ld, msg));
     }
@@ -304,7 +316,7 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
 	    fprintf(stderr, "%s matched DN: %s\n\n", accttype, dn);
 	    if (auth.ldif != NULL) {
 		fp = fopen(auth.ldif, "w");
-                file_chkerr(fp);
+		file_chkerr(fp);
 		fprintf(fp, "# ------ uxdstools LDIF export -------\n");
 		fprintf(fp, "# %s Account: %s\n", accttype, auth.pxacct);
 		fprintf(fp, "dn: %s\n", dn);
@@ -332,7 +344,9 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
 		} else {
 #ifdef HAVE_LDAP_SASL_GSSAPI
 		    if (strcmp(attr, "krb5Key") == 0)
-			vals[i]->bv_val = base64(vals[i]->bv_val, strlen(vals[i]->bv_val));
+			vals[i]->bv_val =
+			    base64(vals[i]->bv_val,
+				   strlen(vals[i]->bv_val));
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 		    fprintf(stdout, "%s: %s\n", attr, vals[i]->bv_val);
 		    fp = fopen(auth.ldif, "a");
@@ -397,15 +411,15 @@ int uxds_acct_add(usrt pxtype, struct mod_data mdata, LDAP * ld)
 	    filter = GIDNUM;
 	}
     }
-    if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, mask, 0, 
-        NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+    if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, mask, 0,
+			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
     if (auth.debug) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	fprintf(stderr, "The number of entries returned was %d\n",
 		ldap_count_entries(ld, msg));
     }
@@ -414,16 +428,16 @@ int uxds_acct_add(usrt pxtype, struct mod_data mdata, LDAP * ld)
 	 entry != NULL; entry = ldap_next_entry(ld, entry)) {
 	if (pxtype == USER) {
 	    if (ldap_sort_entries(ld, &entry, "uidNumber", strcmp))
-                ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-                if (auth.debug) {
-                    fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
-                }
+		ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	    if (auth.debug) {
+		fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	    }
 	} else if (pxtype == GROUP) {
 	    if (ldap_sort_entries(ld, &entry, "gidNumber", strcmp))
-                ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-                if (auth.debug) {
-                    fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
-                }
+		ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	    if (auth.debug) {
+		fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	    }
 	}
 	for (attr = ldap_first_attribute(ld, entry, &ber);
 	     attr != NULL; attr = ldap_next_attribute(ld, entry, ber)) {
@@ -465,16 +479,16 @@ int uxds_acct_add(usrt pxtype, struct mod_data mdata, LDAP * ld)
     //center_free(cbuf);
     if (auth.debug)
 	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
-    if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0, 
-                          NULL, NULL, NULL, 0, &msg)
+    if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
+			  NULL, NULL, NULL, 0, &msg)
 	!= LDAP_SUCCESS) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
     if (auth.debug) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	fprintf(stderr, "The number of entries returned was %d\n",
 		ldap_count_entries(ld, msg));
     }
@@ -538,7 +552,8 @@ int uxds_acct_add(usrt pxtype, struct mod_data mdata, LDAP * ld)
     char *ge_cos = strdup(center(cbuf,
 				 center(cbuf,
 					center(cbuf,
-					       center(cbuf, mdata.firstname,
+					       center(cbuf,
+						      mdata.firstname,
 						      " "),
 					       mdata.lastname), ";"),
 				 role));
@@ -624,7 +639,7 @@ int uxds_acct_add(usrt pxtype, struct mod_data mdata, LDAP * ld)
 #ifdef SSH_LPK
 	n = n + 1;
 #endif				/* SSH_LPK */
-        n = n + 1;
+	n = n + 1;
 
 	LDAPMod **useradd;
 	useradd = (LDAPMod **) calloc(n, sizeof(LDAPMod *));
@@ -713,11 +728,12 @@ int uxds_acct_add(usrt pxtype, struct mod_data mdata, LDAP * ld)
 	    fprintf(stderr, "user=%s, group=%s, uid=%s, gecos=%s\n",
 		    mdata.user, mdata.group, mdata.uidnum, ge_cos);
 
-	if (ldap_add_ext_s(ld, user_dn, useradd, NULL, NULL) != LDAP_SUCCESS) {
+	if (ldap_add_ext_s(ld, user_dn, useradd, NULL, NULL) !=
+	    LDAP_SUCCESS) {
 	    fprintf(stderr, "Attempted DN: %s, len %lu\n", user_dn,
 		    strlen(user_dn));
-            ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-            fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	    ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	    fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 #ifdef TOOL_LOG
 	    log_event(user_dn, USER, ADD, "FAILED");
 #endif				/* TOOL_LOG */
@@ -736,22 +752,22 @@ int uxds_acct_add(usrt pxtype, struct mod_data mdata, LDAP * ld)
 	if ((mdata.cpw == 1) || (mdata.setpass != NULL)) {
 	    char *name = get_krbname(auth, FALSE);
 	    putenv(center(cbuf, "KRB5CCNAME=/tmp/kacache_", name));
-            if (mdata.cpw == 1) {
-	        if (setpwd(mdata.user, randstr()) != 0) {
+	    if (mdata.cpw == 1) {
+		if (setpwd(mdata.user, randstr()) != 0) {
 		    fprintf(stderr, "Password NOT set");
-	        }
-	        if (mdata.exp == 1) {
-		    if ((uxds_user_expire(0, user_dn, ld)) != 0) {
-		        fprintf(stderr, "Password not EXPIRED for %s\n",
-			        mdata.user);
-                    }
-             
 		}
-            } else if (mdata.setpass != NULL) {
-                if (setpwd(mdata.user, mdata.setpass) != 0) {
-                    fprintf(stderr, "Password NOT set\n");
-                }
-            }
+		if (mdata.exp == 1) {
+		    if ((uxds_user_expire(0, user_dn, ld)) != 0) {
+			fprintf(stderr, "Password not EXPIRED for %s\n",
+				mdata.user);
+		    }
+
+		}
+	    } else if (mdata.setpass != NULL) {
+		if (setpwd(mdata.user, mdata.setpass) != 0) {
+		    fprintf(stderr, "Password NOT set\n");
+		}
+	    }
 	}
 #ifdef PTS
 	if (pts_wrap(PTSCRT, mdata.user, MY_CELL, mdata.uidnum)
@@ -761,7 +777,7 @@ int uxds_acct_add(usrt pxtype, struct mod_data mdata, LDAP * ld)
 	}
 #if 0
 	if (strcmp(mdata.group, "sysops") == 0) {
-            char *ptsgrp = "system:administrators";
+	    char *ptsgrp = "system:administrators";
 	    if (pts_wrap(PTSGRP, mdata.user, MY_CELL, ptsgrp) != 0) {
 		fprintf(stderr, "ERROR: User %s not added to pts admins",
 			mdata.user);
@@ -826,10 +842,11 @@ int uxds_acct_add(usrt pxtype, struct mod_data mdata, LDAP * ld)
 		    "group=%s, gid=%s, descr=%s, memberuid(s)=%s\n",
 		    mdata.group, mdata.gidnum, mdata.comment,
 		    mdata.member);
-	if (ldap_add_ext_s(ld, group_dn, groupadd, NULL, NULL) != LDAP_SUCCESS) {
+	if (ldap_add_ext_s(ld, group_dn, groupadd, NULL, NULL) !=
+	    LDAP_SUCCESS) {
 	    fprintf(stdout, "Attempted DN: %s\n", group_dn);
-            ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-            fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	    ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	    fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 #ifdef TOOL_LOG
 	    log_event(group_dn, GROUP, ADD, "FAILED");
 #endif				/* TOOL_LOG */
@@ -875,15 +892,15 @@ int uxds_acct_del(usrt pxtype, struct mod_data mdata, LDAP * ld)
     if (auth.debug)
 	fprintf(stderr, "search filter used: %s, len %lu\n", filter,
 		strlen(filter));
-    if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0, 
-        NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+    if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
+			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
     if (auth.debug) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	fprintf(stderr, "The number of entries returned was %d\n",
 		ldap_count_entries(ld, msg));
     }
@@ -908,8 +925,8 @@ int uxds_acct_del(usrt pxtype, struct mod_data mdata, LDAP * ld)
 	}
     }
     if (ldap_delete_ext_s(ld, dn, NULL, NULL) != LDAP_SUCCESS) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	fprintf(stderr, "POSIX Account deletion UNSUCCESSFUL.\n");
 #ifdef TOOL_LOG
 	log_event(dn, pxtype, DEL, "FAILED");
@@ -918,8 +935,8 @@ int uxds_acct_del(usrt pxtype, struct mod_data mdata, LDAP * ld)
 	exit(EXIT_FAILURE);
     }
     if (auth.debug) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
     }
 #ifdef TOOL_LOG
     log_event(dn, pxtype, DEL, "SUCCESSFUL - DELETED");
@@ -936,7 +953,7 @@ int uxds_acct_del(usrt pxtype, struct mod_data mdata, LDAP * ld)
 		    "ERROR: User %s not deleted from pts database\n",
 		    mdata.user);
 	}
-#endif	/* PTS */
+#endif				/* PTS */
     }
     fprintf(stderr, "POSIX Account DELETED.\n");
     free(filter);
@@ -986,14 +1003,14 @@ int uxds_acct_mod(usrt pxtype, struct mod_data mdata, LDAP * ld)
     if (auth.debug)
 	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
-                          NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
     if (auth.debug) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	fprintf(stderr, "The number of entries returned was %d\n",
 		ldap_count_entries(ld, msg));
     }
@@ -1033,8 +1050,8 @@ int uxds_acct_mod(usrt pxtype, struct mod_data mdata, LDAP * ld)
 	vals = ldap_get_values_len(ld, entry, "givenName");
 	if (vals[0]->bv_val != NULL) {
 	    if (auth.debug)
-		fprintf(stderr, "%s : first name, len %lu\n", vals[0]->bv_val,
-			strlen(vals[0]->bv_val));
+		fprintf(stderr, "%s : first name, len %lu\n",
+			vals[0]->bv_val, strlen(vals[0]->bv_val));
 	    mdata.firstname = strdup(vals[0]->bv_val);
 	    ldap_value_free_len(vals);
 	}
@@ -1166,14 +1183,15 @@ int uxds_acct_mod(usrt pxtype, struct mod_data mdata, LDAP * ld)
 		    "FATAL ERROR.... no attributes came through for modification!\n");
 	    return 1;
 	}
-	if (ldap_modify_ext_s(ld, mod_dn, usermod, NULL, NULL) != LDAP_SUCCESS) {
+	if (ldap_modify_ext_s(ld, mod_dn, usermod, NULL, NULL) !=
+	    LDAP_SUCCESS) {
 	    fprintf(stdout, "Attempted DN: %s, len %lu\n", mod_dn,
 		    strlen(mod_dn));
 #ifdef TOOL_LOG
 	    log_event(mod_dn, USER, MOD, "FAILED");
 #endif				/* TOOL_LOG */
-            ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-            fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	    ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	    fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	    return 1;
 	}
 	fprintf(stdout,
@@ -1266,13 +1284,14 @@ int uxds_acct_mod(usrt pxtype, struct mod_data mdata, LDAP * ld)
 	    fprintf(stderr, "groupDN = %s\n", mod_dn);
 	}
 	center_free(cbuf);
-	if (ldap_modify_ext_s(ld, mod_dn, groupmod, NULL, NULL) != LDAP_SUCCESS) {
+	if (ldap_modify_ext_s(ld, mod_dn, groupmod, NULL, NULL) !=
+	    LDAP_SUCCESS) {
 	    fprintf(stdout, "Attempted DN: %s\n", mod_dn);
 #ifdef TOOL_LOG
 	    log_event(mod_dn, GROUP, MOD, "FAILED");
 #endif				/* TOOL_LOG */
-            ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-            fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	    ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	    fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	    return 1;
 	}
 	fprintf(stdout,
@@ -1290,15 +1309,15 @@ int uxds_acct_mod(usrt pxtype, struct mod_data mdata, LDAP * ld)
     char *old_dn = NULL;
     filter = center(fbuf, center(fbuf, POSIXACCOUNT, mdata.user), "))");
     center_free(fbuf);
-    if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0, 
-                          NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+    if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
+			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
     if (auth.debug) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	fprintf(stderr, "The number of entries returned was %d\n",
 		ldap_count_entries(ld, msg));
     }
@@ -1317,8 +1336,9 @@ int uxds_acct_mod(usrt pxtype, struct mod_data mdata, LDAP * ld)
 	ldap_memfree(dn);
     }
     vals = ldap_get_values_len(ld, entry, "gecos");
-    char *gcos = center(cbuf, center(cbuf, strtok(vals[0]->bv_val, ";"), ";"),
-			mdata.comment);
+    char *gcos =
+	center(cbuf, center(cbuf, strtok(vals[0]->bv_val, ";"), ";"),
+	       mdata.comment);
     ldap_value_free_len(vals);
     fprintf(stderr, "MODRDN to new parent DN: %s\n", mod_dn);
     char *new_rdn = center(fbuf, "uid=", mdata.user);
@@ -1328,13 +1348,13 @@ int uxds_acct_mod(usrt pxtype, struct mod_data mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(new_rdn, USER, MOD, "MODRDN FAILED");
 #endif				/* TOOL_LOG */
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
     if (auth.debug) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
     }
     /* delete memberUid from old posixGroup and add it to new */
     old_dn = strstr(old_dn, "cn=");
@@ -1367,8 +1387,8 @@ int uxds_acct_mod(usrt pxtype, struct mod_data mdata, LDAP * ld)
     if (auth.debug)
 	fprintf(stderr, "%s -> new dn\n", mod_dn);
     if (ldap_modify_ext_s(ld, mod_dn, gidmod, NULL, NULL) != LDAP_SUCCESS) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
     fprintf(stdout,
@@ -1425,8 +1445,8 @@ int uxds_grp_mem(int debug, toolop op, char *user, char *grpdn, LDAP * ld)
 		  center(cbuf, oper, " of memberUid FAILED"));
 #endif				/* TOOL_LOG */
 	center_free(cbuf);
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
     fprintf(stderr, "%s of memberUid %s using POSIX Group DN:\n%s\n",
@@ -1504,8 +1524,8 @@ int uxds_user_expire(int type, char *dn, LDAP * ld)
 #endif				/* PPOLICY */
 
     if (ldap_modify_ext_s(ld, dn, exp, NULL, NULL) != LDAP_SUCCESS) {
-        ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
 
@@ -1513,7 +1533,7 @@ int uxds_user_expire(int type, char *dn, LDAP * ld)
 }
 
 #ifdef PTS
-/* wrapper for OpenAFS pts binary to create/delete accounts */ 
+/* wrapper for OpenAFS pts binary to create/delete accounts */
 int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
 {
     pid_t pid;
@@ -1525,57 +1545,57 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
 
     /* fork off child pts exec proc */
     if ((pid = fork()) < 0) {
-        fprintf(stderr, "ERROR: forking child pts process failed\n");
-        return 1;
+	fprintf(stderr, "ERROR: forking child pts process failed\n");
+	return 1;
     } else if (pid == 0) {
-        pts_str = (char**)calloc(9, sizeof(char*)); 
-        if (pts_str[0] == (char *) NULL) {
-            fprintf(stderr, "malloc ERROR!\n");
-            exit(ENOMEM);
-        }
-        pts_str[0] = "pts";
-        switch (flag) {
-        case PTSCRT:
-            va_start(ap, cellname);
-            idnum = va_arg(ap, char*);
-            pts_str[1] = "createuser";
-            pts_str[2] = "-name";
-            pts_str[3] = ptsname;
-            pts_str[4] = "-cell";
-            pts_str[5] = cellname;
-            pts_str[6] = "-id";
-            pts_str[7] = idnum;
-            pts_str[8] = NULL;
-            va_end(ap);
-            break;
-        case PTSGRP:
-            va_start(ap, cellname);
-            ptsgrp = va_arg(ap, char*);
-            pts_str[1] = "adduser";
-            pts_str[2] = ptsname;
-            pts_str[3] = ptsgrp;
-            pts_str[4] = "-cell";
-            pts_str[5] = cellname;
-            pts_str[6] = NULL;
-            va_end(ap);
-            break;
-         case PTSDEL:
-            pts_str[1] = "delete";
-            pts_str[2] = ptsname;
-            pts_str[3] = "-cell";
-            pts_str[4] = cellname;
-            pts_str[5] = NULL;
-            break;
-         default:
-            /*should never get here */
-            break;
-        }
-        /* do it */
-        if (execv(PTS_BIN, pts_str) != 0) {
-            return 1;
-        }
+	pts_str = (char **) calloc(9, sizeof(char *));
+	if (pts_str[0] == (char *) NULL) {
+	    fprintf(stderr, "malloc ERROR!\n");
+	    exit(ENOMEM);
+	}
+	pts_str[0] = "pts";
+	switch (flag) {
+	case PTSCRT:
+	    va_start(ap, cellname);
+	    idnum = va_arg(ap, char *);
+	    pts_str[1] = "createuser";
+	    pts_str[2] = "-name";
+	    pts_str[3] = ptsname;
+	    pts_str[4] = "-cell";
+	    pts_str[5] = cellname;
+	    pts_str[6] = "-id";
+	    pts_str[7] = idnum;
+	    pts_str[8] = NULL;
+	    va_end(ap);
+	    break;
+	case PTSGRP:
+	    va_start(ap, cellname);
+	    ptsgrp = va_arg(ap, char *);
+	    pts_str[1] = "adduser";
+	    pts_str[2] = ptsname;
+	    pts_str[3] = ptsgrp;
+	    pts_str[4] = "-cell";
+	    pts_str[5] = cellname;
+	    pts_str[6] = NULL;
+	    va_end(ap);
+	    break;
+	case PTSDEL:
+	    pts_str[1] = "delete";
+	    pts_str[2] = ptsname;
+	    pts_str[3] = "-cell";
+	    pts_str[4] = cellname;
+	    pts_str[5] = NULL;
+	    break;
+	default:
+	    /*should never get here */
+	    break;
+	}
+	/* do it */
+	if (execv(PTS_BIN, pts_str) != 0) {
+	    return 1;
+	}
     } else {
-        while (wait(&status) != pid);
+	while (wait(&status) != pid);
     }
     return 0;
 }

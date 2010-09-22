@@ -292,14 +292,15 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *cbuf = NULL;
+    auth->pkcert = NULL;
+    auth->credcache = NULL;
+    auth->s_mech = NULL;
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
     opts.binary = binary;
     auth->debug = 0;
     auth->verb = 0;
     auth->l_uri = NULL;
-    auth->credcache = NULL;
     auth->binddn = NULL;
-    auth->s_mech = NULL;
     auth->username = NULL;
     auth->password = NULL;
     auth->pxacct = NULL;
@@ -364,9 +365,9 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 	    /* ugly hack */
 	    opts.dash = argv[i][0];
 	    opts.letter = argv[i][1];
-	    i++;
+            i++;
 	    opts.chosen = argv[i];
-	    i--;
+            i--; 
 	    switch (argv[i][1]) {
 	    case 'v':		/* Show version info */
 		usage(V, argv[0], atype, op);
@@ -411,7 +412,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		    auth->binddn = NULL;
 		} else {
 		    sflag = 1;
-                }
+		}
 		break;
 #endif				/* HAVE_LDAP_SASL */
 	    case 'D':		/* LDAP authorization DN */
@@ -488,8 +489,8 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		    usage(U, argv[0], atype, op);
 		}
 		auth->pkcert = strdup(argv[i]);
-                fprintf(stdout, "Using PK-INIT with x509 cert: %s\n",
-                        auth->pkcert);
+		fprintf(stdout, "Using PK-INIT with x509 cert: %s\n",
+			auth->pkcert);
 		i--;
 		break;
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
@@ -549,7 +550,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 			    c = CNCUR;
 			//optmask("<group>", atype, opts, c);
 			auth->acct = GROUP;
-			if (argv[i] != NULL) {
+			if ((argv[i] != NULL) && (argv[i][0] != '-')) {
 			    auth->pxacct = strdup(argv[i]);
 			}
 			i--;
@@ -819,11 +820,13 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		break;
 	    case 'p':		/* Password for SASL or SIMPLE bind */
 		i++;
+#ifdef HAVE_LDAP_SASL_GSSAPI
 		if ((sflag == 2) || (auth->pkcert != NULL)) {
 		    fprintf(stderr,
 			    "option -p is unnecessary with GSSAPI or PKINIT\n\n");
 		    usage(U, argv[0], atype, op);
 		}
+#endif				/* HAVE_LDAP_SASL_GSSAPI */
 		if (argv[i] == NULL) {
 		    fprintf(stderr,
 			    "option -p MUST have <password> argument\n\n");
@@ -834,11 +837,13 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		break;
 	    case 'P':		/* enter password on command line */
 		i++;
+#ifdef HAVE_LDAP_SASL_GSSAPI
 		if ((sflag == 2) || (auth->pkcert != NULL)) {
 		    fprintf(stderr,
 			    "option -P is unnecessary with GSSAPI or PKINIT\n\n");
 		    usage(U, argv[0], atype, op);
 		}
+#endif				/* HAVE_LDAP_SASL_GSSAPI */
 		if (argv[i] != NULL) {
 		    fprintf(stderr,
 			    "option -P must be the LAST argument\n\n");
@@ -1039,7 +1044,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 	case 2:
 	    if (auth->password->bv_val != NULL) {
 		fprintf(stderr,
-			"-m GSSAPI is INCOMPATIBLE with [-u] and [-p -P]\n");
+			"-m GSSAPI is INCOMPATIBLE with [-u] and [-p|-P]\n");
 		exit(EXIT_FAILURE);
 	    }
 	    break;

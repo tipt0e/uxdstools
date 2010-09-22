@@ -51,7 +51,7 @@ int log_event(char *acct, usrt type, toolop op, char *text)
 	admin = strdup(auth.username);
     }
 #else
-    admin = strtok(auth.binddn, ";");
+    admin = strtok(auth.binddn, ",");
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 
     FILE *fp;
