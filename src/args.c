@@ -15,7 +15,7 @@ void optmask(char *argt, usrt type, struct cmdopts opts, optflag flag)
 	usage(0, opts.binary, type, 2);
 	break;
 	/* only one of user, group, or sudoer */
-    case CNCUR:
+    case XBOTH:
 	fprintf(stderr, "options (-U|-G|-S) CANNOT be concurrent\n\n");
 	usage(0, opts.binary, type, 2);
 	break;
@@ -505,7 +505,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		    break;
 		case SELF:
 		    if ((auth->acct == GROUP) || (auth->acct == SUDOER))
-			c = CNCUR;
+			c = XBOTH;
 		    //optmask("<username>", atype, opts, c);
 		    auth->acct = USER;
 		    if ((argv[i] != NULL) && (argv[i][0] != '-')) {
@@ -547,7 +547,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		    }
 		    if (atype == SELF) {
 			if ((auth->acct == USER) || (auth->acct == SUDOER))
-			    c = CNCUR;
+			    c = XBOTH;
 			//optmask("<group>", atype, opts, c);
 			auth->acct = GROUP;
 			if ((argv[i] != NULL) && (argv[i][0] != '-')) {
@@ -702,7 +702,7 @@ int parse_argvs(int argc, char **argv, usrt atype, toolop op,
 		}
 		if (atype == SELF) {
 		    if ((auth->acct == USER) || (auth->acct == GROUP))
-			c = CNCUR;
+			c = XBOTH;
 		    //optmask("<sudoer>", atype, opts, c);
 		    auth->acct = SUDOER;
 		    if (argv[i] != NULL) {

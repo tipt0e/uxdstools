@@ -127,7 +127,7 @@ typedef enum { U, H, V } useout;
 
 typedef enum { ADD, MOD, DEL, EYE } toolop;
 
-typedef enum { XARGS, XACCT, CNCUR, XBIND } optflag;
+typedef enum { XARGS, XACCT, XBOTH, XBIND } optflag;
 
 struct cmdopts {
     int dash;			/* parse '-' */
