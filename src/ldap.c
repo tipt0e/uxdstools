@@ -1537,6 +1537,7 @@ int uxds_user_expire(int type, char *dn, LDAP * ld)
 int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
 {
     pid_t pid;
+    int i;
     int status;
     va_list ap;
     char **pts_str;
@@ -1549,10 +1550,14 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
 	return 1;
     } else if (pid == 0) {
 	pts_str = (char **) calloc(9, sizeof(char *));
-	if (pts_str[0] == (char *) NULL) {
-	    fprintf(stderr, "malloc ERROR!\n");
-	    exit(ENOMEM);
-	}
+        for (i = 0; i < 9; i++) {
+            pts_str[i] = (char *) malloc(sizeof(char));
+            if (pts_str[i] == (char *) NULL) {
+                fprintf(stderr, "malloc ERROR!\n");
+                exit(ENOMEM);
+            }
+        }
+
 	pts_str[0] = "pts";
 	switch (flag) {
 	case PTSCRT:
