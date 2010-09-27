@@ -6,7 +6,7 @@
 #include "uxds_krb5.h"
 #endif
 
-void optmask(char *argt, usrt type, struct cmdopts opts, optflag flag)
+void optmask(char *argt, uxds_acct_t type, struct cmdopts opts, optflag flag)
 {
     switch (flag) {
 	/* account with wrong args */
@@ -36,7 +36,7 @@ void optmask(char *argt, usrt type, struct cmdopts opts, optflag flag)
     }
 }
 
-void usage(useout mflag, char *binary, usrt atype, toolop op)
+void usage(useout mflag, char *binary, uxds_acct_t atype, toolop op)
 {
     char *acct = NULL;
     char *oper = NULL;
@@ -281,7 +281,7 @@ void usage(useout mflag, char *binary, usrt atype, toolop op)
 
 
 /* command line parser */
-int parse_argvs(int argc, char **argv, usrt atype, toolop op,
+int parse_argvs(int argc, char **argv, uxds_acct_t atype, toolop op,
 		int arg_n, authzdata * auth, struct mod_data *mdata,
 		char *binary)
 {

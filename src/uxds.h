@@ -98,7 +98,7 @@
 #define TRUE	1
 
 /* account type */
-typedef enum { SELF, USER, GROUP, SUDOER } usrt;
+typedef enum { SELF, USER, GROUP, SUDOER } uxds_acct_t;
 
 /* authentication data, holds parsedata for ease */
 typedef struct {
@@ -117,7 +117,7 @@ typedef struct {
     char *pkcert;               /* PK-INIT certificate */
 #endif  /* HAVE_LDAP_SASL_GSSAPI */
 #endif  /* HAVE_LDAP_SASL */
-    usrt acct;			/* account type marker */
+    uxds_acct_t acct;			/* account type marker */
     char *pxacct;		/* account to parse */
     char *basedn;		/* base dn for ops */
 } authzdata;
@@ -169,17 +169,17 @@ struct sudoers {
     char *sudoer;		/* sudoer name (sudoUser) */
     char *cmd_s;		/* sudoCommand */
     char *opt_s;		/* sudoOption */
-    usrt type;			/* USER = 1 or GROUP = 2 */
+    uxds_acct_t type;			/* USER = 1 or GROUP = 2 */
 };
 
 /* menu option output handler */
-void optmask(char *argt, usrt type, struct cmdopts opts, optflag flag);
+void optmask(char *argt, uxds_acct_t type, struct cmdopts opts, optflag flag);
 
 /* usage and help output */
-void usage(useout mflag, char *binary, usrt atype, toolop op);
+void usage(useout mflag, char *binary, uxds_acct_t atype, toolop op);
 
 /* parse command line args */
-int parse_argvs(int argc, char **argv, usrt atype, toolop op, int arg_n,
+int parse_argvs(int argc, char **argv, uxds_acct_t atype, toolop op, int arg_n,
 		authzdata * auth, struct mod_data *mdata, char *binary);
 
 /* LDAP authorization handler */
@@ -192,11 +192,11 @@ int uxds_ldap_unbind(LDAP * ld);
 int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld);
 
 /* add del mod POSIX account functions */
-int uxds_acct_add(usrt pxtype, struct mod_data mdata, LDAP * ld);
+int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld);
 
-int uxds_acct_del(usrt pxtype, struct mod_data mdata, LDAP * ld);
+int uxds_acct_del(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld);
 
-int uxds_acct_mod(usrt pxtype, struct mod_data mdata, LDAP * ld);
+int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld);
 
 /* memberUid attribute manipulation */
 int uxds_grp_mem(int debug, toolop op, char *user, char *grpdn, LDAP * ld);

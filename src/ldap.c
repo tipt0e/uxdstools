@@ -367,7 +367,7 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
     return 0;
 }
 
-int uxds_acct_add(usrt pxtype, struct mod_data mdata, LDAP * ld)
+int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 {
     BerElement *ber;
     LDAPMessage *msg;
@@ -864,7 +864,7 @@ int uxds_acct_add(usrt pxtype, struct mod_data mdata, LDAP * ld)
     return 0;
 }
 
-int uxds_acct_del(usrt pxtype, struct mod_data mdata, LDAP * ld)
+int uxds_acct_del(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 {
     LDAPMessage *msg;
     LDAPMessage *entry;
@@ -961,7 +961,7 @@ int uxds_acct_del(usrt pxtype, struct mod_data mdata, LDAP * ld)
     return 0;
 }
 
-int uxds_acct_mod(usrt pxtype, struct mod_data mdata, LDAP * ld)
+int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 {
     LDAPMessage *msg;
     LDAPMessage *entry;
