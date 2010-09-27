@@ -1602,6 +1602,10 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
     } else {
 	while (wait(&status) != pid);
     }
+    for (i = 0; i != '\0'; i++) {
+        free(pts_str[i]);
+    }
+
     return 0;
 }
 #endif				/* PTS */
