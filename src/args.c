@@ -36,7 +36,7 @@ void optmask(char *argt, uxds_acct_t type, struct cmdopts opts, optflag flag)
     }
 }
 
-void usage(useout mflag, char *binary, uxds_acct_t atype, uxds_tool_t op)
+void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype, uxds_tool_t op)
 {
     char *acct = NULL;
     char *oper = NULL;
@@ -72,7 +72,7 @@ void usage(useout mflag, char *binary, uxds_acct_t atype, uxds_tool_t op)
 	break;
     }
     switch (mflag) {
-    case USAGE:
+    case UXDS_USAGE:
 #ifdef HAVE_LDAP_SASL
 	fprintf(stdout,
 		"usage: %s -H <host URI> -b <baseDN> -m <SASL mech> [[-u <authcid>] [-D bind DN] [-p passwd] [-P]]\n",
@@ -135,7 +135,7 @@ void usage(useout mflag, char *binary, uxds_acct_t atype, uxds_tool_t op)
 #endif				/* HAVE_LDAP_SASL */
 	exit(EXIT_SUCCESS);
 	break;
-    case HELP:
+    case UXDS_HELP:
 	fprintf(stdout, "%s - LDAP %s Account %s\n", binary, acct, oper);
 	fprintf(stdout, "usage: %s [options]\n", binary);
 	fprintf(stdout, "AUTH options:\n");
@@ -269,7 +269,7 @@ void usage(useout mflag, char *binary, uxds_acct_t atype, uxds_tool_t op)
 	fprintf(stdout, "   -h|--help  HELP! prints this message\n");
 	exit(EXIT_FAILURE);
 	break;
-    case VERSION:
+    case UXDS_VERSION:
 	fprintf(stdout, "%s : LDAP %s Account %s - uxdstools v%s\n",
 		binary, acct, oper, VERSION);
 	exit(EXIT_SUCCESS);
@@ -334,17 +334,17 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 #endif				/* QMAIL */
   parse:
     if (argv[1] == NULL) {
-	usage(U, argv[0], atype, op);
+	usage(UXDS_USAGE, argv[0], atype, op);
     }
     if (argc < (numargs)) {
 	if ((strstr(argv[1], "-v")) || (strstr(argv[1], "--version"))) {
-	    usage(V, argv[0], atype, op);
+	    usage(UXDS_VERSION, argv[0], atype, op);
 	    exit(EXIT_SUCCESS);
 	}
 	if ((strstr(argv[1], "-h")) || (strstr(argv[1], "--help"))) {
-	    usage(H, argv[0], atype, op);
+	    usage(UXDS_HELP, argv[0], atype, op);
 	} else {
-	    usage(U, argv[0], atype, op);
+	    usage(UXDS_USAGE, argv[0], atype, op);
 	}
     }
     if (atype == SUDOER) {
@@ -360,7 +360,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
     for (i = 1; i < argc; i++) {
 	if (argv[i][0] == '-') {
 	    if (!(argv[i][1])) {
-		usage(U, argv[0], atype, op);
+		usage(UXDS_USAGE, argv[0], atype, op);
 	    }
 	    /* ugly hack */
 	    opts.dash = argv[i][0];
@@ -370,10 +370,10 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
             i--; 
 	    switch (argv[i][1]) {
 	    case 'v':		/* Show version info */
-		usage(V, argv[0], atype, op);
+		usage(UXDS_VERSION, argv[0], atype, op);
 		break;
 	    case 'h':		/* Verbose help message */
-		usage(H, argv[0], atype, op);
+		usage(UXDS_HELP, argv[0], atype, op);
 		break;
 	    case 'd':		/* set debug bit */
 		if (auth->debug == 0) {
@@ -421,7 +421,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		if (sflag == 2) {
 		    fprintf(stderr,
 			    "option -D is unnecessary with GSSAPI\n\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 		optmask("<DN>", atype, opts, c);
@@ -434,7 +434,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		if (sflag < 2) {
 		    fprintf(stderr,
 			    "option -c is only available with GSSAPI mech\n\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 		optmask("<ccache>", atype, opts, c);
 		auth->credcache = strdup(argv[i]);
@@ -481,12 +481,12 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		optmask("<filename>", atype, opts, c);
 		if (auth->username == NULL) {
 		    fprintf(stderr, "MUST HAVE -u option for -K option\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 		if ((sflag < 3) || (auth->s_mech) || (auth->binddn)) {
 		    fprintf(stderr,
 			    "-D|-P|-m options CONFLICT with -K option\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 		auth->pkcert = strdup(argv[i]);
 		fprintf(stdout, "Using PK-INIT with x509 cert: %s\n",
@@ -606,7 +606,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		}
 		if ((strlen(argv[i]) != 5)) {
 		    fprintf(stderr, "(u|g)idNumber MUST be 5 digits\n\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 		if (atype == USER) {
 		    optmask("<uidNumber>", atype, opts, c);
@@ -728,7 +728,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		if ((atype != USER) || (op == DEL)) {
 		    fprintf(stderr,
 			    "-W only used with POSIX USER ADD or MODIFY\n\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 		optmask("<email>", atype, opts, c);
 		mdata->altaddr = strdup(argv[i]);
@@ -739,7 +739,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		if ((atype != USER) || (op == DEL)) {
 		    fprintf(stderr,
 			    "-Q only used with POSIX USER ADD or MODIFY\n\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 		optmask("<fqdn>", atype, opts, c);
 		mdata->mhost = strdup(argv[i]);
@@ -772,13 +772,13 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		if (mdata->setpass != NULL) {
 		    fprintf(stderr,
 			    "option -z cannot be used with option -y\n\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		    break;
 		}
 		if ((op == DEL) || (atype != USER)) {
 		    fprintf(stderr,
 			    "option -y only used with USER ADD or MODIFY\n\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		    break;
 		}
 		if (mdata->cpw == 0) {
@@ -791,13 +791,13 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		if (mdata->cpw == 1) {
 		    fprintf(stderr,
 			    "option -z cannot be used with option -y\n\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		    break;
 		}
 		if ((op == DEL) || (atype != USER)) {
 		    fprintf(stderr,
 			    "option -z only used with USER ADD or MODIFY\n\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		    break;
 		}
 		optmask("<password>", atype, opts, c);
@@ -810,7 +810,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		if ((op == DEL) || (atype != USER)) {
 		    fprintf(stderr,
 			    "option -e only used with USER ADD or MODIFY\n\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		    break;
 		}
 		if (mdata->exp == 0) {
@@ -824,13 +824,13 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		if ((sflag == 2) || (auth->pkcert != NULL)) {
 		    fprintf(stderr,
 			    "option -p is unnecessary with GSSAPI or PKINIT\n\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 		if (argv[i] == NULL) {
 		    fprintf(stderr,
 			    "option -p MUST have <password> argument\n\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 		auth->password->bv_val = strdup(argv[i]);
 		i--;
@@ -841,13 +841,13 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		if ((sflag == 2) || (auth->pkcert != NULL)) {
 		    fprintf(stderr,
 			    "option -P is unnecessary with GSSAPI or PKINIT\n\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 		if (argv[i] != NULL) {
 		    fprintf(stderr,
 			    "option -P must be the LAST argument\n\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 		switch (sflag) {
 		case 0:
@@ -862,7 +862,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		case 2:
 		    fprintf(stderr,
 			    "[-P] incompatible with [-m] GSSAPI mech.\n");
-		    usage(U, argv[0], atype, op);
+		    usage(UXDS_USAGE, argv[0], atype, op);
 		    break;
 		case 3:
 		    fprintf(stdout,
@@ -900,7 +900,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	    default:		/* bucket for all other switches */
 		fprintf(stderr, "-%c is NOT a recognized option\n\n",
 			argv[i][1]);
-		usage(U, argv[0], atype, op);
+		usage(UXDS_USAGE, argv[0], atype, op);
 		break;
 	    }
 	}

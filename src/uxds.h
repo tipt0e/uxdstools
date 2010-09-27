@@ -123,7 +123,7 @@ typedef struct {
 } authzdata;
 
 /* options to parse cmd line input and process output :*/
-typedef enum { USAGE, HELP, VERSION } useout;
+typedef enum { UXDS_USAGE, UXDS_HELP, UXDS_VERSION } uxds_usage_t;
 
 typedef enum { ADD, MOD, DEL, EYE } uxds_tool_t;
 
@@ -183,7 +183,7 @@ typedef struct _uxds_t {
 void optmask(char *argt, uxds_acct_t type, struct cmdopts opts, optflag flag);
 
 /* usage and help output */
-void usage(useout mflag, char *binary, uxds_acct_t atype, uxds_tool_t op);
+void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype, uxds_tool_t op);
 
 /* parse command line args */
 int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op, int numargs,
