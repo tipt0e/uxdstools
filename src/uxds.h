@@ -125,7 +125,7 @@ typedef struct {
 /* options to parse cmd line input and process output :*/
 typedef enum { U, H, V } useout;
 
-typedef enum { ADD, MOD, DEL, EYE } toolop;
+typedef enum { ADD, MOD, DEL, EYE } uxds_tool_t;
 
 typedef enum { XARGS, XACCT, XBOTH, XBIND } optflag;
 
@@ -164,7 +164,7 @@ struct mod_data {
 
 /* sudoers data so parse_argvs() can get it from mod_data */
 struct sudoers {
-    toolop tool;		/* operation performed */
+    uxds_tool_t tool;		/* operation performed */
     char *ou;			/* OU for SUDOers */
     char *sudoer;		/* sudoer name (sudoUser) */
     char *cmd_s;		/* sudoCommand */
@@ -176,10 +176,10 @@ struct sudoers {
 void optmask(char *argt, uxds_acct_t type, struct cmdopts opts, optflag flag);
 
 /* usage and help output */
-void usage(useout mflag, char *binary, uxds_acct_t atype, toolop op);
+void usage(useout mflag, char *binary, uxds_acct_t atype, uxds_tool_t op);
 
 /* parse command line args */
-int parse_argvs(int argc, char **argv, uxds_acct_t atype, toolop op, int arg_n,
+int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op, int arg_n,
 		authzdata * auth, struct mod_data *mdata, char *binary);
 
 /* LDAP authorization handler */
@@ -199,7 +199,7 @@ int uxds_acct_del(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld);
 int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld);
 
 /* memberUid attribute manipulation */
-int uxds_grp_mem(int debug, toolop op, char *user, char *grpdn, LDAP * ld);
+int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn, LDAP * ld);
 
 /* expire password */
 int uxds_user_expire(int type, char *dn, LDAP * ld);

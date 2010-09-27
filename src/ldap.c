@@ -1404,7 +1404,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     return 0;
 }
 
-int uxds_grp_mem(int debug, toolop op, char *user, char *grpdn, LDAP * ld)
+int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn, LDAP * ld)
 {
     int mtype;
     char *oper;

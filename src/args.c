@@ -36,7 +36,7 @@ void optmask(char *argt, uxds_acct_t type, struct cmdopts opts, optflag flag)
     }
 }
 
-void usage(useout mflag, char *binary, uxds_acct_t atype, toolop op)
+void usage(useout mflag, char *binary, uxds_acct_t atype, uxds_tool_t op)
 {
     char *acct = NULL;
     char *oper = NULL;
@@ -281,7 +281,7 @@ void usage(useout mflag, char *binary, uxds_acct_t atype, toolop op)
 
 
 /* command line parser */
-int parse_argvs(int argc, char **argv, uxds_acct_t atype, toolop op,
+int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		int arg_n, authzdata * auth, struct mod_data *mdata,
 		char *binary)
 {
