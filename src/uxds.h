@@ -1,5 +1,5 @@
 /*
- * ******* uxds.h ********
+ * ******* ltools.h ********
  *
  *   header file for:
  * --UXDSTOOLS-SUITE-------------------------------------------------
@@ -105,7 +105,7 @@ typedef struct {
     int debug;			/* debug flag */
     int verb;			/* SASL verbose if 1 */
     char *ldif;			/* ldif export flag */
-    char *l_uri;		/* LDAP host URI if not default */
+    char *uri;          	/* LDAP host URI if not default */
     char *realm;		/* SASL realm - optional */
     char *username;		/* SASL authcid */
     struct berval *password;	/* Simple or SASL Bind */
@@ -172,6 +172,13 @@ struct sudoers {
     uxds_acct_t type;			/* USER = 1 or GROUP = 2 */
 };
 
+/* structure for entry into LDAP tree */
+typedef struct _uxds_t {
+    uxds_acct_t type;
+    char *attrib;
+    char *value;
+} uxds_t;
+
 /* menu option output handler */
 void optmask(char *argt, uxds_acct_t type, struct cmdopts opts, optflag flag);
 
@@ -179,7 +186,7 @@ void optmask(char *argt, uxds_acct_t type, struct cmdopts opts, optflag flag);
 void usage(useout mflag, char *binary, uxds_acct_t atype, uxds_tool_t op);
 
 /* parse command line args */
-int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op, int arg_n,
+int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op, int numargs,
 		authzdata * auth, struct mod_data *mdata, char *binary);
 
 /* LDAP authorization handler */

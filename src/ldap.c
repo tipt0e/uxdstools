@@ -29,7 +29,7 @@ int uxds_user_authz(int select, authzdata auth, LDAP * ld)
     unsigned sasl_flags = 0;
 #endif				/* HAVE_LDAP_SASL */
 
-    char *ldapuri = ber_strdup(auth.l_uri);
+    char *ldapuri = ber_strdup(auth.uri);
 
     if (auth.debug) {
 	fprintf(stderr, "sflag value is %i -> ", select);
@@ -171,7 +171,7 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
     char *fbuf = NULL;
     char *filter = NULL;
     char *accttype = NULL;
-    enum { s, S, G };
+    enum { SIMPLE, SASL, GSSAPI };
     /* only pull these values */
     char *attr_mask[] = { "cn",
 	"sn",
@@ -212,20 +212,20 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
 	/* if user/group/sudoer argument not selected - then do who am i? */
     case SELF:
 	switch (bindtype) {
-	case s:
+	case SIMPLE:
 	    base = strdup(auth.binddn);
 	    filter = "uid=*";
 	    if (auth.debug)
 		fprintf(stderr, "search filter string: %s\n", filter);
 	    break;
 #ifdef HAVE_LDAP_SASL
-	case S:
+	case SASL:
 	    filter = center(fbuf, "uid=", auth.username);
 	    if (auth.debug)
 		fprintf(stderr, "search filter string: %s\n", filter);
 	    break;
 #ifdef HAVE_LDAP_SASL_GSSAPI
-	case G:
+	case GSSAPI:
 	    kuser = get_krbname(auth, FALSE);
 	    if (auth.debug)
 		fprintf(stderr,

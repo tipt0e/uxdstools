@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     char *bin = argv[0];
     /* initialize LDAP session */
     sflag = parse_argvs(argc, argv, SUDOER, DEL, 5, &auth, &mdata, bin);
-    rc = ldap_initialize(&ld, auth.l_uri);
+    rc = ldap_initialize(&ld, auth.uri);
     if (rc != LDAP_SUCCESS) {
 	fprintf(stderr, "Could not create LDAP session handle (%d): %s\n",
 		rc, ldap_err2string(rc));

@@ -282,7 +282,7 @@ void usage(useout mflag, char *binary, uxds_acct_t atype, uxds_tool_t op)
 
 /* command line parser */
 int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
-		int arg_n, authzdata * auth, struct mod_data *mdata,
+		int numargs, authzdata * auth, struct mod_data *mdata,
 		char *binary)
 {
     int i;
@@ -299,7 +299,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
     opts.binary = binary;
     auth->debug = 0;
     auth->verb = 0;
-    auth->l_uri = NULL;
+    auth->uri = NULL;
     auth->binddn = NULL;
     auth->username = NULL;
     auth->password = NULL;
@@ -336,7 +336,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
     if (argv[1] == NULL) {
 	usage(U, argv[0], atype, op);
     }
-    if (argc < (arg_n)) {
+    if (argc < (numargs)) {
 	if ((strstr(argv[1], "-v")) || (strstr(argv[1], "--version"))) {
 	    usage(V, argv[0], atype, op);
 	    exit(EXIT_SUCCESS);
@@ -393,7 +393,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	    case 'H':		/* LDAP host URI */
 		i++;
 		optmask("<URI>", atype, opts, c);
-		auth->l_uri = strdup(argv[i]);
+		auth->uri = strdup(argv[i]);
 		i--;
 		break;
 	    case 'b':
