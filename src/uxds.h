@@ -123,7 +123,7 @@ typedef struct {
 } authzdata;
 
 /* options to parse cmd line input and process output :*/
-typedef enum { U, H, V } useout;
+typedef enum { USAGE, HELP, VERSION } useout;
 
 typedef enum { ADD, MOD, DEL, EYE } uxds_tool_t;
 

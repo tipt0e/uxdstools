@@ -72,7 +72,7 @@ void usage(useout mflag, char *binary, uxds_acct_t atype, uxds_tool_t op)
 	break;
     }
     switch (mflag) {
-    case U:
+    case USAGE:
 #ifdef HAVE_LDAP_SASL
 	fprintf(stdout,
 		"usage: %s -H <host URI> -b <baseDN> -m <SASL mech> [[-u <authcid>] [-D bind DN] [-p passwd] [-P]]\n",
@@ -135,7 +135,7 @@ void usage(useout mflag, char *binary, uxds_acct_t atype, uxds_tool_t op)
 #endif				/* HAVE_LDAP_SASL */
 	exit(EXIT_SUCCESS);
 	break;
-    case H:
+    case HELP:
 	fprintf(stdout, "%s - LDAP %s Account %s\n", binary, acct, oper);
 	fprintf(stdout, "usage: %s [options]\n", binary);
 	fprintf(stdout, "AUTH options:\n");
@@ -269,7 +269,7 @@ void usage(useout mflag, char *binary, uxds_acct_t atype, uxds_tool_t op)
 	fprintf(stdout, "   -h|--help  HELP! prints this message\n");
 	exit(EXIT_FAILURE);
 	break;
-    case V:
+    case VERSION:
 	fprintf(stdout, "%s : LDAP %s Account %s - uxdstools v%s\n",
 		binary, acct, oper, VERSION);
 	exit(EXIT_SUCCESS);
