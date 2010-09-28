@@ -976,6 +976,15 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	}
     }
 
+    if ((op == ADD) && (atype == USER)) {
+        if (mdata->user == NULL) {
+            fprintf(stderr,
+                    "%s: [-U] <username> is REQUIRED for POSIX USER ADD\n",
+                    binary);
+            exit(EXIT_FAILURE);
+        }   
+    }
+
     if ((op != ADD)) {
 	if ((atype == USER) && (mdata->user == NULL)) {
 	    fprintf(stderr,
