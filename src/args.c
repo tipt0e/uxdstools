@@ -294,7 +294,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
     char *cbuf = NULL;
     auth->pkcert = NULL;
     auth->credcache = NULL;
-    auth->s_mech = NULL;
+    auth->saslmech = NULL;
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
     opts.binary = binary;
     auth->debug = 0;
@@ -405,7 +405,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 #ifdef HAVE_LDAP_SASL
 	    case 'm':		/* SASL mechanism  */
 		optmask("<SASLMECH> or NONE for", atype, opts, c);
-		auth->s_mech = argv[i + 1];
+		auth->saslmech = argv[i + 1];
 		if (!(strncasecmp("GSSAPI", argv[i + 1], 4))) {
 		    sflag = 2;
 		    auth->username = NULL;
@@ -449,7 +449,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	    case 'u':		/* SASL authentication identity */
 		i++;
 #ifdef HAVE_LDAP_SASL_GSSAPI
-		if ((sflag != 2 && auth->s_mech == NULL)
+		if ((sflag != 2 && auth->saslmech == NULL)
 		    || auth->pkcert != NULL) {
 		    sflag = 3;
 		}
@@ -483,7 +483,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		    fprintf(stderr, "MUST HAVE -u option for -K option\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
-		if ((sflag < 3) || (auth->s_mech) || (auth->binddn)) {
+		if ((sflag < 3) || (auth->saslmech) || (auth->binddn)) {
 		    fprintf(stderr,
 			    "-D|-P|-m options CONFLICT with -K option\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
@@ -856,7 +856,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 #ifdef HAVE_LDAP_SASL
 		case 1:
 		    fprintf(stdout, "SASL Bind selected with %s mech.\n",
-			    auth->s_mech);
+			    auth->saslmech);
 		    break;
 #ifdef HAVE_LDAP_SASL_GSSAPI
 		case 2:
@@ -1048,7 +1048,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	case 1:
 	    if (auth->debug)
 		fprintf(stderr, "SASL - %s selected as mech.\n",
-			auth->s_mech);
+			auth->saslmech);
 	    break;
 	case 2:
 	    if (auth->password->bv_val != NULL) {
@@ -1078,7 +1078,7 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		    }
 		}
 		auth->username = NULL;
-		auth->s_mech = "GSSAPI";
+		auth->saslmech = "GSSAPI";
 		sflag = 2;
 	    } else {
 		fprintf(stderr, "error in obtaining krbtgt ticket\n");
