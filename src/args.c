@@ -6,7 +6,8 @@
 #include "uxds_krb5.h"
 #endif
 
-void optmask(char *argt, uxds_acct_t type, struct cmdopts opts, optflag flag)
+void optmask(char *argt, uxds_acct_t type, struct cmdopts opts,
+	     optflag flag)
 {
     switch (flag) {
 	/* account with wrong args */
@@ -36,7 +37,8 @@ void optmask(char *argt, uxds_acct_t type, struct cmdopts opts, optflag flag)
     }
 }
 
-void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype, uxds_tool_t op)
+void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
+	   uxds_tool_t op)
 {
     char *acct = NULL;
     char *oper = NULL;
@@ -365,9 +367,9 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	    /* ugly hack */
 	    opts.dash = argv[i][0];
 	    opts.letter = argv[i][1];
-            i++;
+	    i++;
 	    opts.chosen = argv[i];
-            i--; 
+	    i--;
 	    switch (argv[i][1]) {
 	    case 'v':		/* Show version info */
 		usage(UXDS_VERSION, argv[0], atype, op);
@@ -486,6 +488,11 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		if ((sflag < 3) || (auth->saslmech) || (auth->binddn)) {
 		    fprintf(stderr,
 			    "-D|-P|-m options CONFLICT with -K option\n");
+		    usage(UXDS_USAGE, argv[0], atype, op);
+		}
+		if (strncmp(argv[i], "FILE:", 5) != 0) {
+		    fprintf(stderr,
+			    "with [-K] 'FILE:' must prepend the path to the certificate\n\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 		auth->pkcert = strdup(argv[i]);
@@ -977,12 +984,12 @@ int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
     }
 
     if ((op == ADD) && (atype == USER)) {
-        if (mdata->user == NULL) {
-            fprintf(stderr,
-                    "%s: [-U] <username> is REQUIRED for POSIX USER ADD\n",
-                    binary);
-            exit(EXIT_FAILURE);
-        }   
+	if (mdata->user == NULL) {
+	    fprintf(stderr,
+		    "%s: [-U] <username> is REQUIRED for POSIX USER ADD\n",
+		    binary);
+	    exit(EXIT_FAILURE);
+	}
     }
 
     if ((op != ADD)) {
