@@ -607,10 +607,8 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 	"inetOrgPerson",
 	"organizationalPerson",
 	"posixAccount",
-#if 0
 #ifdef PPOLICY
 	"pwdPolicy",
-#endif				/* PPOLICY */
 #endif
 #ifdef QMAIL
 	"qmailUser",
