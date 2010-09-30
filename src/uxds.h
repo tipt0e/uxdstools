@@ -60,9 +60,9 @@
 #    endif			/* HAVE_LIBKRB5 */
 #  endif			/* HAVE_KRB5_H */
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
-#ifdef HAVE_AFS
+#ifdef PTS 
 #include <kafs.h>
-#endif 	/* HAVE_AFS */
+#endif 	/* PTS */
 
 /* 
  * mikro-net defaults if no realm chosen 
@@ -127,7 +127,7 @@ typedef enum { UXDS_USAGE, UXDS_HELP, UXDS_VERSION } uxds_usage_t;
 
 typedef enum { ADD, MOD, DEL, EYE } uxds_tool_t;
 
-typedef enum { XARGS, XACCT, XBOTH, XBIND } optflag;
+typedef enum { XARGS, XACCT, XBOTH, XBIND } uxds_flag_t;
 
 struct cmdopts {
     int dash;			/* parse '-' */
@@ -180,7 +180,7 @@ typedef struct _uxds_t {
 } uxds_t;
 
 /* menu option output handler */
-void optmask(char *argt, uxds_acct_t type, struct cmdopts opts, optflag flag);
+void optmask(char *argt, uxds_acct_t type, struct cmdopts opts, uxds_flag_t flag);
 
 /* usage and help output */
 void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype, uxds_tool_t op);

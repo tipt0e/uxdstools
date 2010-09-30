@@ -169,8 +169,8 @@ SRCS = uxds.h uxds_sasl.h uxds_krb5.h uxds_log.h uxds_strings.h strings.c sasl.c
 LDFLAGS = -L/usr/local/lib -lldap
 
 if GSSAPI 
-OBJS = -lkrb5 args.o strings.o krb5.o sasl.o ldap.o log.o
-SUOBJS = -lkrb5 sudoldap.o args.o strings.o krb5.o sasl.o ldap.o log.o
+OBJS = -lkrb5 -lkafs args.o strings.o krb5.o sasl.o ldap.o log.o
+SUOBJS = -lkrb5 -lkafs sudoldap.o args.o strings.o krb5.o sasl.o ldap.o log.o
 else
 OBJS = args.o strings.o sasl.o ldap.o log.o
 SUOBJS = sudoldap.o args.o strings.o sasl.o ldap.o log.o

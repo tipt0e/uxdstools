@@ -122,13 +122,13 @@ int get_tkts(char *user, char *service, authzdata auth)
     char *buf = NULL;
 
 #if 0
-#ifdef HAVE_AFS
+#ifdef PTS 
     if (k_hasafs()) {
-        if (k_setpag() != 0) {
-            fprintf(stderr, "Unable to create PAG\n");
-        }
-    }  
-#endif   /* HAVE_AFS */
+	if (k_setpag() != 0) {
+	    fprintf(stderr, "Unable to create PAG\n");
+	}
+    }
+#endif				/* PTS */
 #endif
     /* needed for krb5_posix_prompter */
     /*prompt.prompt = "Enter Kerberos Password:";
@@ -192,20 +192,22 @@ int get_tkts(char *user, char *service, authzdata auth)
      * or do pkinit if selected as an option
      */
     if (!auth.pkcert) {
-        krb5_get_init_creds_opt_set_pa_password(context, opt, auth.password->bv_val,
-					    NULL);
+	krb5_get_init_creds_opt_set_pa_password(context, opt,
+						auth.password->bv_val,
+						NULL);
     } else {
-        krb5_get_init_creds_opt_set_pkinit(context, opt, target, auth.pkcert,
-                                               NULL, NULL, NULL, 0, 0,
-                                               NULL, auth.password->bv_val);
+	krb5_get_init_creds_opt_set_pkinit(context, opt, target,
+					   auth.pkcert, NULL, NULL, NULL,
+					   0, 0, NULL,
+					   auth.password->bv_val);
     }
     /* circumventing krb5_prompter_posix() with getpwd() */
-    krb5_get_init_creds_opt_set_pa_password(context, opt, auth.password->bv_val,
-                                            NULL);
-                                            
+    krb5_get_init_creds_opt_set_pa_password(context, opt,
+					    auth.password->bv_val, NULL);
+
     /* set up auth */
-    error = krb5_get_init_creds_password(context, &cred, target, NULL, NULL,    /* <- krb5_prompter_posix, */
-                                         NULL, start_time, service, opt);
+    error = krb5_get_init_creds_password(context, &cred, target, NULL, NULL,	/* <- krb5_prompter_posix, */
+					 NULL, start_time, service, opt);
     if (error) {
 	krb5_err(context, 1, error, "krb5_get_init_creds_password");
     }
@@ -251,10 +253,10 @@ int get_tkts(char *user, char *service, authzdata auth)
     error = krb5_cc_store_cred(context, ccache, &cred);
     if (error)
 	krb5_err(context, 1, error, "krb5_cc_store_cred");
-#ifdef HAVE_AFS
-    if (k_hasafs()) 
-        krb5_afslog(context, ccache, NULL, NULL);  
-#endif 	/* HAVE_AFS */
+#ifdef PTS
+    if (k_hasafs())
+	krb5_afslog(context, ccache, NULL, NULL);
+#endif				/* PTS */
 
 #if 0
 /*
@@ -262,37 +264,39 @@ int get_tkts(char *user, char *service, authzdata auth)
  * kadmin/admin is just an example
  * host/hostname, HTTP/hostname are other possibilities
  */
-    if((mdata.cpw == 1) || (mdata.setpass != NULL)) {
-        memset(&opt, 0, sizeof(opt));
-        memset(&cred, 0, sizeof(cred));
+    if ((mdata.cpw == 1) || (mdata.setpass != NULL)) {
+	memset(&opt, 0, sizeof(opt));
+	memset(&cred, 0, sizeof(cred));
 	putenv("KRB5CCNAME=/tmp/kadmin_cache");
 
-        error = krb5_make_principal(context, &kadmin, NULL, "kadmin", "admin", NULL);
-        if(error)
-            krb5_err(context, 1, error, "krb5_make_principal");
+	error =
+	    krb5_make_principal(context, &kadmin, NULL, "kadmin", "admin",
+				NULL);
+	if (error)
+	    krb5_err(context, 1, error, "krb5_make_principal");
 
-        error = krb5_get_creds_opt_alloc(context, &opt);
-        if(error)
-            krb5_err(context, 1, error, "krb5_get_creds_opt_alloc");
+	error = krb5_get_creds_opt_alloc(context, &opt);
+	if (error)
+	    krb5_err(context, 1, error, "krb5_get_creds_opt_alloc");
 
-        // add options here
-        //krb5_get_creds_opt_add_options(context, opt, KRB5_GC_FORWARDABLE);
-        //krb5_get_creds_opt_add_options(context, opt, KRB5_GC_CONSTRAINED_DELEGATION);
+	// add options here
+	//krb5_get_creds_opt_add_options(context, opt, KRB5_GC_FORWARDABLE);
+	//krb5_get_creds_opt_add_options(context, opt, KRB5_GC_CONSTRAINED_DELEGATION);
 
-        error = krb5_get_creds(context, opt, ccache, kadmin, &cred);
-        if(error)
-            krb5_err(context, 1, error, "krb5_get_creds");
+	error = krb5_get_creds(context, opt, ccache, kadmin, &cred);
+	if (error)
+	    krb5_err(context, 1, error, "krb5_get_creds");
 
-        memset(&cred, 0, sizeof(cred));
-       
+	memset(&cred, 0, sizeof(cred));
+
     }
 #endif
     krb5_free_cred_contents(context, &cred);
 
     /*
-    if (enctype)
-	free(enctype);
-    */
+       if (enctype)
+       free(enctype);
+     */
 
     krb5_cc_close(context, ccache);
     krb5_free_context(context);
@@ -330,7 +334,7 @@ int setpwd(char *user, char *passwd)
 
     /* it had better be /tmp/kacache_%uid or putenv() failed -->
      * fprintf(stderr,"%s is ccache\n",strdup(krb5_cc_default_name(context)));
-     */ 
+     */
 
     error = krb5_parse_name(context, user, &target);
 
