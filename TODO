@@ -4,9 +4,9 @@
 
 * better data structures, period.
 
-* move stuff into src/* directories - DONE 0.6.0
-
 * make a shared lib and ditch the crap I have - libuxds
+
+* fix ldap.c to use a array of structs paradigm
 
 GET OUT OF THE N00B STAGE OF MEMORY MANAGEMENT!!!!!
 this is my ultimate goal for this project...

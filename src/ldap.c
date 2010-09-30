@@ -41,7 +41,7 @@ int uxds_user_authz(int select, authzdata auth, LDAP * ld)
 /* SASL authentication chosen */
     if ((select > 0) || (auth.pkcert)) {
 	authmethod = LDAP_AUTH_SASL;
-	sasl_mech = ber_strdup(auth.s_mech);
+	sasl_mech = ber_strdup(auth.saslmech);
 	if (auth.verb == 1) {
 	    sasl_flags = LDAP_SASL_INTERACTIVE;	/* [-V] some mechs need? */
 	} else {
@@ -607,7 +607,6 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 	"inetOrgPerson",
 	"organizationalPerson",
 	"posixAccount",
-	"shadowAccount",
 #ifdef PPOLICY
 	"pwdPolicy",
 #endif				/* PPOLICY */
