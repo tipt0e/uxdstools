@@ -7,7 +7,7 @@
 #endif
 
 void optmask(char *argt, uxds_acct_t type, struct cmdopts opts,
-	     optflag flag)
+	     uxds_flag_t flag)
 {
     switch (flag) {
 	/* account with wrong args */
