@@ -59,7 +59,7 @@ echo "#define MY_CELL  \"${DOM}"\" >> realm.h
 echo "/* end realm.h */" >> realm.h
 
 MACHINE=`uname -m`
-if [ ${MACHINE} == "i386" ]; then
+if [ "${MACHINE}" = "i386" ]; then
     cd src
     cp ldap.c ldap64.c
     cp sudoldap.c sudoldap64.c
