@@ -299,7 +299,6 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
 	    }
 
 	}
-	free(filter);
 
 	return 0;
     } else {
@@ -324,7 +323,6 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
 	    }
 	    ldap_memfree(dn);
 	    if (auth.acct == SELF) {
-		free(filter);
 
 		return 0;
 	    }
@@ -362,7 +360,6 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
 	ber_free(ber, 0);
     }
     ldap_msgfree(msg);
-    free(filter);
 
     return 0;
 }
@@ -782,7 +779,6 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 #endif
 #endif				/* PTS */
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
-	free(filter);
 
 	return 0;
     }
@@ -952,7 +948,6 @@ int uxds_acct_del(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 #endif				/* PTS */
     }
     fprintf(stderr, "POSIX Account DELETED.\n");
-    free(filter);
 
     return 0;
 }

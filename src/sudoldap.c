@@ -148,7 +148,6 @@ int uxds_sudo_add(authzdata auth, struct sudoers *su, LDAP * ld)
     log_event(su_dn, SUDOER, ADD, "attempt SUCCESSFUL - IMPORTED");
 #endif				/* TOOL_LOG */
     //ldap_mods_free(sudoadd, 1);
-    free(filter);
 
     return 0;
 }
