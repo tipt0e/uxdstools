@@ -857,7 +857,7 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(group_dn, GROUP, ADD, "SUCCESSFUL - IMPORTED");
 #endif				/* TOOL_LOG */
-        for (i = 0; groupadd[i] != NULL; i++) {\
+        for (i = 0; groupadd[i] != NULL; i++) {
             if (groupadd[i])
                 free(groupadd[i]);
         }
