@@ -82,7 +82,6 @@ int uxds_user_authz(int select, authzdata auth, LDAP * ld)
 	    if (auth.credcache != NULL) {
 		auth.credcache =
 		    center(cbuf, "KRB5CCNAME=", auth.credcache);
-		//center_free(cbuf);
 		if (auth.debug)
 		    fprintf(stderr, "'%s' exported\n", auth.credcache);
 		putenv(auth.credcache);
@@ -512,7 +511,7 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 		    center(cbuf, center(cbuf, "uid=", mdata.user), ","),
 		    dn));
 	group_dn = strdup(dn);
-	//center_free(cbuf);
+
 	ldap_memfree(dn);
     }
     vals = ldap_get_values_len(ld, entry, "description");
@@ -546,14 +545,10 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     if (mdata.shell == NULL) {
 	mdata.shell = strdup("/bin/bash");
     }
-    //center_free(cbuf);
     char *mbx = strdup(center(cbuf, mdata.user, AT_EMAIL));
-    //center_free(cbuf);
 #ifdef HDB_LDAP
     char *principal = strdup(center(cbuf, mdata.user, AT_REALM));
-    //center_free(cbuf);
     char *userpwd = strdup(center(cbuf, "{K5KEY}", principal));
-    //center_free(cbuf);
 #endif				/* HDB_LDAP */
     char *ge_cos = strdup(center(cbuf,
 				 center(cbuf,
@@ -837,7 +832,6 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 	    center(cbuf,
 		   center(cbuf, center(cbuf, "cn=", mdata.group), ","),
 		   auth.basedn);
-	//center_free(cbuf);
 	if (auth.debug)
 	    fprintf(stderr,
 		    "group=%s, gid=%s, descr=%s, memberuid(s)=%s\n",
@@ -1088,7 +1082,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 	       center(cbuf,
 		      center(cbuf, center(cbuf, mdata.lastname, ","),
 			     mdata.firstname), ";"), role);
-    //center_free(cbuf);
     if (auth.debug)
 	fprintf(stderr, "gecos is now : %s\n", ge_cos);
   gecosnull:;
@@ -1288,7 +1281,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 	    fprintf(stderr, "group = %s\n", mdata.group);
 	    fprintf(stderr, "groupDN = %s\n", mod_dn);
 	}
-	//center_free(cbuf);
 	if (ldap_modify_ext_s(ld, mod_dn, groupmod, NULL, NULL) !=
 	    LDAP_SUCCESS) {
 	    fprintf(stdout, "Attempted DN: %s\n", mod_dn);
@@ -1350,7 +1342,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     ldap_value_free_len(vals);
     fprintf(stderr, "MODRDN to new parent DN: %s\n", mod_dn);
     char *new_rdn = center(fbuf, "uid=", mdata.user);
-    //center_free(fbuf);
     /* do it */
     if (ldap_rename_s(ld, old_dn, new_rdn, mod_dn, 1, NULL, NULL) != 0) {
 #ifdef TOOL_LOG
@@ -1391,7 +1382,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     gidmod[2] = NULL;
 
     mod_dn = center(fbuf, center(fbuf, new_rdn, ","), mod_dn);
-    //center_free(fbuf);
     if (auth.debug)
 	fprintf(stderr, "%s -> new dn\n", mod_dn);
     if (ldap_modify_ext_s(ld, mod_dn, gidmod, NULL, NULL) != LDAP_SUCCESS) {
@@ -1406,7 +1396,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     log_event(new_rdn, USER, MOD,
 	      center(cbuf, mdata.group,
 		     " is POSIX GROUP - MODRDN SUCCESSFUL"));
-    //center_free(cbuf);
 #endif				/* TOOL_LOG */
 
     return 0;
@@ -1452,7 +1441,6 @@ int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn, LDAP * ld)
 	log_event(grpdn, GROUP, MOD,
 		  center(cbuf, oper, " of memberUid FAILED"));
 #endif				/* TOOL_LOG */
-	//center_free(cbuf);
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
@@ -1463,7 +1451,6 @@ int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn, LDAP * ld)
     log_event(grpdn, GROUP, MOD,
 	      center(cbuf, oper, " of memberUid SUCCESSFUL"));
 #endif				/* TOOL_LOG */
-    //center_free(cbuf);
 
     return 0;
 }
