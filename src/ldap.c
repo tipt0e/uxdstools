@@ -241,6 +241,7 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
 	}
 	break;
     case USER:
+        /* XXX too lazy to use the macros */
 	if (!snprintf(filter, (strlen(POSIXACCOUNT) + strlen(auth.pxacct)), POSIXACCOUNT, auth.pxacct))
             break;
 	accttype = "POSIX User";
@@ -462,7 +463,7 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 
   idpassed:;
 
-    char *filter = (char *) calloc(1, (strlen(POSIXACCOUNT) + strlen(mdata.user) + 1));
+    char *filter = (char *) calloc(1, (*PA_LEN + 1));
 
     a = 0;
     char *_g_gidnumber[] = { mdata.gidnum, NULL };
@@ -477,7 +478,7 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     }
 
     /* for USER only */
-    if (!snprintf(filter, (strlen(POSIXGROUP) + strlen(mdata.group)), POSIXGROUP, mdata.group))
+    if (!snprintf(filter, (*PG_LEN), POSIXGROUP, mdata.group))
         return 1; 
     if (auth.debug)
 	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
@@ -867,18 +868,17 @@ int uxds_acct_del(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     static authzdata auth;
 
     char *dn;
-    char *filter = (char *) calloc(1, (strlen(POSIXACCOUNT) + strlen(mdata.user) + 1));
-    //char *fbuf = NULL;
+    char *filter = (char *) calloc(1, (*PA_LEN + 1));
     char *acct_type = NULL;
 
     switch (pxtype) {
     case USER:
-        if (!snprintf(filter, (strlen(POSIXACCOUNT) + strlen(mdata.user)), POSIXACCOUNT, mdata.user))
+        if (!snprintf(filter, (*PA_LEN), POSIXACCOUNT, mdata.user))
             break;
         acct_type = "POSIX User";
 	break;
     case GROUP:
-        if (!snprintf(filter, (strlen(POSIXGROUP) + strlen(mdata.group)), POSIXGROUP, mdata.group))
+        if (!snprintf(filter, (*PG_LEN), POSIXGROUP, mdata.group))
             break;
         acct_type = "POSIX Group";
 	break;
@@ -978,19 +978,19 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     char *_g_gidnumber[] = { mdata.gidnum, NULL };
     char *_description[] = { mdata.comment, NULL };
     char *fbuf = NULL;
-    char *filter = (char *) calloc(1, (strlen(POSIXACCOUNT) + strlen(mdata.user)) + 1);
+    char *filter = (char *) calloc(1, (*PA_LEN + 1));
     char *acct_type = NULL;
     if (mdata.modrdn == 1) {
 	pxtype = GROUP;
     }
     switch (pxtype) {
     case USER:
-        if (!snprintf(filter, (strlen(POSIXACCOUNT) + strlen(mdata.user)), POSIXACCOUNT, mdata.user))
+        if (!snprintf(filter, (*PA_LEN), POSIXACCOUNT, mdata.user))
             break; 
 	acct_type = "POSIX User";
 	break;
     case GROUP:
-        if (!snprintf(filter, (strlen(POSIXGROUP) + strlen(mdata.group)), POSIXGROUP, mdata.group))
+        if (!snprintf(filter, (*PG_LEN), POSIXGROUP, mdata.group))
             break;
 	acct_type = "POSIX Group";
 	break;
@@ -1304,7 +1304,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     /* MODRDN operation for POSIX user primary group change */
   modrdn:;
     char *old_dn = NULL;
-    if (!snprintf(fbuf, (strlen(POSIXACCOUNT) + strlen(mdata.user)), POSIXACCOUNT, mdata.user))
+    if (!snprintf(fbuf, (*PA_LEN), POSIXACCOUNT, mdata.user))
        return 1; 
     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
 			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
