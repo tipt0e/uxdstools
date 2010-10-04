@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
     /* authenticate */
     if (uxds_user_authz(sflag, auth, ld) != 0) {
-	fprintf(stderr, "uxds_user_authz failed->\n");
+	fprintf(stderr, "uxds_user_authz failed.\n");
 	exit(EXIT_FAILURE);
     }
 
