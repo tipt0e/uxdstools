@@ -383,6 +383,8 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     char *role = NULL;
     char *user_dn = NULL;
     char *group_dn = NULL;
+    char *filter = NULL;
+    char *ge_cos = NULL;
     char *_g_cn[] = { mdata.group, NULL };
     char *_description[] = { mdata.comment, NULL };
     char *G_objectclass[] = { "top",
@@ -463,7 +465,7 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 
   idpassed:;
 
-    char *filter = (char *) calloc(1, (PA_LEN + 1));
+    filter = realloc(filter, (PG_LEN + 1));
 
     a = 0;
     char *_g_gidnumber[] = { mdata.gidnum, NULL };
@@ -551,7 +553,7 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     char *principal = strdup(center(cbuf, mdata.user, AT_REALM));
     char *userpwd = strdup(center(cbuf, "{K5KEY}", principal));
 #endif				/* HDB_LDAP */
-    char *ge_cos = (char *) calloc(1, (GC_LEN + 3));
+    ge_cos = realloc(ge_cos, (GC_LEN + 3));
     if (!snprintf(ge_cos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
         return 1;
     char *_homedirectory[] = { mdata.homes, NULL };
@@ -779,6 +781,11 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 #endif
 #endif				/* PTS */
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
+        for (i = 0; useradd[i] != NULL; i++) {
+            if (useradd[i])
+                free(useradd[i]);
+        }
+         
         free(ge_cos);
 
 	return 0;
@@ -850,7 +857,10 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(group_dn, GROUP, ADD, "SUCCESSFUL - IMPORTED");
 #endif				/* TOOL_LOG */
-
+        for (i = 0; groupadd[i] != NULL; i++) {\
+            if (groupadd[i])
+                free(groupadd[i]);
+        }
     }
 
     return 0;
@@ -864,16 +874,18 @@ int uxds_acct_del(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     static authzdata auth;
 
     char *dn;
-    char *filter = (char *) calloc(1, (PA_LEN + 1));
+    char *filter = NULL;
     char *acct_type = NULL;
 
     switch (pxtype) {
     case USER:
+        filter = realloc(filter, (PA_LEN + 1));
         if (!snprintf(filter, PA_LEN, POSIXACCOUNT, mdata.user))
             break;
         acct_type = "POSIX User";
 	break;
     case GROUP:
+        filter = realloc(filter, (PG_LEN +1 ));
         if (!snprintf(filter, PG_LEN, POSIXGROUP, mdata.group))
             break;
         acct_type = "POSIX Group";
@@ -977,7 +989,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     char *_description[] = { mdata.comment, NULL };
     char *fbuf = NULL;
     char *ge_cos = NULL;
-    char *filter = (char *) calloc(1, (PA_LEN + 1));
+    char *filter = NULL;
     char *acct_type = NULL;
     
     if (mdata.modrdn == 1) {
@@ -985,11 +997,13 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     }
     switch (pxtype) {
     case USER:
+        filter = realloc(filter, (PA_LEN + 1));
         if (!snprintf(filter, PA_LEN, POSIXACCOUNT, mdata.user))
             break; 
 	acct_type = "POSIX User";
 	break;
     case GROUP:
+        filter = realloc(filter, (PG_LEN + 1));
         if (!snprintf(filter, PG_LEN, POSIXGROUP, mdata.group))
             break;
 	acct_type = "POSIX Group";
