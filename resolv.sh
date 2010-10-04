@@ -58,6 +58,8 @@ echo "#define UXDS_LOG	\"${LOGPATH}"\" >> realm.h
 echo "#define MY_CELL  \"${DOM}"\" >> realm.h
 echo "/* end realm.h */" >> realm.h
 
+mv realm.h src
+
 MACHINE=`uname -m`
 if [ "${MACHINE}" = "i386" ]; then
     cd src
