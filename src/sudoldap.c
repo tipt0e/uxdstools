@@ -25,7 +25,7 @@ int uxds_sudo_add(authzdata auth, struct sudoers *su, LDAP * ld)
     char **cmds;
     char **opts = NULL;
     char *su_dn;
-    char *filter = (char *) calloc(1, (strlen(POSIXACCOUNT) + strlen(su->sudoer) + 1));
+    char *filter = (char *) calloc(1, (SU_LEN + 1));
 
     if (su->type == USER) {
         if (!snprintf(filter, (strlen(POSIXACCOUNT) + strlen(su->sudoer)), POSIXACCOUNT, su->sudoer))
@@ -133,12 +133,12 @@ int uxds_sudo_add(authzdata auth, struct sudoers *su, LDAP * ld)
 	log_event(su_dn, SUDOER, ADD, "attempt FAILED");
 #endif				/* TOOL_LOG */
         ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s", res, ldap_err2string(rc));
+        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
     if (auth.debug) {
         ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s", res, ldap_err2string(rc));
+        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
     }
     fprintf(stderr, "SUDOer Account %s ADDED.\n", su->sudoer);
 #ifdef TOOL_LOG
@@ -153,9 +153,9 @@ int uxds_sudo_del(authzdata auth, struct sudoers *su, LDAP * ld)
     LDAPMessage *msg;
     LDAPMessage *entry;
 
-    char *filter = (char *) calloc(1, (strlen(SUDOUSER) + strlen(su->sudoer) + 1));
+    char *filter = (char *) calloc(1, (SU_LEN + 1));
 
-    if (!snprintf(filter, (strlen(SUDOUSER) + strlen(su->sudoer)), SUDOUSER, su->sudoer))
+    if (!snprintf(filter, SU_LEN, SUDOUSER, su->sudoer))
         return 1;
     if (auth.debug)
 	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
@@ -185,7 +185,7 @@ int uxds_sudo_del(authzdata auth, struct sudoers *su, LDAP * ld)
     }
     if (ldap_delete_ext_s(ld, dn, NULL, NULL) != LDAP_SUCCESS) {
         ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s", res, ldap_err2string(rc));
+        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 #ifdef TOOL_LOG
 	log_event(dn, SUDOER, DEL, "attempt FAILED");
 #endif				/* TOOL_LOG */
@@ -211,16 +211,16 @@ int uxds_sudo_mod(authzdata auth, struct sudoers *su, LDAP * ld)
     char *cbuf = NULL;
     char **cmds = NULL;
     char **opts = NULL;
-    char *filter = (char *) calloc(1, (strlen(SUDOUSER) + strlen(su->sudoer))); 
+    char *filter = (char *) calloc(1, (SU_LEN + 1)); 
 
-    if (!snprintf(filter, (strlen(SUDOUSER) + strlen(su->sudoer)), SUDOUSER, su->sudoer))
+    if (!snprintf(filter, SU_LEN, SUDOUSER, su->sudoer))
         return 1;
     if (auth.debug)
 	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
                           NULL, NULL, NULL, 0,  &msg) != LDAP_SUCCESS) {
         ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s", res, ldap_err2string(rc));
+        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
 
@@ -311,7 +311,7 @@ int uxds_sudo_mod(authzdata auth, struct sudoers *su, LDAP * ld)
 	log_event(su_dn, SUDOER, MOD, "attempt FAILED");
 #endif				/* TOOL_LOG */
         ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s", res, ldap_err2string(rc));
+        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
     fprintf(stdout, "SUDOer Account Modification of %s SUCCESSFUL.\n",

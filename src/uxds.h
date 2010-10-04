@@ -92,7 +92,7 @@
 
 #define PA_LEN	      (strlen(POSIXACCOUNT) + strlen(mdata.user))
 #define PG_LEN        (strlen(POSIXGROUP) + strlen(mdata.group))
-#define SU_LEN        (strlen(POSIXGROUP) + strlen(mdata.user))
+#define SU_LEN        (strlen(SUDOUSER) + strlen(su->sudoer))
 
 /* sort IDNUM logic for highest choice */
 #define UIDNUM        "(&(objectclass=posixAccount)(uidNumber=*))"
