@@ -56,10 +56,11 @@ echo "#define UXDS_POSIX_OU 	\"${OU}"\" >> ./realm.h
 echo "/* log location from configure */" >> ./realm.h
 echo "#define UXDS_LOG	\"${LOGPATH}"\" >> realm.h
 echo "#define MY_CELL  \"${DOM}"\" >> realm.h
+echo "" >> realm.h
+echo "#define MY_GECOS  \"UXDSAcct;%s %s;%s"\" >> realm.h
+echo "" >> realm.h
 echo "/* end realm.h */" >> realm.h
-
 mv realm.h src
-
 MACHINE=`uname -m`
 if [ "${MACHINE}" = "i386" ]; then
     cd src
