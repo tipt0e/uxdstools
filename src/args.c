@@ -283,7 +283,7 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 
 
 /* command line parser */
-int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
+int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		int numargs, authzdata * auth, struct mod_data *mdata,
 		char *binary)
 {

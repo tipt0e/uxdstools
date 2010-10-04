@@ -28,7 +28,7 @@
 #include <errno.h>		/* ENOMEM, etc. */
 #include <ctype.h>
 #include <err.h>
-#include <unistd.h>		/* is necessary?? */
+#include <unistd.h>		
 #include <termios.h>		/* need to tweak for Sun */
 #include <krb5.h>		/* Heimdal kerberos */
 #include <lber.h>		/* future use */
@@ -36,7 +36,7 @@
 #include <sys/wait.h>
 #include "config.h"
 #include "realm.h"
-#define rpl_malloc malloc
+//#define rpl_malloc malloc
 /* config.h */
 
 #ifdef HAVE_LDAP_SASL
@@ -86,9 +86,14 @@
 
 /* search filters  */
 /* -> LEFT sides for center() */
-#define POSIXACCOUNT  "(&(objectclass=posixAccount)(uid="
-#define POSIXGROUP    "(&(objectclass=posixGroup)(cn="
-#define SUDOUSER      "(&(objectclass=sudoRole)(sudoUser="
+#define POSIXACCOUNT  "(&(objectclass=posixAccount)(uid=%s))"
+#define POSIXGROUP    "(&(objectclass=posixGroup)(cn=%s))"
+#define SUDOUSER      "(&(objectclass=sudoRole)(sudoUser=%s))"
+
+#define PA_LEN	      "strlen(POSIXACCOUNT) + strlen(mdata.user) + 1"
+#define PG_LEN        "strlen(POSIXGROUP) + strlen(mdata.group) + 1"
+#define SU_LEN        "strlen(POSIXGROUP) + strlen(mdata.user) + 1"
+
 /* sort IDNUM logic for highest choice */
 #define UIDNUM        "(&(objectclass=posixAccount)(uidNumber=*))"
 #define GIDNUM        "(&(objectclass=posixGroup)(gidNumber=*))"
@@ -123,6 +128,7 @@ typedef struct {
 } authzdata;
 
 /* options to parse cmd line input and process output :*/
+/* i like _t's */
 typedef enum { UXDS_USAGE, UXDS_HELP, UXDS_VERSION } uxds_usage_t;
 
 typedef enum { ADD, MOD, DEL, EYE } uxds_tool_t;
@@ -162,7 +168,7 @@ struct mod_data {
     struct sudoers *su;		/* sudoers data */
 };
 
-/* sudoers data so parse_argvs() can get it from mod_data */
+/* sudoers data so parse_args() can get it from mod_data */
 struct sudoers {
     uxds_tool_t tool;		/* operation performed */
     char *ou;			/* OU for SUDOers */
@@ -186,7 +192,7 @@ void optmask(char *argt, uxds_acct_t type, struct cmdopts opts, uxds_flag_t flag
 void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype, uxds_tool_t op);
 
 /* parse command line args */
-int parse_argvs(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op, int numargs,
+int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op, int numargs,
 		authzdata * auth, struct mod_data *mdata, char *binary);
 
 /* LDAP authorization handler */

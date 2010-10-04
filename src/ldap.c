@@ -82,7 +82,7 @@ int uxds_user_authz(int select, authzdata auth, LDAP * ld)
 	    if (auth.credcache != NULL) {
 		auth.credcache =
 		    center(cbuf, "KRB5CCNAME=", auth.credcache);
-		center_free(cbuf);
+		//center_free(cbuf);
 		if (auth.debug)
 		    fprintf(stderr, "'%s' exported\n", auth.credcache);
 		putenv(auth.credcache);
@@ -169,7 +169,6 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
     char *base = NULL;
     char *attr = NULL;
     char *fbuf = NULL;
-    char *filter = NULL;
     char *accttype = NULL;
     enum { SIMPLE, SASL, GSSAPI };
     /* only pull these values */
@@ -198,7 +197,8 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
 	"sudoOption",
 	(char *) 0
     };
-
+    
+    char *filter = (char *) calloc(1, (strlen(SUDOUSER) + strlen(auth.pxacct) + 1));
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *kuser = NULL;
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
@@ -232,7 +232,6 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
 			"user account filter half returned: %s, size %lu len %lu\n",
 			kuser, sizeof(kuser), strlen(kuser));
 	    filter = strdup(center(fbuf, "uid=", kuser));
-	    center_free(fbuf);
 	    if (auth.debug)
 		fprintf(stderr, "search filter string: %s\n", filter);
 	    break;
@@ -243,25 +242,25 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
 	}
 	break;
     case USER:
-	filter =
-	    strdup(center
-		   (fbuf, center(fbuf, POSIXACCOUNT, auth.pxacct), "))"));
+	if (!snprintf(filter, (strlen(POSIXACCOUNT) + strlen(auth.pxacct)), POSIXACCOUNT, auth.pxacct))
+            break;
 	accttype = "POSIX User";
 	break;
     case GROUP:
-	filter =
-	    strdup(center
-		   (fbuf, center(fbuf, POSIXGROUP, auth.pxacct), "))"));
+	if (!snprintf(filter, (strlen(POSIXGROUP) + strlen(auth.pxacct)), POSIXGROUP, auth.pxacct))
+            break;
 	accttype = "POSIX Group";
 	break;
     case SUDOER:
-	filter =
-	    strdup(center
-		   (fbuf, center(fbuf, SUDOUSER, auth.pxacct), "))"));
+	if (!snprintf(filter, (strlen(SUDOUSER) + strlen(auth.pxacct)), SUDOUSER, auth.pxacct))
+            break;     
 	accttype = "SUDOer";
 	break;
+    default:
+        fprintf(stderr, "FATAL: Bad LDAP search filter\n");
+        return 1;
+        break;
     }
-    center_free(fbuf);
     if (auth.debug)
 	fprintf(stderr, "using '%s' as selected account\n", auth.pxacct);
     if (auth.basedn != NULL) {
@@ -280,6 +279,9 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
+  
+    free(filter);
+
     if (auth.debug) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
@@ -374,10 +376,9 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 
     int i;
     int a;
-    char *cbuf = NULL;
+    //char *cbuf = NULL;
     char *attr = NULL;
     char **mems = NULL;
-    char *filter = NULL;
     char *dn = NULL;
     char *role = NULL;
     char *user_dn = NULL;
@@ -388,6 +389,7 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 	"posixGroup",
 	NULL
     };
+    char *idfil = NULL;
 
     char *mask[] = { "uidNumber", "gidNumber", NULL };
     if (pxtype == USER) {
@@ -397,18 +399,19 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 	    exit(EXIT_FAILURE);
 	}
 	if (mdata.uidnum != NULL) {
+            printf("%s mdata.uidnum\n", mdata.uidnum);
 	    goto idpassed;
 	} else {
-	    filter = UIDNUM;
+	    idfil = UIDNUM;
 	}
     } else if (pxtype == GROUP) {
 	if (mdata.gidnum != NULL) {
 	    goto idpassed;
 	} else {
-	    filter = GIDNUM;
+	    idfil = GIDNUM;
 	}
     }
-    if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, mask, 0,
+    if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, idfil, mask, 0,
 			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
@@ -420,6 +423,7 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 	fprintf(stderr, "The number of entries returned was %d\n",
 		ldap_count_entries(ld, msg));
     }
+ 
     /* get next available uid or gid */
     for (entry = ldap_first_entry(ld, msg);
 	 entry != NULL; entry = ldap_next_entry(ld, entry)) {
@@ -459,6 +463,8 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 
   idpassed:;
 
+    char *filter = (char *) calloc(1, (strlen(POSIXACCOUNT) + strlen(mdata.user) + 1));
+
     a = 0;
     char *_g_gidnumber[] = { mdata.gidnum, NULL };
     /* GROUP conditional jump */
@@ -472,8 +478,8 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     }
 
     /* for USER only */
-    filter = center(cbuf, center(cbuf, POSIXGROUP, mdata.group), "))");
-    //center_free(cbuf);
+    if (!snprintf(filter, (strlen(POSIXGROUP) + strlen(mdata.group)), POSIXGROUP, mdata.group))
+        return 1; 
     if (auth.debug)
 	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
@@ -483,6 +489,9 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
+
+    free(filter);
+
     if (auth.debug) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
@@ -503,7 +512,7 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 		    center(cbuf, center(cbuf, "uid=", mdata.user), ","),
 		    dn));
 	group_dn = strdup(dn);
-	center_free(cbuf);
+	//center_free(cbuf);
 	ldap_memfree(dn);
     }
     vals = ldap_get_values_len(ld, entry, "description");
@@ -537,14 +546,14 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     if (mdata.shell == NULL) {
 	mdata.shell = strdup("/bin/bash");
     }
-    center_free(cbuf);
+    //center_free(cbuf);
     char *mbx = strdup(center(cbuf, mdata.user, AT_EMAIL));
-    center_free(cbuf);
+    //center_free(cbuf);
 #ifdef HDB_LDAP
     char *principal = strdup(center(cbuf, mdata.user, AT_REALM));
-    center_free(cbuf);
+    //center_free(cbuf);
     char *userpwd = strdup(center(cbuf, "{K5KEY}", principal));
-    center_free(cbuf);
+    //center_free(cbuf);
 #endif				/* HDB_LDAP */
     char *ge_cos = strdup(center(cbuf,
 				 center(cbuf,
@@ -828,7 +837,7 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 	    center(cbuf,
 		   center(cbuf, center(cbuf, "cn=", mdata.group), ","),
 		   auth.basedn);
-	center_free(cbuf);
+	//center_free(cbuf);
 	if (auth.debug)
 	    fprintf(stderr,
 		    "group=%s, gid=%s, descr=%s, memberuid(s)=%s\n",
@@ -864,21 +873,24 @@ int uxds_acct_del(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     static authzdata auth;
 
     char *dn;
-    char *filter = NULL;
-    char *fbuf = NULL;
+    char *filter = (char *) calloc(1, (strlen(POSIXACCOUNT) + strlen(mdata.user) + 1));
+    //char *fbuf = NULL;
     char *acct_type = NULL;
 
     switch (pxtype) {
     case USER:
-	acct_type = "POSIX User";
-	filter =
-	    center(fbuf, center(fbuf, POSIXACCOUNT, mdata.user), "))");
+        if (!snprintf(filter, (strlen(POSIXACCOUNT) + strlen(mdata.user)), POSIXACCOUNT, mdata.user))
+            break;
+        acct_type = "POSIX User";
 	break;
     case GROUP:
-	acct_type = "POSIX Group";
-	filter = center(fbuf, center(fbuf, POSIXGROUP, mdata.group), "))");
+        if (!snprintf(filter, (strlen(POSIXGROUP) + strlen(mdata.group)), POSIXGROUP, mdata.group))
+            break;
+        acct_type = "POSIX Group";
 	break;
     default:
+        fprintf(stderr, "FATAL: Bad LDAP search filter\n");
+        return 1;
 	break;
     }
     if (auth.debug)
@@ -972,25 +984,27 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     char *_g_gidnumber[] = { mdata.gidnum, NULL };
     char *_description[] = { mdata.comment, NULL };
     char *fbuf = NULL;
-    char *filter = NULL;
+    char *filter = (char *) calloc(1, (strlen(POSIXACCOUNT) + strlen(mdata.user)) + 1);
     char *acct_type = NULL;
     if (mdata.modrdn == 1) {
 	pxtype = GROUP;
     }
     switch (pxtype) {
     case USER:
+        if (!snprintf(filter, (strlen(POSIXACCOUNT) + strlen(mdata.user)), POSIXACCOUNT, mdata.user))
+            break; 
 	acct_type = "POSIX User";
-	filter =
-	    center(fbuf, center(fbuf, POSIXACCOUNT, mdata.user), "))");
 	break;
     case GROUP:
+        if (!snprintf(filter, (strlen(POSIXGROUP) + strlen(mdata.group)), POSIXGROUP, mdata.group))
+            break;
 	acct_type = "POSIX Group";
-	filter = center(fbuf, center(fbuf, POSIXGROUP, mdata.group), "))");
 	break;
     default:
-	break;
+        fprintf(stderr, "FATAL: BAD LDAP search filter\n");
+        return 1;        
+        break;
     }
-    center_free(fbuf);
     if (auth.debug)
 	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
@@ -1074,7 +1088,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 	       center(cbuf,
 		      center(cbuf, center(cbuf, mdata.lastname, ","),
 			     mdata.firstname), ";"), role);
-    center_free(cbuf);
+    //center_free(cbuf);
     if (auth.debug)
 	fprintf(stderr, "gecos is now : %s\n", ge_cos);
   gecosnull:;
@@ -1274,7 +1288,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 	    fprintf(stderr, "group = %s\n", mdata.group);
 	    fprintf(stderr, "groupDN = %s\n", mod_dn);
 	}
-	center_free(cbuf);
+	//center_free(cbuf);
 	if (ldap_modify_ext_s(ld, mod_dn, groupmod, NULL, NULL) !=
 	    LDAP_SUCCESS) {
 	    fprintf(stdout, "Attempted DN: %s\n", mod_dn);
@@ -1298,14 +1312,17 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     /* MODRDN operation for POSIX user primary group change */
   modrdn:;
     char *old_dn = NULL;
-    filter = center(fbuf, center(fbuf, POSIXACCOUNT, mdata.user), "))");
-    center_free(fbuf);
+    if (!snprintf(fbuf, (strlen(POSIXACCOUNT) + strlen(mdata.user)), POSIXACCOUNT, mdata.user))
+       return 1; 
     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
 			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
+
+    free(fbuf);
+
     if (auth.debug) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
@@ -1333,7 +1350,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     ldap_value_free_len(vals);
     fprintf(stderr, "MODRDN to new parent DN: %s\n", mod_dn);
     char *new_rdn = center(fbuf, "uid=", mdata.user);
-    center_free(fbuf);
+    //center_free(fbuf);
     /* do it */
     if (ldap_rename_s(ld, old_dn, new_rdn, mod_dn, 1, NULL, NULL) != 0) {
 #ifdef TOOL_LOG
@@ -1374,7 +1391,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     gidmod[2] = NULL;
 
     mod_dn = center(fbuf, center(fbuf, new_rdn, ","), mod_dn);
-    center_free(fbuf);
+    //center_free(fbuf);
     if (auth.debug)
 	fprintf(stderr, "%s -> new dn\n", mod_dn);
     if (ldap_modify_ext_s(ld, mod_dn, gidmod, NULL, NULL) != LDAP_SUCCESS) {
@@ -1389,7 +1406,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     log_event(new_rdn, USER, MOD,
 	      center(cbuf, mdata.group,
 		     " is POSIX GROUP - MODRDN SUCCESSFUL"));
-    center_free(cbuf);
+    //center_free(cbuf);
 #endif				/* TOOL_LOG */
 
     return 0;
@@ -1435,7 +1452,7 @@ int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn, LDAP * ld)
 	log_event(grpdn, GROUP, MOD,
 		  center(cbuf, oper, " of memberUid FAILED"));
 #endif				/* TOOL_LOG */
-	center_free(cbuf);
+	//center_free(cbuf);
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
@@ -1446,7 +1463,7 @@ int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn, LDAP * ld)
     log_event(grpdn, GROUP, MOD,
 	      center(cbuf, oper, " of memberUid SUCCESSFUL"));
 #endif				/* TOOL_LOG */
-    center_free(cbuf);
+    //center_free(cbuf);
 
     return 0;
 }

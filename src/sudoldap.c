@@ -14,7 +14,6 @@ int a;
 int i;
 char *dn;
 char *res;
-char *filter = NULL;
 struct berval **vals;
 
 int uxds_sudo_add(authzdata auth, struct sudoers *su, LDAP * ld)
@@ -26,18 +25,16 @@ int uxds_sudo_add(authzdata auth, struct sudoers *su, LDAP * ld)
     char **cmds;
     char **opts = NULL;
     char *su_dn;
+    char *filter = (char *) calloc(1, (strlen(POSIXACCOUNT) + strlen(su->sudoer) + 1));
 
     if (su->type == USER) {
-	filter =
-	    strdup(center
-		   (cbuf, center(cbuf, POSIXACCOUNT, su->sudoer), "))"));
+        if (!snprintf(filter, (strlen(POSIXACCOUNT) + strlen(su->sudoer)), POSIXACCOUNT, su->sudoer))
+            return 1;
     }
     if (su->type == GROUP) {
-	filter =
-	    strdup(center
-		   (cbuf, center(cbuf, POSIXGROUP, su->sudoer), "))"));
+        if (!snprintf(filter, (strlen(POSIXGROUP) + strlen(su->sudoer)), POSIXGROUP, su->sudoer))
+            return 1;
     }
-    center_free(cbuf);
     if (auth.debug)
 	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
@@ -46,9 +43,12 @@ int uxds_sudo_add(authzdata auth, struct sudoers *su, LDAP * ld)
         fprintf(stderr, "%s: %s", res, ldap_err2string(rc));
 	return 1;
     }
+    
+    free(filter);
+
     if (auth.debug) {
         ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s", res, ldap_err2string(rc));
+        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	fprintf(stderr, "The number of entries returned was %d\n",
 		ldap_count_entries(ld, msg));
     }
@@ -60,7 +60,6 @@ int uxds_sudo_add(authzdata auth, struct sudoers *su, LDAP * ld)
     }
     if ((dn = ldap_get_dn(ld, entry)) != NULL) {
 	fprintf(stderr, "SUDOer matched DN: %s\n\n", dn);
-	center_free(cbuf);
 	ldap_memfree(dn);
     }
     if (su->type == GROUP) {
@@ -91,8 +90,6 @@ int uxds_sudo_add(authzdata auth, struct sudoers *su, LDAP * ld)
 	opts[i++] = NULL;
     }
     a = a + 2;
-
-    //LDAPMod objectClass, cn, sudoUser, sudoHost, sudoCommand, sudoOption;
 
     LDAPMod **sudoadd;
     sudoadd = (LDAPMod **) calloc(a, sizeof(LDAPMod *));
@@ -147,7 +144,6 @@ int uxds_sudo_add(authzdata auth, struct sudoers *su, LDAP * ld)
 #ifdef TOOL_LOG
     log_event(su_dn, SUDOER, ADD, "attempt SUCCESSFUL - IMPORTED");
 #endif				/* TOOL_LOG */
-    //ldap_mods_free(sudoadd, 1);
 
     return 0;
 }
@@ -157,10 +153,10 @@ int uxds_sudo_del(authzdata auth, struct sudoers *su, LDAP * ld)
     LDAPMessage *msg;
     LDAPMessage *entry;
 
-    char *cbuf = NULL;
+    char *filter = (char *) calloc(1, (strlen(SUDOUSER) + strlen(su->sudoer) + 1));
 
-    filter =
-	strdup(center(cbuf, center(cbuf, SUDOUSER, su->sudoer), "))"));
+    if (!snprintf(filter, (strlen(SUDOUSER) + strlen(su->sudoer)), SUDOUSER, su->sudoer))
+        return 1;
     if (auth.debug)
 	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0, 
@@ -171,7 +167,7 @@ int uxds_sudo_del(authzdata auth, struct sudoers *su, LDAP * ld)
     }
     if (auth.debug) {
         ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s", res, ldap_err2string(rc));
+        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	fprintf(stderr, "The number of entries returned was %d\n",
 		ldap_count_entries(ld, msg));
     }
@@ -183,7 +179,6 @@ int uxds_sudo_del(authzdata auth, struct sudoers *su, LDAP * ld)
     }
     if ((dn = ldap_get_dn(ld, entry)) != NULL) {
 	fprintf(stderr, "SUDOer matched DN: %s\n\n", dn);
-	center_free(cbuf);
     }
     if (ldap_delete_ext_s(ld, dn, NULL, NULL) != LDAP_SUCCESS) {
         ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
@@ -213,9 +208,10 @@ int uxds_sudo_mod(authzdata auth, struct sudoers *su, LDAP * ld)
     char *cbuf = NULL;
     char **cmds = NULL;
     char **opts = NULL;
+    char *filter = (char *) calloc(1, (strlen(SUDOUSER) + strlen(su->sudoer))); 
 
-    filter =
-	strdup(center(cbuf, center(cbuf, SUDOUSER, su->sudoer), "))"));
+    if (!snprintf(filter, (strlen(SUDOUSER) + strlen(su->sudoer)), SUDOUSER, su->sudoer))
+        return 1;
     if (auth.debug)
 	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
@@ -226,7 +222,7 @@ int uxds_sudo_mod(authzdata auth, struct sudoers *su, LDAP * ld)
     }
     if (auth.debug) {
         ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-        fprintf(stderr, "%s: %s", res, ldap_err2string(rc));
+        fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	fprintf(stderr, "The number of entries returned was %d\n",
 		ldap_count_entries(ld, msg));
     }
@@ -265,8 +261,6 @@ int uxds_sudo_mod(authzdata auth, struct sudoers *su, LDAP * ld)
 	a++;
     }
     a++;
-
-    //LDAPMod sudoCommand, sudoOption;
 
     LDAPMod **sudomod;
     sudomod = (LDAPMod **) calloc(a, sizeof(LDAPMod *));

@@ -67,7 +67,7 @@ char *getpwd(char *user)
 /* this I think is totally useless */
 void center_free(char *buf)
 {
-    if (buf == NULL) {
+    if (buf != NULL) {
 	//memset(buf, 0, sizeof(buf));
 	free(buf);
     }
