@@ -225,6 +225,7 @@ int uxds_sudo_mod(authzdata auth, struct sudoers *su, LDAP * ld)
     }
 
     free(filter);
+
     if (auth.debug) {
         ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
         fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
