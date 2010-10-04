@@ -551,14 +551,9 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     char *principal = strdup(center(cbuf, mdata.user, AT_REALM));
     char *userpwd = strdup(center(cbuf, "{K5KEY}", principal));
 #endif				/* HDB_LDAP */
-    char *ge_cos = strdup(center(cbuf,
-				 center(cbuf,
-					center(cbuf,
-					       center(cbuf,
-						      mdata.firstname,
-						      " "),
-					       mdata.lastname), ";"),
-				 role));
+    char *ge_cos = (char *) calloc(1, (GC_LEN + 3));
+    if (!snprintf(ge_cos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
+        return 1;
     char *_homedirectory[] = { mdata.homes, NULL };
     char *_gecos[] = { ge_cos, NULL };
     char *_u_cn[] = { mdata.user, NULL };
@@ -784,6 +779,7 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 #endif
 #endif				/* PTS */
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
+        free(ge_cos);
 
 	return 0;
     }
@@ -977,12 +973,13 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     char *mod_dn = NULL;
     char *old_gecos = NULL;
     char *xgecos = NULL;
-    char *ge_cos = NULL;
     char *_g_gidnumber[] = { mdata.gidnum, NULL };
     char *_description[] = { mdata.comment, NULL };
     char *fbuf = NULL;
+    char *ge_cos = NULL;
     char *filter = (char *) calloc(1, (PA_LEN + 1));
     char *acct_type = NULL;
+    
     if (mdata.modrdn == 1) {
 	pxtype = GROUP;
     }
@@ -1002,6 +999,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
         return 1;        
         break;
     }
+
     if (auth.debug)
 	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
@@ -1083,11 +1081,9 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     xgecos = strdup(old_gecos);
     role = strtok(xgecos, ";");
     role = strtok(NULL, ";");
-    ge_cos =
-	center(cbuf,
-	       center(cbuf,
-		      center(cbuf, center(cbuf, mdata.lastname, ","),
-			     mdata.firstname), ";"), role);
+    ge_cos = realloc(ge_cos, (GC_LEN + 3));
+    if (!snprintf(ge_cos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
+        return 1;
     if (auth.debug)
 	fprintf(stderr, "gecos is now : %s\n", ge_cos);
   gecosnull:;
@@ -1224,6 +1220,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(mod_dn, USER, MOD, "SUCCESSFUL");
 #endif				/* TOOL_LOG */
+        free(ge_cos);
 
 	return 0;
     }
@@ -1310,7 +1307,8 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     /* MODRDN operation for POSIX user primary group change */
   modrdn:;
     char *old_dn = NULL;
-    if (!snprintf(fbuf, PA_LEN, POSIXACCOUNT, mdata.user))
+    filter = (char *) calloc(1, (PA_LEN + 1));
+    if (!snprintf(filter, PA_LEN, POSIXACCOUNT, mdata.user))
        return 1; 
     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
 			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
@@ -1319,7 +1317,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 	return 1;
     }
 
-    free(fbuf);
+    free(filter);
 
     if (auth.debug) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
@@ -1332,8 +1330,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 	fprintf(stderr, "Using %s filter matched no DN.\n", filter);
 	return 1;
     }
-
-    free(filter);
 
     /* get out present DN */
     if ((dn = ldap_get_dn(ld, entry)) != NULL) {
@@ -1406,7 +1402,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
 	      center(cbuf, mdata.group,
 		     " is POSIX GROUP - MODRDN SUCCESSFUL"));
 #endif				/* TOOL_LOG */
-
     return 0;
 }
 

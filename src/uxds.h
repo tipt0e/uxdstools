@@ -28,7 +28,7 @@
 #include <errno.h>		/* ENOMEM, etc. */
 #include <ctype.h>
 #include <err.h>
-#include <unistd.h>		
+#include <unistd.h>
 #include <termios.h>		/* need to tweak for Sun */
 #include <krb5.h>		/* Heimdal kerberos */
 #include <lber.h>		/* future use */
@@ -40,29 +40,29 @@
 /* config.h */
 
 #ifdef HAVE_LDAP_SASL
-#  ifdef HAVE_SASL_SASL_H
-#    include <sasl/sasl.h>
-#  elif defined (HAVE_SASL_H)
-#    include <sasl.h>
-#  else
-#    undef HAVE_LDAP_SASL
-#  endif			/* HAVE_SASL_SASL_H */
+#ifdef HAVE_SASL_SASL_H
+#include <sasl/sasl.h>
+#elif defined (HAVE_SASL_H)
+#include <sasl.h>
+#else
+#undef HAVE_LDAP_SASL
+#endif				/* HAVE_SASL_SASL_H */
 #endif				/* HAVE_LDAP_SASL */
 #if SASL_VERSION_MAJOR < 2
-#  undef HAVE_LDAP_SASL
+#undef HAVE_LDAP_SASL
 #endif				/* maybe a fart */
 #ifdef HAVE_LDAP_SASL_GSSAPI
-#  ifdef HAVE_KRB5_H
-#    ifdef HAVE_LIBKRB5
-#      include <krb5.h>
-#    else
-#      undef HAVE_LDAP_SASL_GSSAPI
-#    endif			/* HAVE_LIBKRB5 */
-#  endif			/* HAVE_KRB5_H */
+#ifdef HAVE_KRB5_H
+#ifdef HAVE_LIBKRB5
+#include <krb5.h>
+#else
+#undef HAVE_LDAP_SASL_GSSAPI
+#endif				/* HAVE_LIBKRB5 */
+#endif				/* HAVE_KRB5_H */
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
-#ifdef PTS 
+#ifdef PTS
 #include <kafs.h>
-#endif 	/* PTS */
+#endif				/* PTS */
 
 /* 
  * mikro-net defaults if no realm chosen 
@@ -93,6 +93,7 @@
 #define PA_LEN	      (strlen(POSIXACCOUNT) + strlen(mdata.user))
 #define PG_LEN        (strlen(POSIXGROUP) + strlen(mdata.group))
 #define SU_LEN        (strlen(SUDOUSER) + strlen(su->sudoer))
+#define GC_LEN        (strlen(MY_GECOS) + strlen(mdata.firstname) + strlen(mdata.lastname) + strlen(role))
 
 /* sort IDNUM logic for highest choice */
 #define UIDNUM        "(&(objectclass=posixAccount)(uidNumber=*))"
@@ -110,7 +111,7 @@ typedef struct {
     int debug;			/* debug flag */
     int verb;			/* SASL verbose if 1 */
     char *ldif;			/* ldif export flag */
-    char *uri;          	/* LDAP host URI if not default */
+    char *uri;			/* LDAP host URI if not default */
     char *realm;		/* SASL realm - optional */
     char *username;		/* SASL authcid */
     struct berval *password;	/* Simple or SASL Bind */
@@ -119,10 +120,10 @@ typedef struct {
     char *saslmech;		/* SASL mechanism */
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *credcache;		/* Krb5 credentials cache */
-    char *pkcert;               /* PK-INIT certificate */
-#endif  /* HAVE_LDAP_SASL_GSSAPI */
-#endif  /* HAVE_LDAP_SASL */
-    uxds_acct_t acct;			/* account type marker */
+    char *pkcert;		/* PK-INIT certificate */
+#endif				/* HAVE_LDAP_SASL_GSSAPI */
+#endif				/* HAVE_LDAP_SASL */
+    uxds_acct_t acct;		/* account type marker */
     char *pxacct;		/* account to parse */
     char *basedn;		/* base dn for ops */
 } authzdata;
@@ -175,7 +176,7 @@ struct sudoers {
     char *sudoer;		/* sudoer name (sudoUser) */
     char *cmd_s;		/* sudoCommand */
     char *opt_s;		/* sudoOption */
-    uxds_acct_t type;			/* USER = 1 or GROUP = 2 */
+    uxds_acct_t type;		/* USER = 1 or GROUP = 2 */
 };
 
 /* structure for entry into LDAP tree */
@@ -186,14 +187,17 @@ typedef struct _uxds_t {
 } uxds_t;
 
 /* menu option output handler */
-void optmask(char *argt, uxds_acct_t type, struct cmdopts opts, uxds_flag_t flag);
+void optmask(char *argt, uxds_acct_t type, struct cmdopts opts,
+	     uxds_flag_t flag);
 
 /* usage and help output */
-void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype, uxds_tool_t op);
+void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
+	   uxds_tool_t op);
 
 /* parse command line args */
-int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op, int numargs,
-		authzdata * auth, struct mod_data *mdata, char *binary);
+int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
+	       int numargs, authzdata * auth, struct mod_data *mdata,
+	       char *binary);
 
 /* LDAP authorization handler */
 int uxds_user_authz(int select, authzdata auth, LDAP * ld);
@@ -212,7 +216,8 @@ int uxds_acct_del(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld);
 int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld);
 
 /* memberUid attribute manipulation */
-int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn, LDAP * ld);
+int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
+		 LDAP * ld);
 
 /* expire password */
 int uxds_user_expire(int type, char *dn, LDAP * ld);

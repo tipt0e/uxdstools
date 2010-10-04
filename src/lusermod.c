@@ -33,6 +33,14 @@ int main(int argc, char *argv[])
     char *bin = argv[0];
     sflag = parse_args(argc, argv, USER, MOD, 6, &auth, &mdata, bin);
 
+    if ((auth.pkcert) && (argc < 8)) {
+        if ((!mdata.exp) || (!mdata.cpw)) {
+            fprintf(stderr, "At least attribute must be selected to use lusermod.\n");
+            fprintf(stderr, "parse_args failed.\n");
+            exit(EXIT_FAILURE);
+        }
+    }
+
     /* initialize LDAP context */
     rc = ldap_initialize(&ld, auth.uri);
     if (rc != LDAP_SUCCESS) {
