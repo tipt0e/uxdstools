@@ -165,6 +165,9 @@ int uxds_sudo_del(authzdata auth, struct sudoers *su, LDAP * ld)
         fprintf(stderr, "%s: %s", res, ldap_err2string(rc));
 	return 1;
     }
+
+    free(filter);
+
     if (auth.debug) {
         ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
         fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
@@ -220,6 +223,8 @@ int uxds_sudo_mod(authzdata auth, struct sudoers *su, LDAP * ld)
         fprintf(stderr, "%s: %s", res, ldap_err2string(rc));
 	return 1;
     }
+
+    free(filter);
     if (auth.debug) {
         ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
         fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
@@ -234,7 +239,6 @@ int uxds_sudo_mod(authzdata auth, struct sudoers *su, LDAP * ld)
     }
     if ((dn = ldap_get_dn(ld, entry)) != NULL) {
 	fprintf(stderr, "SUDOer matched DN: %s\n\n", dn);
-	center_free(cbuf);
     }
     a = 1;
     i = 0;
