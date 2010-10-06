@@ -133,7 +133,7 @@ Support for OpenLDAP's ppolicy "pwdReset", Samba's "sambaPwdMustChange", and Mic
 .ul
 FILE:/path/to/x509_certificate
 
-With GSSAPI enabled, this allows for rudimentary PK-INIT authentication using an x509 certificate.  At this time it does not accept passphrases for private keys.  In all other ways it is identical to using the -p|-P options.
+With GSSAPI enabled, this allows for rudimentary PK-INIT authentication using an x509 certificate.  At this time it does not accept passphrases for private keys.  It will gain a kadmin/changepw ticket for use in changing principal passwords. Requires -u <krb5Principal> argument.
 .TP
 \-v|\-\-version 
 
