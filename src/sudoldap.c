@@ -16,7 +16,7 @@ char *dn;
 char *res;
 struct berval **vals;
 
-int uxds_sudo_add(authzdata auth, struct sudoers *su, LDAP * ld)
+int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t *su, LDAP * ld)
 {
     LDAPMessage *msg;
     LDAPMessage *entry;
@@ -148,7 +148,7 @@ int uxds_sudo_add(authzdata auth, struct sudoers *su, LDAP * ld)
     return 0;
 }
 
-int uxds_sudo_del(authzdata auth, struct sudoers *su, LDAP * ld)
+int uxds_sudo_del(uxds_authz_t auth, uxds_sudo_t *su, LDAP * ld)
 {
     LDAPMessage *msg;
     LDAPMessage *entry;
@@ -201,7 +201,7 @@ int uxds_sudo_del(authzdata auth, struct sudoers *su, LDAP * ld)
 
 }
 
-int uxds_sudo_mod(authzdata auth, struct sudoers *su, LDAP * ld)
+int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t *su, LDAP * ld)
 {
     LDAPMessage *msg;
     LDAPMessage *entry;

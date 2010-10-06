@@ -12,7 +12,7 @@
  */
 int main(int argc, char *argv[])
 {
-    static authzdata auth;
+    static uxds_authz_t auth;
 
     char *user = NULL;
     char *svc = NULL;

@@ -11,7 +11,7 @@
 
 int log_event(char *acct, uxds_acct_t type, uxds_tool_t op, char *text)
 {
-    static authzdata auth;
+    static uxds_authz_t auth;
 
     char *blurb = NULL;
     char *oper = NULL;

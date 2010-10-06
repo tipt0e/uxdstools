@@ -20,7 +20,7 @@ char *cbuf = NULL;
 char *res = "ERROR";
 struct berval **vals;
 
-int uxds_user_authz(int select, authzdata auth, LDAP * ld)
+int uxds_user_authz(int select, uxds_authz_t auth, LDAP * ld)
 {
     int proto;
     int authmethod = 0;
@@ -154,7 +154,7 @@ int uxds_ldap_unbind(LDAP * ld)
 }
 
 /* perform search operation and parse - based on account type argument */
-int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
+int uxds_acct_parse(int bindtype, uxds_authz_t auth, LDAP * ld)
 {
     BerElement *ber;
     LDAPMessage *msg;
@@ -366,13 +366,13 @@ int uxds_acct_parse(int bindtype, authzdata auth, LDAP * ld)
     return 0;
 }
 
-int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
+int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 {
     BerElement *ber;
     LDAPMessage *msg;
     LDAPMessage *entry;
 
-    static authzdata auth;
+    static uxds_authz_t auth;
 
     int i;
     int a;
@@ -866,12 +866,12 @@ int uxds_acct_add(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     return 0;
 }
 
-int uxds_acct_del(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
+int uxds_acct_del(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 {
     LDAPMessage *msg;
     LDAPMessage *entry;
 
-    static authzdata auth;
+    static uxds_authz_t auth;
 
     char *dn;
     char *filter = NULL;
@@ -969,12 +969,12 @@ int uxds_acct_del(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
     return 0;
 }
 
-int uxds_acct_mod(uxds_acct_t pxtype, struct mod_data mdata, LDAP * ld)
+int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 {
     LDAPMessage *msg;
     LDAPMessage *entry;
 
-    static authzdata auth;
+    static uxds_authz_t auth;
 
     int i;
     int a = 0;

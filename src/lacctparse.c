@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     LDAP *ld;
     int rc;
     int sflag;
-    authzdata auth;
+    uxds_authz_t auth;
     char *bin = argv[0];
     sflag = parse_args(argc, argv, SELF, EYE, 3, &auth, NULL, bin);
 

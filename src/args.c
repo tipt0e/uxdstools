@@ -284,7 +284,7 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 
 /* command line parser */
 int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
-		int numargs, authzdata * auth, struct mod_data *mdata,
+		int numargs, uxds_authz_t * auth, uxds_data_t *mdata,
 		char *binary)
 {
     int i;
@@ -350,7 +350,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	}
     }
     if (atype == SUDOER) {
-	mdata->su = calloc(1, sizeof(struct sudoers));
+	mdata->su = calloc(1, sizeof(uxds_sudo_t));
 	mdata->su->sudoer = NULL;
 	mdata->su->cmd_s = NULL;
 	mdata->su->opt_s = NULL;

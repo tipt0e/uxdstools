@@ -45,7 +45,7 @@ Please see info documentation for the complete list of licenses.
 /* get user principal name or ccache location 
  * from krb5 ccache (parse = 0|1)
  */
-char *get_krbname(authzdata auth, int parse)
+char *get_krbname(uxds_authz_t auth, int parse)
 {
     krb5_context context;
     krb5_error_code error;
@@ -106,7 +106,7 @@ char *get_krbname(authzdata auth, int parse)
 }
 
 /* get krb5 initial ticket for service */
-int get_tkts(char *user, char *service, authzdata auth)
+int get_tkts(char *user, char *service, uxds_authz_t auth)
 {
     krb5_context context;
     krb5_error_code error;
@@ -154,7 +154,7 @@ int get_tkts(char *user, char *service, authzdata auth)
 	fprintf(stderr,
 		"credentials cache pulled from krb5_cc_default_name: %s\n",
 		auth.credcache);
-    /* set desired principal to user name from authzdata */
+    /* set desired principal to user name from uxds_authz_t */
     error = krb5_parse_name(context, user, &target);
     if (error) {
 	krb5_err(context, 1, error, "krb5_parse_name");

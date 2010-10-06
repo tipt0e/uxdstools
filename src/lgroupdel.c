@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
     LDAP *ld;
     int rc;
     int sflag;
-    authzdata auth;
-    struct mod_data mdata;
+    uxds_authz_t auth;
+    uxds_data_t mdata;
     char *bin = argv[0];
     sflag = parse_args(argc, argv, GROUP, DEL, 4, &auth, &mdata, bin);
 

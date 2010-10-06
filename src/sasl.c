@@ -9,7 +9,7 @@
 int uxds_sasl_interact(LDAP * ld, unsigned flags, void *defaults,
 			void *in)
 {
-    authzdata *auth = (authzdata *) defaults;
+    uxds_authz_t *auth = (uxds_authz_t *) defaults;
 
     sasl_interact_t *interact = (sasl_interact_t *) in;
     if (ld == NULL)
