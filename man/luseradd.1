@@ -115,7 +115,7 @@ UID number for the user.  Optional, there is a search done for the highest uidnu
 .TP
 -y
 
-With GSSAPI enabled, this will set an 8 character random string into the krb5Key (password) attribute of the user account.  This operation requires a ticket from the kadmin/changepw kerberos principal. This will obtain the ticket from that principal and place it into a cache located in /tmp/kacache_%uid (the user id) if used in combination with the -P option.  Further calls can be made for the lifetime of the ticket (5 minutes) using the -m gssapi option without a password.
+With GSSAPI enabled, this will set an 8 character random string into the krb5Key (password) attribute of the user account.  This operation requires a ticket from the kadmin/changepw kerberos principal. This will obtain the ticket from that principal and place it into a cache located in /tmp/kacache_%uid (the user id) if used in combination with the -P, -p, or -K options.  Further calls can be made for the lifetime of the ticket (5 minutes) using the -m gssapi option without a password.
 .TP
 \-z
 .ul
