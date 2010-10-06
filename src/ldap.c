@@ -546,7 +546,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	mdata.homes = strdup(center(cbuf, "/home/", mdata.user));
     }
     if (mdata.shell == NULL) {
-	mdata.shell = strdup("/bin/bash");
+	mdata.shell = strdup("/bin/sh");
     }
     char *mbx = strdup(center(cbuf, mdata.user, AT_EMAIL));
 #ifdef HDB_LDAP
