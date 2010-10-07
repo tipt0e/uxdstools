@@ -242,17 +242,17 @@ int uxds_acct_parse(int bindtype, uxds_authz_t auth, LDAP * ld)
 	break;
     case USER:
         /* XXX too lazy to use the macros */
-	if (!snprintf(filter, (strlen(POSIXACCOUNT) + strlen(auth.pxacct)), POSIXACCOUNT, auth.pxacct))
+	if (!snprintf(filter, (strlen(POSIXACCOUNT) + strlen(auth.pxacct) + 1), POSIXACCOUNT, auth.pxacct))
             break;
 	accttype = "POSIX User";
 	break;
     case GROUP:
-	if (!snprintf(filter, (strlen(POSIXGROUP) + strlen(auth.pxacct)), POSIXGROUP, auth.pxacct))
+	if (!snprintf(filter, (strlen(POSIXGROUP) + strlen(auth.pxacct) + 1), POSIXGROUP, auth.pxacct))
             break;
 	accttype = "POSIX Group";
 	break;
     case SUDOER:
-	if (!snprintf(filter, (strlen(SUDOUSER) + strlen(auth.pxacct)), SUDOUSER, auth.pxacct))
+	if (!snprintf(filter, (strlen(SUDOUSER) + strlen(auth.pxacct) + 1), SUDOUSER, auth.pxacct))
             break;     
 	accttype = "SUDOer";
 	break;

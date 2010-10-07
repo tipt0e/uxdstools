@@ -90,10 +90,10 @@
 #define POSIXGROUP    "(&(objectclass=posixGroup)(cn=%s))"
 #define SUDOUSER      "(&(objectclass=sudoRole)(sudoUser=%s))"
 
-#define PA_LEN	      (strlen(POSIXACCOUNT) + strlen(mdata.user))
-#define PG_LEN        (strlen(POSIXGROUP) + strlen(mdata.group))
-#define SU_LEN        (strlen(SUDOUSER) + strlen(su->sudoer))
-#define GC_LEN        (strlen(MY_GECOS) + strlen(mdata.firstname) + strlen(mdata.lastname) + strlen(role))
+#define PA_LEN	      (strlen(POSIXACCOUNT) + strlen(mdata.user) + 1)
+#define PG_LEN        (strlen(POSIXGROUP) + strlen(mdata.group) + 1)
+#define SU_LEN        (strlen(SUDOUSER) + strlen(su->sudoer) + 1)
+#define GC_LEN        (strlen(MY_GECOS) + strlen(mdata.firstname) + strlen(mdata.lastname) + strlen(role) + 1)
 
 /* sort IDNUM logic for highest choice */
 #define UIDNUM        "(&(objectclass=posixAccount)(uidNumber=*))"

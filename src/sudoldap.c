@@ -28,11 +28,11 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t *su, LDAP * ld)
     char *filter = (char *) calloc(1, (SU_LEN + 1));
 
     if (su->type == USER) {
-        if (!snprintf(filter, (strlen(POSIXACCOUNT) + strlen(su->sudoer)), POSIXACCOUNT, su->sudoer))
+        if (!snprintf(filter, (strlen(POSIXACCOUNT) + strlen(su->sudoer) + 1), POSIXACCOUNT, su->sudoer))
             return 1;
     }
     if (su->type == GROUP) {
-        if (!snprintf(filter, (strlen(POSIXGROUP) + strlen(su->sudoer)), POSIXGROUP, su->sudoer))
+        if (!snprintf(filter, (strlen(POSIXGROUP) + strlen(su->sudoer) + 1), POSIXGROUP, su->sudoer))
             return 1;
     }
     if (auth.debug)
