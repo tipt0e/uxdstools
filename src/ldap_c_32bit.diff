@@ -1,36 +1,24 @@
---- ldap.c	2010-09-02 02:06:31.604289492 -0700
-+++ attic/ldap_32.c	2010-09-02 02:19:07.775229875 -0700
-=======
-+++ ldap_32.c	2010-09-02 02:19:07.775229875 -0700
->>>>>>> 9960386ae8de6a22a6305742059c38f2f8968df7
-@@ -119,7 +119,7 @@ int uxds_user_authz(int select, authzdat
- 	if (!ldap_get_option(ld, LDAP_OPT_X_SASL_SSF, &ssf)) {
- 	    val = (unsigned long) ssf;
- 	}
--	fprintf(stderr, "SSF level is: %lu\n", val);
-+	fprintf(stderr, "SSF level is: %i\n", val);
-     }
- #endif				/* HAVE_LDAP_SASL */
-     if (auth.debug) {
-@@ -213,7 +213,7 @@ int uxds_acct_parse(int bindtype, authzd
- 	    kuser = get_krbname(auth, 0);
+--- ldap.c	2010-10-08 14:11:36.538137162 -0700
++++ ldap32.c	2010-10-08 14:29:38.132422307 -0700
+@@ -228,7 +228,7 @@ int uxds_acct_parse(int bindtype, uxds_a
+ 	    kuser = get_krbname(auth, FALSE);
  	    if (auth.debug)
  		fprintf(stderr,
 -			"user account filter half returned: %s, size %lu len %lu\n",
-+			"user account filter half returned: %s, size %i len %i\n",
++			"user account filter half returned: %s, size %lu len %i\n",
  			kuser, sizeof(kuser), strlen(kuser));
  	    filter = strdup(center(fbuf, "uid=", kuser));
- 	    center_free(fbuf);
-@@ -456,7 +456,7 @@ int uxds_acct_add(usrt pxtype, struct mo
-     filter = center(cbuf, center(cbuf, POSIXGROUP, mdata.group), "))");
-     //center_free(cbuf);
+ 	    if (auth.debug)
+@@ -483,7 +483,7 @@ int uxds_acct_add(uxds_acct_t pxtype, ux
+     if (!snprintf(filter, PG_LEN, POSIXGROUP, mdata.group))
+         return 1; 
      if (auth.debug)
 -	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
 +	fprintf(stderr, "filter is %s, len %i\n", filter, strlen(filter));
-     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0, 
-                           NULL, NULL, NULL, 0, &msg)
+     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
+ 			  NULL, NULL, NULL, 0, &msg)
  	!= LDAP_SUCCESS) {
-@@ -490,7 +490,7 @@ int uxds_acct_add(usrt pxtype, struct mo
+@@ -520,7 +520,7 @@ int uxds_acct_add(uxds_acct_t pxtype, ux
      vals = ldap_get_values_len(ld, entry, "description");
      if (vals[0]->bv_val != NULL) {
  	if (auth.debug)
@@ -39,7 +27,7 @@
  		    strlen(vals[0]->bv_val));
  	role = strdup(vals[0]->bv_val);
      }
-@@ -500,7 +500,7 @@ int uxds_acct_add(usrt pxtype, struct mo
+@@ -530,7 +530,7 @@ int uxds_acct_add(uxds_acct_t pxtype, ux
      char *gidnum = NULL;
      if (vals[0]->bv_val != NULL) {
  	if (auth.debug)
@@ -48,43 +36,43 @@
  		    strlen(vals[0]->bv_val));
  	gidnum = strdup(vals[0]->bv_val);
      }
-@@ -705,7 +705,7 @@ int uxds_acct_add(usrt pxtype, struct mo
- 		    mdata.user, mdata.group, mdata.uidnum, ge_cos);
+@@ -725,7 +725,7 @@ int uxds_acct_add(uxds_acct_t pxtype, ux
  
- 	if (ldap_add_ext_s(ld, user_dn, useradd, NULL, NULL) != LDAP_SUCCESS) {
+ 	if (ldap_add_ext_s(ld, user_dn, useradd, NULL, NULL) !=
+ 	    LDAP_SUCCESS) {
 -	    fprintf(stderr, "Attempted DN: %s, len %lu\n", user_dn,
 +	    fprintf(stderr, "Attempted DN: %s, len %i\n", user_dn,
  		    strlen(user_dn));
-             ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-             fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
-@@ -864,7 +864,7 @@ int uxds_acct_del(usrt pxtype, struct mo
+ 	    ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+ 	    fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+@@ -899,7 +899,7 @@ int uxds_acct_del(uxds_acct_t pxtype, ux
  	break;
      }
      if (auth.debug)
 -	fprintf(stderr, "search filter used: %s, len %lu\n", filter,
 +	fprintf(stderr, "search filter used: %s, len %i\n", filter,
  		strlen(filter));
-     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0, 
-         NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
-@@ -973,7 +973,7 @@ int uxds_acct_mod(usrt pxtype, struct mo
+     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
+ 			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
+@@ -1018,7 +1018,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
      }
-     center_free(fbuf);
+ 
      if (auth.debug)
 -	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
 +	fprintf(stderr, "filter is %s, len %i\n", filter, strlen(filter));
      if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
-                           NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
-         ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-@@ -1022,7 +1022,7 @@ int uxds_acct_mod(usrt pxtype, struct mo
+ 			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
+ 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+@@ -1070,7 +1070,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
  	vals = ldap_get_values_len(ld, entry, "givenName");
  	if (vals[0]->bv_val != NULL) {
  	    if (auth.debug)
--		fprintf(stderr, "%s : first name, len %lu\n", vals[0]->bv_val,
-+		fprintf(stderr, "%s : first name, len %i\n", vals[0]->bv_val,
- 			strlen(vals[0]->bv_val));
+-		fprintf(stderr, "%s : first name, len %lu\n",
++		fprintf(stderr, "%s : first name, len %i\n",
+ 			vals[0]->bv_val, strlen(vals[0]->bv_val));
  	    mdata.firstname = strdup(vals[0]->bv_val);
  	    ldap_value_free_len(vals);
-@@ -1032,7 +1032,7 @@ int uxds_acct_mod(usrt pxtype, struct mo
+@@ -1080,7 +1080,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
  	vals = ldap_get_values_len(ld, entry, "sn");
  	if (vals[0]->bv_val != NULL) {
  	    if (auth.debug)
@@ -93,7 +81,7 @@
  			strlen(vals[0]->bv_val));
  	    mdata.lastname = strdup(vals[0]->bv_val);
  	    ldap_value_free_len(vals);
-@@ -1041,7 +1041,7 @@ int uxds_acct_mod(usrt pxtype, struct mo
+@@ -1089,7 +1089,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
      vals = ldap_get_values_len(ld, entry, "gecos");
      if (vals[0]->bv_val != NULL) {
  	if (auth.debug)
@@ -102,10 +90,10 @@
  		    strlen(vals[0]->bv_val));
  	old_gecos = strdup(vals[0]->bv_val);
      }
-@@ -1156,7 +1156,7 @@ int uxds_acct_mod(usrt pxtype, struct mo
- 	    return 1;
+@@ -1202,7 +1202,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
  	}
- 	if (ldap_modify_ext_s(ld, mod_dn, usermod, NULL, NULL) != LDAP_SUCCESS) {
+ 	if (ldap_modify_ext_s(ld, mod_dn, usermod, NULL, NULL) !=
+ 	    LDAP_SUCCESS) {
 -	    fprintf(stdout, "Attempted DN: %s, len %lu\n", mod_dn,
 +	    fprintf(stdout, "Attempted DN: %s, len %i\n", mod_dn,
  		    strlen(mod_dn));
