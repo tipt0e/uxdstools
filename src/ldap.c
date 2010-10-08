@@ -154,7 +154,7 @@ int uxds_ldap_unbind(LDAP * ld)
 }
 
 /* perform search operation and parse - based on account type argument */
-int uxds_acct_parse(int bindtype, uxds_authz_t auth, LDAP * ld)
+int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 {
     BerElement *ber;
     LDAPMessage *msg;
@@ -169,7 +169,6 @@ int uxds_acct_parse(int bindtype, uxds_authz_t auth, LDAP * ld)
     char *attr = NULL;
     char *fbuf = NULL;
     char *accttype = NULL;
-    enum { SIMPLE, SASL, GSSAPI };
     /* only pull these values */
     char *attr_mask[] = { "cn",
 	"sn",
@@ -210,7 +209,7 @@ int uxds_acct_parse(int bindtype, uxds_authz_t auth, LDAP * ld)
     switch (auth.acct) {
 	/* if user/group/sudoer argument not selected - then do who am i? */
     case SELF:
-	switch (bindtype) {
+	switch (bind) {
 	case SIMPLE:
 	    base = strdup(auth.binddn);
 	    filter = "uid=*";

@@ -128,14 +128,13 @@ typedef struct {
     char *basedn;		/* base dn for ops */
 } uxds_authz_t;
 
-/* options to parse cmd line input and process output :*/
-/* i like _t's */
+/* enums to forsake the magickal numerals... i like _t's */
 typedef enum { UXDS_USAGE, UXDS_HELP, UXDS_VERSION } uxds_usage_t;
-
 typedef enum { ADD, MOD, DEL, EYE } uxds_tool_t;
-
 typedef enum { XARGS, XACCT, XBOTH, XBIND } uxds_flag_t;
+typedef enum { SIMPLE, SASL, GSSAPI } uxds_bind_t;
 
+/* options to parse cmd line input and process output :*/
 struct cmdopts {
     int dash;			/* parse '-' */
     int letter;			/* optarg */
@@ -206,7 +205,7 @@ int uxds_user_authz(int select, uxds_authz_t auth, LDAP * ld);
 int uxds_ldap_unbind(LDAP * ld);
 
 /* parse account handler */
-int uxds_acct_parse(int bindtype, uxds_authz_t auth, LDAP * ld);
+int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld);
 
 /* add del mod POSIX account functions */
 int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld);
