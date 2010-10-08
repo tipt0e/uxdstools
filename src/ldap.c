@@ -1237,6 +1237,12 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(mod_dn, USER, MOD, "SUCCESSFUL");
 #endif				/* TOOL_LOG */
+        for (i = 0; usermod[i] != NULL; i++) {
+            free(usermod[i]);
+        }
+        if (usermod)
+            free(usermod);
+
         free(ge_cos);
 
 	return 0;
@@ -1318,6 +1324,11 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(mod_dn, GROUP, MOD, "SUCCESSFUL");
 #endif				/* TOOL_LOG */
+        for (i = 0; groupmod[i] != NULL; i++) {
+            free(groupmod[i]);
+        }
+        if (groupmod)
+            free(groupmod);
 
 	return 0;
     }
@@ -1333,8 +1344,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
-
-    free(filter);
 
     if (auth.debug) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
@@ -1419,6 +1428,13 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	      center(cbuf, mdata.group,
 		     " is POSIX GROUP - MODRDN SUCCESSFUL"));
 #endif				/* TOOL_LOG */
+    free(filter);
+    for (i = 0; gidmod[i] != NULL; i++) {
+        free(gidmod[i]);
+    }
+    if (gidmod)
+        free(gidmod);
+    
     return 0;
 }
 
