@@ -785,7 +785,8 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
             if (useradd[i])
                 free(useradd[i]);
         }
-         
+        if (useradd)
+            free(useradd);
         free(ge_cos);
 
 	return 0;
@@ -861,6 +862,8 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
             if (groupadd[i])
                 free(groupadd[i]);
         }
+        if (groupadd)
+            free(groupadd);        
     }
 
     return 0;
