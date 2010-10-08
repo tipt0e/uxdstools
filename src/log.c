@@ -62,6 +62,9 @@ int log_event(char *acct, uxds_acct_t type, uxds_tool_t op, char *text)
 	    curdate(), admin, blurb, oper, acct, text);
 
     fclose(fp);
+    if (admin)
+        free(admin);
+  
     return 0;
 }
 #endif				/* TOOL_LOG */
