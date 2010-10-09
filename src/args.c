@@ -50,7 +50,7 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 	acct = "POSIX Group";
 	break;
     case SELF:
-	acct = "POSIX User/Group & SUDOer";
+	acct = "POSIX & SUDOer";
 	break;
     case SUDOER:
 	acct = "SUDOer";
