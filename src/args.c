@@ -502,6 +502,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
                             "with [-K] there must be a certificate name after 'FILE:'\n\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
+                free(check);
 		auth->pkcert = strdup(argv[i]);
 		fprintf(stdout, "Using PK-INIT with x509 cert: %s\n",
 			auth->pkcert);
