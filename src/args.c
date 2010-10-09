@@ -145,6 +145,12 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 		"   -H URI     LDAP resource URI e.g. ldap://server.example.com\n");
 	fprintf(stdout,
 		"   -b baseDN  LDAP base DN for searches, e.g. ou=unix,dc=foobar,dc=pvt\n");
+
+#ifdef HAVE_LDAP_SASL_GSSAPI
+	fprintf(stdout,
+		"   -K cert    X.509 Certificate file to use for PK-INIT\n" \
+                "              Requires -u <username|cn>\n");
+#endif				/* HAVE_LDAP_SASL_GSSAPI */
 #ifdef HAVE_LDAP_SASL
 	fprintf(stdout,
 		"   -m mech    SASL mechanism e.g. GSSAPI, DIGEST-MD5, CRAM-MD5, etc.\n");
@@ -176,8 +182,6 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 		"              can be a path, e.g. /tmp/krb5cc_100 or preceded by 'METHOD:'\n");
 	fprintf(stdout,
 		"              as in FILE:/tmp/krb5cc_100 or KCM:100\n");
-	fprintf(stdout,
-		"   -K cert    Certificate file to use for PKINIT\n");
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 	fprintf(stdout, "Options for Target %s Account %s:\n", acct, oper);
 	switch (atype) {
