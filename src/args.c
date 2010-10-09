@@ -493,6 +493,13 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		if (strncmp(argv[i], "FILE:", 5) != 0) {
 		    fprintf(stderr,
 			    "with [-K] 'FILE:' must prepend the path to the certificate\n\n");
+                    usage(UXDS_USAGE, argv[0], atype, op);
+                }
+                char *check = strdup(argv[i]);
+                strtok(check, ":");
+                if (strtok(NULL, ":") == NULL) {
+                    fprintf(stderr,
+                            "with [-K] there must be a certificate name after 'FILE:'\n\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 		auth->pkcert = strdup(argv[i]);
