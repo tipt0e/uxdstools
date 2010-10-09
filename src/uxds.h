@@ -186,7 +186,7 @@ typedef struct {
 } uxds_attr_t;
 
 /* menu option output handler */
-void optmask(char *argt, uxds_acct_t type, struct cmdopts opts,
+void optmask(char *label, uxds_acct_t type, struct cmdopts opts,
 	     uxds_flag_t flag);
 
 /* usage and help output */
