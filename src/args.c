@@ -6,34 +6,34 @@
 #include "uxds_krb5.h"
 #endif
 
-void optmask(char *argt, uxds_acct_t type, struct cmdopts opts,
+void optmask(char *label, uxds_acct_t type, struct cmdopts opts,
 	     uxds_flag_t flag)
 {
     switch (flag) {
 	/* account with wrong args */
     case XACCT:
 	fprintf(stderr, "option not relevant for account TYPE\n");
-	usage(0, opts.binary, type, 2);
+	usage(0, opts.binary, type, XBOTH);
 	break;
 	/* only one of user, group, or sudoer */
     case XBOTH:
 	fprintf(stderr, "options (-U|-G|-S) CANNOT be concurrent\n\n");
-	usage(0, opts.binary, type, 2);
+	usage(0, opts.binary, type, XBOTH);
 	break;
 	/* message for options SASL!GSSAPI only */
     case XBIND:
 	fprintf(stderr,
 		"option -%c is unnecessary with GSSAPI or SIMPLE binds\n\n",
 		(char) opts.letter);
-	usage(0, opts.binary, type, 2);
+	usage(0, opts.binary, type, XBOTH);
 	break;
     default:
 	break;
     }
     if (!(opts.chosen) || (opts.chosen[0] == '-')) {
 	fprintf(stderr, "option -%c MUST have %s argument\n\n",
-		(char) opts.letter, argt);
-	usage(0, opts.binary, type, 2);
+		(char) opts.letter, label);
+	usage(0, opts.binary, type, XBOTH);
     }
 }
 
