@@ -562,8 +562,8 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		if ((atype != GROUP) && (atype != SUDOER) && (op != ADD)) {
 		    if ((op == MOD) && (argc > g)) {
 			fprintf(stderr,
-				"%s: %i is argc -G only good WITHOUT ANY OTHER modifications\n",
-				binary, g);
+				"%s: -G only good WITHOUT ANY OTHER modifications\n",
+				binary);
 			exit(EXIT_FAILURE);
 		    }
 		    if (atype == SELF) {
