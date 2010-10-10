@@ -780,12 +780,12 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #endif
 #endif				/* PTS */
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
-        for (i = 0; useradd[i] != NULL; i++) {
-            if (useradd[i])
-                free(useradd[i]);
-        }
-        if (useradd)
+        if (useradd) {
+            for (i = 0; useradd[i] != NULL; i++) {
+                 free(useradd[i]);
+            }
             free(useradd);
+        }
         free(ge_cos);
 
 	return 0;
@@ -857,12 +857,13 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(group_dn, GROUP, ADD, "SUCCESSFUL - IMPORTED");
 #endif				/* TOOL_LOG */
-        for (i = 0; groupadd[i] != NULL; i++) {
-            if (groupadd[i])
-                free(groupadd[i]);
+        if (groupadd) {
+            for (i = 0; groupadd[i] != NULL; i++) {
+                 free(groupadd[i]);
+            }
+            free(groupadd);
         }
-        if (groupadd)
-            free(groupadd);        
+
     }
 
     return 0;
@@ -1236,12 +1237,12 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(mod_dn, USER, MOD, "SUCCESSFUL");
 #endif				/* TOOL_LOG */
-        for (i = 0; usermod[i] != NULL; i++) {
-            free(usermod[i]);
-        }
-        if (usermod)
+        if (usermod) {
+            for (i = 0; usermod[i] != NULL; i++) {
+                free(usermod[i]);
+            }
             free(usermod);
-
+        }
         free(ge_cos);
 
 	return 0;
@@ -1323,11 +1324,18 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(mod_dn, GROUP, MOD, "SUCCESSFUL");
 #endif				/* TOOL_LOG */
-        for (i = 0; groupmod[i] != NULL; i++) {
-            free(groupmod[i]);
-        }
-        if (groupmod)
+        if (groupmod) {
+            for (i = 0; groupmod[i] != NULL; i++) {
+                free(groupmod[i]);
+            }
             free(groupmod);
+        }
+        if (mems) {
+            for (i = 0; mems[i] != NULL; i++ ) {
+                free(mems[i]);
+            }
+            free(mems);
+        }
 
 	return 0;
     }
@@ -1428,11 +1436,12 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		     " is POSIX GROUP - MODRDN SUCCESSFUL"));
 #endif				/* TOOL_LOG */
     free(filter);
-    for (i = 0; gidmod[i] != NULL; i++) {
-        free(gidmod[i]);
-    }
-    if (gidmod)
+    if (gidmod) {
+        for (i = 0; gidmod[i] != NULL; i++) {
+            free(gidmod[i]);
+        }
         free(gidmod);
+    }
     
     return 0;
 }
