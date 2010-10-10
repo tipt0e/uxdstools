@@ -1,16 +1,3 @@
-* ldap.c - need to refactor the functions - especially uxds_ldap_add()
-           probably split into a varadic function whose last arg is a callback
-           or two
-
-* better data structures, period.
-
-* make a shared lib and ditch the crap I have - libuxds
-
-* fix ldap.c to use a array of structs paradigm
-
-GET OUT OF THE N00B STAGE OF MEMORY MANAGEMENT!!!!!
-this is my ultimate goal for this project...
-
-devel on alpha is pre-alpha, so YMMV.
-
-much respect to no-exit
+correct functionality
+split functions
+lol
