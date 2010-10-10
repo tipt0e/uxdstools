@@ -1,18 +1,15 @@
---- sudoldap.c	2010-09-02 02:20:01.901436589 -0700
-+++ attic/sudoldap_32.c	2010-09-02 02:19:34.626340468 -0700
-=======
-+++ sudoldap_32.c	2010-09-02 02:19:34.626340468 -0700
->>>>>>> 9960386ae8de6a22a6305742059c38f2f8968df7
-@@ -39,7 +39,7 @@ int uxds_sudo_add(authzdata auth, struct
+--- /vicepa/git/uxdstools.git/src/sudoldap.c	2010-10-07 09:05:19.930571254 -0700
++++ /vicepa/git/uxdstools.git/src/sudoldap32.c	2010-10-10 11:30:37.382921590 -0700
+@@ -36,7 +36,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxd
+             return 1;
      }
-     center_free(cbuf);
      if (auth.debug)
 -	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
 +	fprintf(stderr, "filter is %s, len %i\n", filter, strlen(filter));
      if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
                            NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
          ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-@@ -130,7 +130,7 @@ int uxds_sudo_add(authzdata auth, struct
+@@ -127,7 +127,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxd
  		      ",ou=sudoers,"), auth.basedn);
      fprintf(stderr, "DN is %s\n", su_dn);
      if (ldap_add_ext_s(ld, su_dn, sudoadd, NULL, NULL) != LDAP_SUCCESS) {
@@ -21,25 +18,25 @@
  		strlen(su_dn));
  #ifdef TOOL_LOG
  	log_event(su_dn, SUDOER, ADD, "attempt FAILED");
-@@ -165,7 +165,7 @@ int uxds_sudo_del(authzdata auth, struct
-     filter =
- 	strdup(center(cbuf, center(cbuf, SUDOUSER, su->sudoer), "))"));
+@@ -158,7 +158,7 @@ int uxds_sudo_del(uxds_authz_t auth, uxd
+     if (!snprintf(filter, SU_LEN, SUDOUSER, su->sudoer))
+         return 1;
      if (auth.debug)
 -	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
 +	fprintf(stderr, "filter is %s, len %i\n", filter, strlen(filter));
      if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0, 
                            NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
          ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-@@ -224,7 +224,7 @@ int uxds_sudo_mod(authzdata auth, struct
-     filter =
- 	strdup(center(cbuf, center(cbuf, SUDOUSER, su->sudoer), "))"));
+@@ -216,7 +216,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxd
+     if (!snprintf(filter, SU_LEN, SUDOUSER, su->sudoer))
+         return 1;
      if (auth.debug)
 -	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
 +	fprintf(stderr, "filter is %s, len %i\n", filter, strlen(filter));
      if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
                            NULL, NULL, NULL, 0,  &msg) != LDAP_SUCCESS) {
          ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-@@ -313,7 +313,7 @@ int uxds_sudo_mod(authzdata auth, struct
+@@ -305,7 +305,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxd
  		      ",ou=sudoers,"), auth.basedn);
  
      if (ldap_modify_ext_s(ld, su_dn, sudomod, NULL, NULL) != LDAP_SUCCESS) {

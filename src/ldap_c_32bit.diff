@@ -1,11 +1,11 @@
 --- /vicepa/git/uxdstools.git/src/ldap.c	2010-10-08 17:14:25.538190419 -0700
-+++ /vicepa/git/uxdstools.git/src/ldap32.c	2010-10-09 13:37:04.590689399 -0700
++++ /vicepa/git/uxdstools.git/src/ldap32.c	2010-10-10 11:30:37.374922264 -0700
 @@ -227,7 +227,7 @@ int uxds_acct_parse(uxds_bind_t bind, ux
  	    kuser = get_krbname(auth, FALSE);
  	    if (auth.debug)
  		fprintf(stderr,
 -			"user account filter half returned: %s, size %lu len %lu\n",
-+			"user account filter half returned: %s, size %lu len %i\n",
++			"user account filter half returned: %s, size %i len %i\n",
  			kuser, sizeof(kuser), strlen(kuser));
  	    filter = strdup(center(fbuf, "uid=", kuser));
  	    if (auth.debug)
