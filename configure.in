@@ -2,7 +2,7 @@ dnl                                               -*- Autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT(uxdstools,0.7-dev,mikal@mikro-net.com) 
+AC_INIT(uxdstools,0.7-git,mikal@mikro-net.com) 
 
 AC_CONFIG_SRCDIR([src/krb5.c])
 AC_CONFIG_HEADER([src/config.h])
