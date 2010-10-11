@@ -1568,6 +1568,12 @@ int uxds_user_expire(int type, char *dn, LDAP * ld)
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
+    if (exp) {
+        for (i = 0; exp[i] != NULL; i++) {
+            free(exp[i]);
+        }
+        free(exp);
+    }
 
     return 0;
 }
