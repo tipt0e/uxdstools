@@ -18,7 +18,6 @@ int uxds_sasl_interact(LDAP * ld, unsigned flags, void *defaults,
     while (interact->id != SASL_CB_LIST_END) {
 	if (auth->debug)
 	    fprintf(stderr, "sasl callback is: %lu\n", interact->id);
-	//char *dflt = (char*)interact->defresult;
 	interact->defresult = calloc(1, sizeof(sasl_interact_t));
 
 	switch (interact->id) {
@@ -28,7 +27,6 @@ int uxds_sasl_interact(LDAP * ld, unsigned flags, void *defaults,
 			"uxds_sasl_interact asked for SASL_CB_GETREALM, returned %s\n",
 			auth->realm);
 	    interact->defresult = auth->realm;
-	    //dflt = auth->realm;
 	    break;
 	case SASL_CB_AUTHNAME:
 	    if (auth->debug)
@@ -36,7 +34,6 @@ int uxds_sasl_interact(LDAP * ld, unsigned flags, void *defaults,
 			"uxds_sasl_interact asked for SASL_CB_AUTHNAME, returned %s\n",
 			auth->binddn);
 	    interact->defresult = auth->binddn;
-	    //dflt = auth->binddn;
 	    break;
 	case SASL_CB_PASS:
 	    if (auth->debug)
@@ -44,7 +41,6 @@ int uxds_sasl_interact(LDAP * ld, unsigned flags, void *defaults,
 			"uxds_sasl_interact asked for SASL_CB_PASS, returned <HIDDEN>\n");
 	    /* auth->password); */
 	    interact->defresult = auth->password->bv_val;
-	    //dflt = auth->password;
 	    break;
 	case SASL_CB_USER:
 	    if (auth->debug)
@@ -52,7 +48,6 @@ int uxds_sasl_interact(LDAP * ld, unsigned flags, void *defaults,
 			"uxds_sasl_interact asked for SASL_CB_USER, returned %s\n",
 			auth->username);
 	    interact->defresult = auth->username;
-	    //dflt = auth->username;
 	    if (auth->debug)
 		fprintf(stderr,
 			"attempting SASL bind using user %s credentials\n",
@@ -65,7 +60,6 @@ int uxds_sasl_interact(LDAP * ld, unsigned flags, void *defaults,
 			interact->id);
 	    break;
 	}
-	//interact->result = (dflt && *dflt) ? dflt : (char*)"";
 	interact->result = (interact->defresult
 			    && *interact->defresult) ? interact->
 	    defresult : (char *) "";

@@ -1,5 +1,5 @@
 --- /vicepa/git/uxdstools.git/src/ldap.c	2010-10-11 16:55:39.437809293 -0700
-+++ /vicepa/git/uxdstools.git/src/ldap32.c	2010-10-11 17:12:59.065966510 -0700
++++ /vicepa/git/uxdstools.git/src/ldap32.c	2010-10-11 17:30:27.933202175 -0700
 @@ -227,7 +227,7 @@ int uxds_acct_parse(uxds_bind_t bind, ux
  	    kuser = get_krbname(auth, FALSE);
  	    if (auth.debug)
