@@ -144,6 +144,11 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t *su, LDAP * ld)
 #ifdef TOOL_LOG
     log_event(su_dn, SUDOER, ADD, "attempt SUCCESSFUL - IMPORTED");
 #endif				/* TOOL_LOG */
+    if (sudoadd) {
+        for (i = 0; sudoadd[i] != NULL; i++) {
+            free(sudoadd[i]);
+        }
+    }
 
     return 0;
 }
@@ -319,6 +324,11 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t *su, LDAP * ld)
 #ifdef TOOL_LOG
     log_event(su_dn, SUDOER, MOD, "attempt SUCCESSFUL");
 #endif				/* TOOL_LOG */
+   if (sudomod) {
+        for (i = 0; sudomod[i] != NULL; i++) {
+            free(sudomod[i]);
+        }
+    }
 
     return 0;
 }
