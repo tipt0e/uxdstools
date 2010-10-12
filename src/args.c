@@ -426,7 +426,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 #ifdef HAVE_LDAP_SASL_GSSAPI
 		if (sflag == 2) {
 		    fprintf(stderr,
-			    "option -D is unnecessary with GSSAPI\n\n");
+			    "option [-D] is unnecessary with GSSAPI\n\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
@@ -439,7 +439,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		i++;
 		if (sflag < 2) {
 		    fprintf(stderr,
-			    "option -c is only available with GSSAPI mech\n\n");
+			    "option [-c] is only available with GSSAPI mech\n\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 		optmask("<ccache>", atype, opts, c);
@@ -486,12 +486,12 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		i++;
 		optmask("<filename>", atype, opts, c);
 		if (auth->username == NULL) {
-		    fprintf(stderr, "MUST HAVE -u option for -K option\n");
+		    fprintf(stderr, "MUST HAVE [-u] option for [-K] option\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 		if ((sflag < 3) || (auth->saslmech) || (auth->binddn)) {
 		    fprintf(stderr,
-			    "-D|-P|-m options CONFLICT with -K option\n");
+			    "[-D|-P|-m] options CONFLICT with [-K] option\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 		if (strncmp(argv[i], "FILE:", 5) != 0) {
@@ -518,7 +518,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		switch (atype) {
 		case GROUP:
 		    fprintf(stderr,
-			    "%s: -U not an option for POSIX GROUP OPS\n",
+			    "%s: [-U] not an option for POSIX GROUP OPS\n",
 			    binary);
 		    exit(EXIT_FAILURE);
 		    break;
@@ -534,7 +534,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		case SUDOER:
 		    if (op != ADD) {
 			fprintf(stderr,
-				"%s: -U is an option for SUDOER ADD ONLY\n",
+				"%s: [-U] is an option for SUDOER ADD ONLY\n",
 				binary);
 			exit(EXIT_FAILURE);
 		    } else {
@@ -562,7 +562,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		if ((atype != GROUP) && (atype != SUDOER) && (op != ADD)) {
 		    if ((op == MOD) && (argc > g)) {
 			fprintf(stderr,
-				"%s: -G only good WITHOUT ANY OTHER modifications\n",
+				"%s: [-G] only good WITHOUT ANY OTHER modifications\n",
 				binary);
 			exit(EXIT_FAILURE);
 		    }
@@ -581,14 +581,14 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 			goto modrdn;
 		    }
 		    fprintf(stderr,
-			    "%s: -G not an option for existing POSIX USER DELETE\n",
+			    "%s: [-G] not an option for existing POSIX USER DELETE\n",
 			    binary);
 		    exit(EXIT_FAILURE);
 		}
 		if (atype == SUDOER) {
 		    if (op != ADD) {
 			fprintf(stderr,
-				"%s: -G is an option for SUDOER ADD ONLY\n",
+				"%s: [-G] is an option for SUDOER ADD ONLY\n",
 				binary);
 			exit(EXIT_FAILURE);
 		    } else {
