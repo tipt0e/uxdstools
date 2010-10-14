@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 
     /* initialize LDAP context */
     rc = ldap_initialize(&ld, auth.uri);
-    if(rc != LDAP_SUCCESS) {
+    if (rc != LDAP_SUCCESS) {
 	fprintf(stderr, "Could not create LDAP session handle (%d): %s\n",
 		rc, ldap_err2string(rc));
 	exit(EXIT_FAILURE);

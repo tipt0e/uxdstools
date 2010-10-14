@@ -36,16 +36,14 @@ int main(int argc, char *argv[])
     }
     if ((argv[3] != NULL) && (strcmp(argv[3], "NONE") != 0)) {
 	putenv(center(buf, "KRB5CCNAME=", argv[3]));
-    }
-    else if(argv[3] == NULL) {
-        auth.password = getpwd(user);
+    } else if (argv[3] == NULL) {
+	auth.password = getpwd(user);
 	goto tkt;
     }
     if (argv[4] != NULL) {
 	auth.password = strdup(argv[4]);
-    }
-    else {
-        auth.password = getpwd(user);
+    } else {
+	auth.password = getpwd(user);
     }
   tkt:
     if (get_tkts(user, svc, auth) != 0) {

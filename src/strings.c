@@ -164,7 +164,7 @@ char *randstr(void)
 	/* ha ha i know it's kludgy and sux but
 	 * this is my first random string function 
 	 */
-	ch = 33+(int) (75.0*rand()/(RAND_MAX));
+	ch = 33 + (int) (75.0 * rand() / (RAND_MAX));
 	while (ch > 32 && ch < 123) {
 	    /* chars we don't want */
 	    if (ch > 90 && ch < 97) {
@@ -247,43 +247,43 @@ char *base64(char *str, int len)
 }
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 
-void file_chkerr(FILE *fp)
+void file_chkerr(FILE * fp)
 {
     if (fp == NULL) {
-        switch (errno) {
-        case EINVAL:
-            fprintf(stderr,
-                    "EINVAL - invalid value passed to the function\n");
-            break;
-        case EACCES:
-            fprintf(stderr, "EACCES - permission denied to open log %s\n",
-                    UXDS_LOG);
-            break;
-        case EDEADLK:
-            fprintf(stderr,
-                    "EDEADLK - resource deadlock would occur opening %s\n",
-                    UXDS_LOG);
-            break;
-        case ENAMETOOLONG:
-            fprintf(stderr, "ENAMETOOLONG - file name too long\n");
-            break;
-        case ENOLCK:
-            fprintf(stderr, "ENOLCK - no record locks available for %s\n",
-                    UXDS_LOG);
-            break;
-        case ENOSYS:
-            fprintf(stderr, "ENOSYS - function not implemented\n");
-            break;
-        case ELOOP:
-            fprintf(stderr,
-                    "ELOOP - too many symbolic links encountered opening %s\n",
-                    UXDS_LOG);
-            break;
-        default:
-            fprintf(stderr, "ERRNO is %i\n", errno);
-            break;
-        }
-        fprintf(stderr, "ditching on * %i *......\n", errno);
-        exit(errno);
+	switch (errno) {
+	case EINVAL:
+	    fprintf(stderr,
+		    "EINVAL - invalid value passed to the function\n");
+	    break;
+	case EACCES:
+	    fprintf(stderr, "EACCES - permission denied to open log %s\n",
+		    UXDS_LOG);
+	    break;
+	case EDEADLK:
+	    fprintf(stderr,
+		    "EDEADLK - resource deadlock would occur opening %s\n",
+		    UXDS_LOG);
+	    break;
+	case ENAMETOOLONG:
+	    fprintf(stderr, "ENAMETOOLONG - file name too long\n");
+	    break;
+	case ENOLCK:
+	    fprintf(stderr, "ENOLCK - no record locks available for %s\n",
+		    UXDS_LOG);
+	    break;
+	case ENOSYS:
+	    fprintf(stderr, "ENOSYS - function not implemented\n");
+	    break;
+	case ELOOP:
+	    fprintf(stderr,
+		    "ELOOP - too many symbolic links encountered opening %s\n",
+		    UXDS_LOG);
+	    break;
+	default:
+	    fprintf(stderr, "ERRNO is %i\n", errno);
+	    break;
+	}
+	fprintf(stderr, "ditching on * %i *......\n", errno);
+	exit(errno);
     }
 }

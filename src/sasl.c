@@ -6,8 +6,7 @@
 #include "uxds_sasl.h"
 
 /* get SASL callbacks */
-int uxds_sasl_interact(LDAP * ld, unsigned flags, void *defaults,
-			void *in)
+int uxds_sasl_interact(LDAP * ld, unsigned flags, void *defaults, void *in)
 {
     uxds_authz_t *auth = (uxds_authz_t *) defaults;
 
@@ -61,8 +60,8 @@ int uxds_sasl_interact(LDAP * ld, unsigned flags, void *defaults,
 	    break;
 	}
 	interact->result = (interact->defresult
-			    && *interact->defresult) ? interact->
-	    defresult : (char *) "";
+			    && *interact->
+			    defresult) ? interact->defresult : (char *) "";
 	interact->len = strlen((char *) interact->result);
 
 	interact++;

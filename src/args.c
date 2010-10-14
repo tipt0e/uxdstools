@@ -148,8 +148,8 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 
 #ifdef HAVE_LDAP_SASL_GSSAPI
 	fprintf(stdout,
-		"   -K cert    X.509 Certificate file to use for PK-INIT\n" \
-                "              Requires -u <username|cn>\n");
+		"   -K cert    X.509 Certificate file to use for PK-INIT\n"
+		"              Requires -u <username|cn>\n");
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 #ifdef HAVE_LDAP_SASL
 	fprintf(stdout,
@@ -288,8 +288,8 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 
 /* command line parser */
 int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
-		int numargs, uxds_authz_t * auth, uxds_data_t *mdata,
-		char *binary)
+	       int numargs, uxds_authz_t * auth, uxds_data_t * mdata,
+	       char *binary)
 {
     int i;
     int sflag;
@@ -356,7 +356,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
     if (atype == SUDOER) {
 	mdata->su = calloc(1, sizeof(uxds_sudo_t));
 	mdata->su->sudoer = NULL;
-	mdata->su->cmd_s = NULL;
+	mdata->su->cmd = NULL;
 	mdata->su->opt_s = NULL;
 	mdata->su->ou = NULL;
     }
@@ -486,7 +486,8 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		i++;
 		optmask("<filename>", atype, opts, c);
 		if (auth->username == NULL) {
-		    fprintf(stderr, "MUST HAVE [-u] option for [-K] option\n");
+		    fprintf(stderr,
+			    "MUST HAVE [-u] option for [-K] option\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 		if ((sflag < 3) || (auth->saslmech) || (auth->binddn)) {
@@ -497,16 +498,16 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		if (strncmp(argv[i], "FILE:", 5) != 0) {
 		    fprintf(stderr,
 			    "with [-K] 'FILE:' must prepend the path to the certificate\n\n");
-                    usage(UXDS_USAGE, argv[0], atype, op);
-                }
-                char *check = strdup(argv[i]);
-                strtok(check, ":");
-                if (strtok(NULL, ":") == NULL) {
-                    fprintf(stderr,
-                            "with [-K] there must be a certificate name after 'FILE:'\n\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
-                free(check);
+		char *check = strdup(argv[i]);
+		strtok(check, ":");
+		if (strtok(NULL, ":") == NULL) {
+		    fprintf(stderr,
+			    "with [-K] there must be a certificate name after 'FILE:'\n\n");
+		    usage(UXDS_USAGE, argv[0], atype, op);
+		}
+		free(check);
 		auth->pkcert = strdup(argv[i]);
 		fprintf(stdout, "Using PK-INIT with x509 cert: %s\n",
 			auth->pkcert);
@@ -557,8 +558,8 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		int g = 7;
 		if (auth->debug)
 		    g++;
-                if (auth->pkcert)
-                    g = g + 2;
+		if (auth->pkcert)
+		    g = g + 2;
 		if ((atype != GROUP) && (atype != SUDOER) && (op != ADD)) {
 		    if ((op == MOD) && (argc > g)) {
 			fprintf(stderr,
@@ -775,7 +776,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		    break;
 		}
 		optmask("<sudoCommand>", atype, opts, c);
-		mdata->su->cmd_s = strdup(argv[i]);
+		mdata->su->cmd = strdup(argv[i]);
 		i--;
 		break;
 	    case 'O':
@@ -1032,7 +1033,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	}
     }
     if (atype == SUDOER) {
-	if ((op != DEL) && (mdata->su->cmd_s == NULL)) {
+	if ((op != DEL) && (mdata->su->cmd == NULL)) {
 	    if (op == ADD) {
 		fprintf(stderr,
 			"%s: At least ONE [-C] <cmd> argument MUST be supplied for SUDOER ADD\n",

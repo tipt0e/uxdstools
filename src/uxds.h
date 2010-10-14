@@ -85,7 +85,6 @@
 #endif				/* UXDS_LOG */
 
 /* search filters  */
-/* -> LEFT sides for center() */
 #define POSIXACCOUNT  "(&(objectclass=posixAccount)(uid=%s))"
 #define POSIXGROUP    "(&(objectclass=posixGroup)(cn=%s))"
 #define SUDOUSER      "(&(objectclass=sudoRole)(sudoUser=%s))"
@@ -107,7 +106,7 @@
 typedef enum { SELF, USER, GROUP, SUDOER } uxds_acct_t;
 
 /* authentication data, holds parsedata for ease */
-typedef struct {
+typedef struct uxds_authz_t {
     int debug;			/* debug flag */
     int verb;			/* SASL verbose if 1 */
     char *ldif;			/* ldif export flag */
@@ -128,7 +127,7 @@ typedef struct {
     char *basedn;		/* base dn for ops */
 } uxds_authz_t;
 
-/* enums to forsake the magickal numerals... i like _t's */
+/* primitve enum types - will have to consolidate */
 typedef enum { UXDS_USAGE, UXDS_HELP, UXDS_VERSION } uxds_usage_t;
 typedef enum { ADD, MOD, DEL, EYE } uxds_tool_t;
 typedef enum { XARGS, XACCT, XBOTH, XBIND } uxds_flag_t;
@@ -143,17 +142,17 @@ struct cmdopts {
 };
 
 /* sudoers data so parse_args() can get it from mod_data */
-typedef struct {
-    uxds_tool_t tool;           /* operation performed */
-    char *ou;                   /* OU for SUDOers */
-    char *sudoer;               /* sudoer name (sudoUser) */
-    char *cmd_s;                /* sudoCommand */
-    char *opt_s;                /* sudoOption */
-    uxds_acct_t type;           /* USER = 1 or GROUP = 2 */
+typedef struct uxds_sudo_t {
+    uxds_tool_t tool;		/* operation performed */
+    char *ou;			/* OU for SUDOers */
+    char *sudoer;		/* sudoer name (sudoUser) */
+    char *cmd;		/* sudoCommand */
+    char *opt;		/* sudoOption */
+    uxds_acct_t type;		/* USER = 1 or GROUP = 2 */
 } uxds_sudo_t;
 
 /* account data passed to LDAPMod structs */
-typedef struct {
+typedef struct uxds_data_t {
     int _entry;			/* calc args for op */
     int modrdn;			/* flag for modrdn op */
     int membit;			/* flag for memberUid add/del */
@@ -179,10 +178,11 @@ typedef struct {
 } uxds_data_t;
 
 /* structure for entry into LDAP tree */
-typedef struct {
+typedef struct uxds_attr_t {
     uxds_acct_t type;
     char *attrib;
     char *value;
+    /* uxds_attr_t *next_attr */
 } uxds_attr_t;
 
 /* menu option output handler */
@@ -195,7 +195,7 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 
 /* parse command line args */
 int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
-	       int numargs, uxds_authz_t * auth, uxds_data_t *mdata,
+	       int numargs, uxds_authz_t * auth, uxds_data_t * mdata,
 	       char *binary);
 
 /* LDAP authorization handler */
@@ -222,8 +222,8 @@ int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
 int uxds_user_expire(int type, char *dn, LDAP * ld);
 
 /* SUDOer add mod del functions */
-int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t *su, LDAP * ld);
+int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld);
 
-int uxds_sudo_del(uxds_authz_t auth, uxds_sudo_t *su, LDAP * ld);
+int uxds_sudo_del(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld);
 
-int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t *su, LDAP * ld);
+int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld);

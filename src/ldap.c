@@ -195,8 +195,9 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	"sudoOption",
 	(char *) 0
     };
-    
-    char *filter = (char *) calloc(1, (strlen(SUDOUSER) + strlen(auth.pxacct) + 1));
+
+    char *filter =
+	(char *) calloc(1, (strlen(SUDOUSER) + strlen(auth.pxacct) + 1));
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *kuser = NULL;
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
@@ -240,25 +241,31 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	}
 	break;
     case USER:
-        /* XXX too lazy to use the macros */
-	if (!snprintf(filter, (strlen(POSIXACCOUNT) + strlen(auth.pxacct) + 1), POSIXACCOUNT, auth.pxacct))
-            break;
+	/* XXX too lazy to use the macros */
+	if (!snprintf
+	    (filter, (strlen(POSIXACCOUNT) + strlen(auth.pxacct) + 1),
+	     POSIXACCOUNT, auth.pxacct))
+	    break;
 	accttype = "POSIX User";
 	break;
     case GROUP:
-	if (!snprintf(filter, (strlen(POSIXGROUP) + strlen(auth.pxacct) + 1), POSIXGROUP, auth.pxacct))
-            break;
+	if (!snprintf
+	    (filter, (strlen(POSIXGROUP) + strlen(auth.pxacct) + 1),
+	     POSIXGROUP, auth.pxacct))
+	    break;
 	accttype = "POSIX Group";
 	break;
     case SUDOER:
-	if (!snprintf(filter, (strlen(SUDOUSER) + strlen(auth.pxacct) + 1), SUDOUSER, auth.pxacct))
-            break;     
+	if (!snprintf
+	    (filter, (strlen(SUDOUSER) + strlen(auth.pxacct) + 1),
+	     SUDOUSER, auth.pxacct))
+	    break;
 	accttype = "SUDOer";
 	break;
     default:
-        fprintf(stderr, "FATAL: Bad LDAP search filter\n");
-        return 1;
-        break;
+	fprintf(stderr, "FATAL: Bad LDAP search filter\n");
+	return 1;
+	break;
     }
     if (auth.debug)
 	fprintf(stderr, "using '%s' as selected account\n", auth.pxacct);
@@ -278,7 +285,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
-  
+
     free(filter);
 
     if (auth.debug) {
@@ -400,7 +407,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    exit(EXIT_FAILURE);
 	}
 	if (mdata.uidnum != NULL) {
-            printf("%s mdata.uidnum\n", mdata.uidnum);
+	    printf("%s mdata.uidnum\n", mdata.uidnum);
 	    goto idpassed;
 	} else {
 	    idfil = UIDNUM;
@@ -424,7 +431,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	fprintf(stderr, "The number of entries returned was %d\n",
 		ldap_count_entries(ld, msg));
     }
- 
+
     /* get next available uid or gid */
     for (entry = ldap_first_entry(ld, msg);
 	 entry != NULL; entry = ldap_next_entry(ld, entry)) {
@@ -480,7 +487,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
     /* for USER only */
     if (!snprintf(filter, PG_LEN, POSIXGROUP, mdata.group))
-        return 1; 
+	return 1;
     if (auth.debug)
 	fprintf(stderr, "filter is %s, len %lu\n", filter, strlen(filter));
     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
@@ -553,8 +560,9 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     char *userpwd = strdup(center(cbuf, "{K5KEY}", principal));
 #endif				/* HDB_LDAP */
     ge_cos = realloc(ge_cos, (GC_LEN + 3));
-    if (!snprintf(ge_cos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
-        return 1;
+    if (!snprintf
+	(ge_cos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
+	return 1;
     char *_homedirectory[] = { mdata.homes, NULL };
     char *_gecos[] = { ge_cos, NULL };
     char *_u_cn[] = { mdata.user, NULL };
@@ -780,13 +788,13 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #endif
 #endif				/* PTS */
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
-        if (useradd) {
-            for (i = 0; useradd[i] != NULL; i++) {
-                 free(useradd[i]);
-            }
-            free(useradd);
-        }
-        free(ge_cos);
+	if (useradd) {
+	    for (i = 0; useradd[i] != NULL; i++) {
+		free(useradd[i]);
+	    }
+	    free(useradd);
+	}
+	free(ge_cos);
 
 	return 0;
     }
@@ -857,12 +865,12 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(group_dn, GROUP, ADD, "SUCCESSFUL - IMPORTED");
 #endif				/* TOOL_LOG */
-        if (groupadd) {
-            for (i = 0; groupadd[i] != NULL; i++) {
-                 free(groupadd[i]);
-            }
-            free(groupadd);
-        }
+	if (groupadd) {
+	    for (i = 0; groupadd[i] != NULL; i++) {
+		free(groupadd[i]);
+	    }
+	    free(groupadd);
+	}
 
     }
 
@@ -882,20 +890,20 @@ int uxds_acct_del(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
     switch (pxtype) {
     case USER:
-        filter = realloc(filter, (PA_LEN + 1));
-        if (!snprintf(filter, PA_LEN, POSIXACCOUNT, mdata.user))
-            break;
-        acct_type = "POSIX User";
+	filter = realloc(filter, (PA_LEN + 1));
+	if (!snprintf(filter, PA_LEN, POSIXACCOUNT, mdata.user))
+	    break;
+	acct_type = "POSIX User";
 	break;
     case GROUP:
-        filter = realloc(filter, (PG_LEN +1 ));
-        if (!snprintf(filter, PG_LEN, POSIXGROUP, mdata.group))
-            break;
-        acct_type = "POSIX Group";
+	filter = realloc(filter, (PG_LEN + 1));
+	if (!snprintf(filter, PG_LEN, POSIXGROUP, mdata.group))
+	    break;
+	acct_type = "POSIX Group";
 	break;
     default:
-        fprintf(stderr, "FATAL: Bad LDAP search filter\n");
-        return 1;
+	fprintf(stderr, "FATAL: Bad LDAP search filter\n");
+	return 1;
 	break;
     }
     if (auth.debug)
@@ -994,27 +1002,27 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     char *ge_cos = NULL;
     char *filter = NULL;
     char *acct_type = NULL;
-    
+
     if (mdata.modrdn == 1) {
 	pxtype = GROUP;
     }
     switch (pxtype) {
     case USER:
-        filter = realloc(filter, (PA_LEN + 1));
-        if (!snprintf(filter, PA_LEN, POSIXACCOUNT, mdata.user))
-            break; 
+	filter = realloc(filter, (PA_LEN + 1));
+	if (!snprintf(filter, PA_LEN, POSIXACCOUNT, mdata.user))
+	    break;
 	acct_type = "POSIX User";
 	break;
     case GROUP:
-        filter = realloc(filter, (PG_LEN + 1));
-        if (!snprintf(filter, PG_LEN, POSIXGROUP, mdata.group))
-            break;
+	filter = realloc(filter, (PG_LEN + 1));
+	if (!snprintf(filter, PG_LEN, POSIXGROUP, mdata.group))
+	    break;
 	acct_type = "POSIX Group";
 	break;
     default:
-        fprintf(stderr, "FATAL: BAD LDAP search filter\n");
-        return 1;        
-        break;
+	fprintf(stderr, "FATAL: BAD LDAP search filter\n");
+	return 1;
+	break;
     }
 
     if (auth.debug)
@@ -1099,8 +1107,9 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     role = strtok(xgecos, ";");
     role = strtok(NULL, ";");
     ge_cos = realloc(ge_cos, (GC_LEN + 3));
-    if (!snprintf(ge_cos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
-        return 1;
+    if (!snprintf
+	(ge_cos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
+	return 1;
     if (auth.debug)
 	fprintf(stderr, "gecos is now : %s\n", ge_cos);
   gecosnull:;
@@ -1237,13 +1246,13 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(mod_dn, USER, MOD, "SUCCESSFUL");
 #endif				/* TOOL_LOG */
-        if (usermod) {
-            for (i = 0; usermod[i] != NULL; i++) {
-                free(usermod[i]);
-            }
-            free(usermod);
-        }
-        free(ge_cos);
+	if (usermod) {
+	    for (i = 0; usermod[i] != NULL; i++) {
+		free(usermod[i]);
+	    }
+	    free(usermod);
+	}
+	free(ge_cos);
 
 	return 0;
     }
@@ -1324,18 +1333,18 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(mod_dn, GROUP, MOD, "SUCCESSFUL");
 #endif				/* TOOL_LOG */
-        if (groupmod) {
-            for (i = 0; groupmod[i] != NULL; i++) {
-                free(groupmod[i]);
-            }
-            free(groupmod);
-        }
-        if (mems) {
-            for (i = 0; mems[i] != NULL; i++ ) {
-                free(mems[i]);
-            }
-            free(mems);
-        }
+	if (groupmod) {
+	    for (i = 0; groupmod[i] != NULL; i++) {
+		free(groupmod[i]);
+	    }
+	    free(groupmod);
+	}
+	if (mems) {
+	    for (i = 0; mems[i] != NULL; i++) {
+		free(mems[i]);
+	    }
+	    free(mems);
+	}
 
 	return 0;
     }
@@ -1344,7 +1353,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     char *old_dn = NULL;
     filter = (char *) calloc(1, (PA_LEN + 1));
     if (!snprintf(filter, PA_LEN, POSIXACCOUNT, mdata.user))
-       return 1; 
+	return 1;
     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
 			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
@@ -1437,16 +1446,17 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #endif				/* TOOL_LOG */
     free(filter);
     if (gidmod) {
-        for (i = 0; gidmod[i] != NULL; i++) {
-            free(gidmod[i]);
-        }
-        free(gidmod);
+	for (i = 0; gidmod[i] != NULL; i++) {
+	    free(gidmod[i]);
+	}
+	free(gidmod);
     }
-    
+
     return 0;
 }
 
-int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn, LDAP * ld)
+int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
+		 LDAP * ld)
 {
     int mtype;
     char *oper;
@@ -1569,10 +1579,10 @@ int uxds_user_expire(int type, char *dn, LDAP * ld)
 	return 1;
     }
     if (exp) {
-        for (i = 0; exp[i] != NULL; i++) {
-            free(exp[i]);
-        }
-        free(exp);
+	for (i = 0; exp[i] != NULL; i++) {
+	    free(exp[i]);
+	}
+	free(exp);
     }
 
     return 0;
@@ -1596,13 +1606,13 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
 	return 1;
     } else if (pid == 0) {
 	pts_str = (char **) calloc(9, sizeof(char *));
-        for (i = 0; i < 9; i++) {
-            pts_str[i] = (char *) malloc(sizeof(char));
-            if (pts_str[i] == (char *) NULL) {
-                fprintf(stderr, "malloc ERROR!\n");
-                exit(ENOMEM);
-            }
-        }
+	for (i = 0; i < 9; i++) {
+	    pts_str[i] = (char *) malloc(sizeof(char));
+	    if (pts_str[i] == (char *) NULL) {
+		fprintf(stderr, "malloc ERROR!\n");
+		exit(ENOMEM);
+	    }
+	}
 
 	pts_str[0] = "pts";
 	switch (flag) {
@@ -1649,7 +1659,7 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
 	while (wait(&status) != pid);
     }
     for (i = 0; i != '\0'; i++) {
-        free(pts_str[i]);
+	free(pts_str[i]);
     }
 
     return 0;

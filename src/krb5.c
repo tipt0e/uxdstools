@@ -122,7 +122,7 @@ int get_tkts(char *user, char *service, uxds_authz_t auth)
     char *buf = NULL;
 
 #if 0
-#ifdef PTS 
+#ifdef PTS
     if (k_hasafs()) {
 	if (k_setpag() != 0) {
 	    fprintf(stderr, "Unable to create PAG\n");
