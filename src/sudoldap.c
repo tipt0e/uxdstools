@@ -82,7 +82,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	i++;
     }
     cmds[i++] = NULL;
-    if (su->opt_s != NULL) {
+    if (su->opt != NULL) {
 	a++;
 	opts = calloc(1, strlen(su->opt_s) + 1);
 	i = 0;
@@ -115,7 +115,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     sudoadd[3]->mod_values = _sudohost;
     sudoadd[4]->mod_type = "sudoCommand";
     sudoadd[4]->mod_values = cmds;
-    if (su->opt_s != NULL) {
+    if (su->opt != NULL) {
 	sudoadd[5]->mod_type = "sudoOption";
 	sudoadd[5]->mod_values = opts;
 	sudoadd[6] = NULL;
@@ -263,7 +263,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	a++;
     }
     i = 0;
-    if (su->opt_s != NULL) {
+    if (su->opt != NULL) {
 	a++;
 	opts = calloc(1, strlen(su->opt_s) + 1);
 	opts[i] = strtok(su->opt_s, ",");
@@ -297,7 +297,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	sudomod[c]->mod_values = cmds;
 	c++;
     }
-    if (su->opt_s != NULL) {
+    if (su->opt != NULL) {
 	sudomod[c]->mod_type = "sudoOption";
 	sudomod[c]->mod_values = opts;
 	c++;

@@ -357,7 +357,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	mdata->su = calloc(1, sizeof(uxds_sudo_t));
 	mdata->su->sudoer = NULL;
 	mdata->su->cmd = NULL;
-	mdata->su->opt_s = NULL;
+	mdata->su->opt = NULL;
 	mdata->su->ou = NULL;
     }
     /* option arguments */
@@ -786,7 +786,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		    break;
 		}
 		optmask("<sudoOption>", atype, opts, c);
-		mdata->su->opt_s = strdup(argv[i]);
+		mdata->su->opt = strdup(argv[i]);
 		i--;
 		break;
 	    case 'y':		/* set flag for passwd resets */
@@ -1039,7 +1039,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 			"%s: At least ONE [-C] <cmd> argument MUST be supplied for SUDOER ADD\n",
 			binary);
 		exit(EXIT_FAILURE);
-	    } else if (mdata->su->opt_s == NULL) {
+	    } else if (mdata->su->opt == NULL) {
 		fprintf(stderr,
 			"%s: At least ONE [-C] <cmd> or [-O] <opt> MUST be supplied for SUDOER MODIFY\n",
 			binary);
