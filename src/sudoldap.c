@@ -84,9 +84,9 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     cmds[i++] = NULL;
     if (su->opt != NULL) {
 	a++;
-	opts = calloc(1, strlen(su->opt_s) + 1);
+	opts = calloc(1, strlen(su->opt) + 1);
 	i = 0;
-	opts[i] = strtok(su->opt_s, ",");
+	opts[i] = strtok(su->opt, ",");
 	i++;
 	while ((opts[i] = strtok(NULL, ",")) != NULL) {
 	    i++;
@@ -265,8 +265,8 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     i = 0;
     if (su->opt != NULL) {
 	a++;
-	opts = calloc(1, strlen(su->opt_s) + 1);
-	opts[i] = strtok(su->opt_s, ",");
+	opts = calloc(1, strlen(su->opt) + 1);
+	opts[i] = strtok(su->opt, ",");
 	i++;
 	while ((opts[i] = strtok(NULL, ",")) != NULL) {
 	    i++;
