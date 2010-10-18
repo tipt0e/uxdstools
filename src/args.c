@@ -383,7 +383,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		break;
 	    case 'd':		/* set debug bit */
 		if (auth->debug == 0) {
-		    auth->debug++;
+		    auth->debug = TRUE;
 		    fprintf(stderr, "DEBUG flag set.\n");
 		} else {
 		    fprintf(stderr,
@@ -392,7 +392,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		break;
 	    case 'V':
 		if (auth->verb == 0) {
-		    auth->verb++;
+		    auth->verb = TRUE;
 		}
 		break;
 		/* AUTHENTICATION options */
