@@ -374,15 +374,15 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 
 int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 {
-    BerElement *ber;
-    LDAPMessage *msg;
-    LDAPMessage *entry;
+    BerElement *ber = NULL;
+    LDAPMessage *msg = NULL;
+    LDAPMessage *entry = NULL;
 
     static uxds_authz_t auth;
+    struct posixid pxid;
 
     int i;
     int a;
-    //char *cbuf = NULL;
     char *attr = NULL;
     char **mems = NULL;
     char *dn = NULL;
@@ -397,6 +397,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	"posixGroup",
 	NULL
     };
+    
     char *idfil = NULL;
 
     char *mask[] = { "uidNumber", "gidNumber", NULL };
@@ -432,42 +433,9 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		ldap_count_entries(ld, msg));
     }
 
-    /* get next available uid or gid */
-    for (entry = ldap_first_entry(ld, msg);
-	 entry != NULL; entry = ldap_next_entry(ld, entry)) {
-	if (pxtype == USER) {
-	    if (ldap_sort_entries(ld, &entry, "uidNumber", strcmp))
-		ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-	    if (auth.debug) {
-		fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
-	    }
-	} else if (pxtype == GROUP) {
-	    if (ldap_sort_entries(ld, &entry, "gidNumber", strcmp))
-		ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-	    if (auth.debug) {
-		fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
-	    }
-	}
-	for (attr = ldap_first_attribute(ld, entry, &ber);
-	     attr != NULL; attr = ldap_next_attribute(ld, entry, ber)) {
-	    if (pxtype == USER) {
-		if ((strstr(attr, "uid") != 0)) {
-		    vals = ldap_get_values_len(ld, entry, attr);
-		    mdata.uidnum = strdup(vals[0]->bv_val);
-		    a = atoi(mdata.uidnum) + 1;
-		    snprintf(mdata.uidnum, 6, "%d", a);
-		    ldap_value_free_len(vals);
-		}
-	    } else if (pxtype == GROUP) {
-		vals = ldap_get_values_len(ld, entry, attr);
-		mdata.gidnum = strdup(vals[0]->bv_val);
-		a = atoi(mdata.gidnum) + 1;
-		snprintf(mdata.gidnum, 6, "%d", a);
-		ldap_value_free_len(vals);
-	    }
-	    ldap_memfree(attr);
-	}
-    }
+    pxid = get_next_pxid(ld, msg, entry, attr, pxtype, ber, auth.debug);
+    mdata.uidnum = pxid.uidnum;
+    mdata.gidnum = pxid.gidnum;
 
   idpassed:;
 
@@ -1665,3 +1633,54 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
     return 0;
 }
 #endif				/* PTS */
+
+struct posixid get_next_pxid(LDAP * ld, LDAPMessage * msg,
+                             LDAPMessage * entry, char *attr,
+                             uxds_acct_t pxtype, BerElement *ber,
+                             int debug)
+{
+    struct posixid pxid; 
+    pxid.uidnum = NULL;
+    pxid.gidnum = NULL;
+
+    int a;
+
+    /* get next available uid or gid */
+    for (entry = ldap_first_entry(ld, msg);
+         entry != NULL; entry = ldap_next_entry(ld, entry)) {
+        if (pxtype == USER) {
+            if (ldap_sort_entries(ld, &entry, "uidNumber", strcmp))
+                ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+            if (debug) {
+                fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+            }
+        } else if (pxtype == GROUP) {
+            if (ldap_sort_entries(ld, &entry, "gidNumber", strcmp))
+                ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
+            if (debug) {
+                fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+            }
+        }
+        for (attr = ldap_first_attribute(ld, entry, &ber);
+             attr != NULL; attr = ldap_next_attribute(ld, entry, ber)) {
+            if (pxtype == USER) {
+                if ((strstr(attr, "uid") != 0)) {
+                    vals = ldap_get_values_len(ld, entry, attr);
+                    pxid.uidnum = strdup(vals[0]->bv_val);
+                    a = atoi(pxid.uidnum) + 1;
+                    snprintf(pxid.uidnum, 6, "%d", a);
+                    ldap_value_free_len(vals);
+                }
+            } else if (pxtype == GROUP) {
+                vals = ldap_get_values_len(ld, entry, attr);
+                pxid.gidnum = strdup(vals[0]->bv_val);
+                a = atoi(pxid.gidnum) + 1;
+                snprintf(pxid.gidnum, 6, "%d", a);
+                ldap_value_free_len(vals);
+            }
+            ldap_memfree(attr);
+        }
+    }
+    return pxid;
+}
+
