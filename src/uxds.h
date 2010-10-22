@@ -209,15 +209,18 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld);
 
 /* (u|g)id struct for getting next available id */
 struct posixid {
+    int fail;
     char *uidnum;
     char *gidnum;
 };
 
-/* get next available (u|g)id */
+/* next two functions get next available (u|g)id */
 struct posixid get_next_pxid(LDAP * ld, LDAPMessage * msg,
                              LDAPMessage * entry, char *attr,
                              uxds_acct_t pxtype, BerElement * ber,
                              int debug);
+
+char *return_idnum(LDAP * ld, LDAPMessage *entry, char *attr);
 
 /* add del mod POSIX account functions */
 int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld);
