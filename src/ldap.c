@@ -470,11 +470,10 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     }
     if ((dn = ldap_get_dn(ld, entry)) != NULL) {
 	fprintf(stderr, "POSIX Group matched DN: %s\n\n", dn);
-	user_dn =
-	    strdup(center
-		   (cbuf,
-		    center(cbuf, center(cbuf, "uid=", mdata.user), ","),
-		    dn));
+	user_dn = realloc(user_dn, strlen(mdata.user) + strlen(dn) + 6);
+	if (!snprintf(user_dn, strlen(mdata.user) + strlen(dn) + 6,
+		      "uid=%s,%s", mdata.user, dn))
+	    return 1;
 	group_dn = strdup(dn);
 
 	ldap_memfree(dn);
@@ -797,10 +796,10 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	if (auth.basedn == NULL) {
 	    auth.basedn = strdup(UXDS_POSIX_OU);
 	}
-	group_dn =
-	    center(cbuf,
-		   center(cbuf, center(cbuf, "cn=", mdata.group), ","),
-		   auth.basedn);
+        group_dn = realloc(group_dn, strlen(mdata.group) + strlen(auth.basedn) + 5);
+        if (!snprintf(group_dn, strlen(mdata.group) + strlen(auth.basedn) + 5,
+                      "cn=%s,%s", mdata.group, auth.basedn))
+            return 1;
 	if (auth.debug)
 	    fprintf(stderr,
 		    "group=%s, gid=%s, descr=%s, memberuid(s)=%s\n",
