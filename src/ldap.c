@@ -609,6 +609,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		calloc(2, strlen(user_attr[i].value) + 1);
 	    useradd[i]->mod_values[0] = user_attr[i].value;
 	}
+        useradd[i + 1] = NULL;
 
 	if (auth.debug)
 	    fprintf(stderr, "user=%s, group=%s, uid=%s, gecos=%s\n",
