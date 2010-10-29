@@ -739,11 +739,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    groupadd[i]->mod_values = mems;
         }
         groupadd[i + 1] = NULL;
-#if 0
-        for (i = 0; i < (attrs + 1); i++) {
-            printf("groupadd[%i] => %s: %s\n",i, groupadd[i]->mod_type, groupadd[i]->mod_values[0]);
-        }
-#endif
 
 	if (auth.basedn == NULL) {
 	    auth.basedn = UXDS_POSIX_OU;
@@ -776,14 +771,15 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(group_dn, GROUP, ADD, "SUCCESSFUL - IMPORTED");
 #endif				/* TOOL_LOG */
-#if 0
 	if (groupadd) {
 	    for (i = 0; groupadd[i] != NULL; i++) {
 		free(groupadd[i]);
 	    }
-	    free(groupadd);
 	}
-#endif
+        if (mems) {
+           free(groupadd);
+           free(mems);
+        }
 
     }
 
