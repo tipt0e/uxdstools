@@ -678,7 +678,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    }
 	    free(useradd);
 	}
-	//free(mygecos);
+	free(mygecos);
 
 	return 0;
     }
