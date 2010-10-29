@@ -145,11 +145,6 @@ int uxds_user_authz(int select, uxds_authz_t auth, LDAP * ld)
 int uxds_ldap_unbind(LDAP * ld)
 {
     rc = ldap_unbind_ext_s(ld, NULL, NULL);
-#ifdef HAVE_LDAP_SASL
-    sasl_done();
-    sasl_client_init(NULL);
-#endif				/* HAVE_LDAP_SASL */
-
     return rc;
 }
 
