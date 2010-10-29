@@ -29,19 +29,17 @@ int uxds_user_authz(int select, uxds_authz_t auth, LDAP * ld)
     unsigned sasl_flags = 0;
 #endif				/* HAVE_LDAP_SASL */
 
-    char *ldapuri = ber_strdup(auth.uri);
-
     if (auth.debug) {
 	fprintf(stderr, "sflag value is %i -> ", select);
 	fprintf(stderr,
 		"(0 = SIMPLE, 1 = SASL non GSSAPI, 2 = SASL/GSSAPI)\n");
-	fprintf(stderr, "LDAP host URI is: %s\n", ldapuri);
+	fprintf(stderr, "LDAP host URI is: %s\n", auth.uri);
     }
 #ifdef HAVE_LDAP_SASL
 /* SASL authentication chosen */
     if ((select > 0) || (auth.pkcert)) {
 	authmethod = LDAP_AUTH_SASL;
-	sasl_mech = ber_strdup(auth.saslmech);
+	sasl_mech = auth.saslmech;
 	if (auth.verb == 1) {
 	    sasl_flags = LDAP_SASL_INTERACTIVE;	/* [-V] some mechs need? */
 	} else {
@@ -122,7 +120,7 @@ int uxds_user_authz(int select, uxds_authz_t auth, LDAP * ld)
 	return 1;
     }
     if (auth.debug)
-	fprintf(stdout, "SUCCESSFUL bind using URI %s\n", ldapuri);
+	fprintf(stdout, "SUCCESSFUL bind using URI %s\n", auth.uri);
 #ifdef HAVE_LDAP_SASL
     /* get SASL SSF factor - debug */
     if (auth.debug) {
@@ -144,6 +142,7 @@ int uxds_user_authz(int select, uxds_authz_t auth, LDAP * ld)
 /* unbind from directory service */
 int uxds_ldap_unbind(LDAP * ld)
 {
+    sasl_client_init(NULL);
     rc = ldap_unbind_ext_s(ld, NULL, NULL);
     return rc;
 }
@@ -225,7 +224,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 		fprintf(stderr,
 			"user account filter half returned: %s, size %lu len %lu\n",
 			kuser, sizeof(kuser), strlen(kuser));
-	    filter = strdup(center(fbuf, "uid=", kuser));
+	    filter = (center(fbuf, "uid=", kuser));
 	    if (auth.debug)
 		fprintf(stderr, "search filter string: %s\n", filter);
 	    break;
@@ -264,9 +263,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
     }
     if (auth.debug)
 	fprintf(stderr, "using '%s' as selected account\n", auth.pxacct);
-    if (auth.basedn != NULL) {
-	base = strdup(auth.basedn);
-    }
+
     /* perform search */
     if (auth.debug)
 	fprintf(stderr, "final passed filter: %s\n", filter);
@@ -274,7 +271,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	attr_mask[0] = NULL;
     }
     if (ldap_search_ext_s
-	(ld, base, LDAP_SCOPE_SUBTREE, filter, attr_mask, 0,
+	(ld, auth.basedn, LDAP_SCOPE_SUBTREE, filter, attr_mask, 0,
 	 NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
@@ -302,10 +299,9 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	    }
 
 	}
-
 	return 0;
-    } else {
 
+    } else {
 	entry = ldap_first_entry(ld, msg);
 	if (entry == NULL) {
 	    fprintf(stderr, "account %s not matched to any DN\n",
@@ -382,16 +378,15 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     char **mems = NULL;
     char *dn = NULL;
     char *role = NULL;
+#ifdef QMAIL
+    char *mbx = NULL;
+    char *addr = NULL;
+    char *host = NULL;
+#endif    /* QMAIL */
     char *user_dn = NULL;
     char *group_dn = NULL;
     char *filter = NULL;
-    char *ge_cos = NULL;
-    char *_g_cn[] = { mdata.group, NULL };
-    char *_description[] = { mdata.comment, NULL };
-    char *G_objectclass[] = { "top",
-	"posixGroup",
-	NULL
-    };
+    char *mygecos = NULL;
 
     if (pxtype == USER) {
 	if (mdata.group == NULL) {
@@ -425,7 +420,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     filter = realloc(filter, (PG_LEN + 1));
 
     a = 0;
-    char *_g_gidnumber[] = { mdata.gidnum, NULL };
     /* XXX GROUP conditional jump */
     if (pxtype == GROUP) {
 	if (mdata.member == NULL) {
@@ -464,7 +458,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	return 1;
     }
     if ((dn = ldap_get_dn(ld, entry)) != NULL) {
-	fprintf(stderr, "POSIX Group matched DN: %s\n\n", dn);
+	fprintf(stderr, "POSIX Group matched DN: %s\n", dn);
 	user_dn = realloc(user_dn, strlen(mdata.user) + strlen(dn) + 6);
 	if (!snprintf(user_dn, strlen(mdata.user) + strlen(dn) + 6,
 		      "uid=%s,%s", mdata.user, dn))
@@ -498,36 +492,36 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 */
     ldap_msgfree(msg);
 
+    char *user_oc[] = {
+	"top",
+	"person",
+	"inetOrgPerson",
+	"organizationalPerson",
+	"posixAccount",
+#ifdef QMAIL
+	"qmailUser",
+#endif
+#ifdef HDB_LDAP
+	"krb5Principal",
+	"krb5KDCEntry",
+#endif				/* HDB_LDAP */
+#ifdef SSH_LPK
+	"ldapPublicKey",
+#endif				/* SSH_LPK */
+	NULL
+    };
+
     if (mdata.homes == NULL) {
 	mdata.homes = strdup(center(cbuf, "/home/", mdata.user));
     }
     if (mdata.shell == NULL) {
 	mdata.shell = strdup("/bin/sh");
     }
-    char *mbx = strdup(center(cbuf, mdata.user, AT_EMAIL));
-#ifdef HDB_LDAP
-    char *principal = strdup(center(cbuf, mdata.user, AT_REALM));
-    char *userpwd = strdup(center(cbuf, "{K5KEY}", principal));
-#endif				/* HDB_LDAP */
-    ge_cos = realloc(ge_cos, (GC_LEN + 3));
+    mygecos = realloc(mygecos, (GC_LEN + 3)); 
     if (!snprintf
-	(ge_cos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
+	(mygecos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
 	return 1;
-    char *_homedirectory[] = { mdata.homes, NULL };
-    char *_gecos[] = { ge_cos, NULL };
-    char *_u_cn[] = { mdata.user, NULL };
-    char *_givenname[] = { mdata.firstname, NULL };
-    char *_sn[] = { mdata.lastname, NULL };
-    char *_mail[] = { mbx, NULL };
-    char *_uid[] = { mdata.user, NULL };
-    /* php-uxdstools session key */
-    char *_carlicense[] = { "XxXxXxXxXxXxXxXxX", NULL };
-    char *_loginshell[] = { mdata.shell, NULL };
-    char *_uidnumber[] = { mdata.uidnum, NULL };
-    char *_u_gidnumber[] = { gidnum, NULL };
 #ifdef QMAIL
-    char *host;
-    char *addr;
     if (mdata.mhost != NULL) {
 	host = strdup(mdata.mhost);
     } else {
@@ -538,148 +532,87 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     } else {
 	addr = strdup(mbx);
     }
-    char *_accountstatus[] = { "active", NULL };
-    char *_mailhost[] = { host, NULL };
-    char *_mailalternateaddress[] = { addr, NULL };
-    char *_mailmessagestore[] =
-	{ center(cbuf, "/var/qmail/maildirs/", mdata.user), NULL };
 #endif				/* QMAIL */
-#ifdef SSH_LPK
-    char *_sshpublickey[] = { "0", NULL };
-#endif				/* SSH_LPK */
+
+    char *principal = center(cbuf, mdata.user, AT_REALM);
+
+    /*
+     * because objectClass is already an array, we have to
+     * put dummy values for user_attr[0] so we can start
+     * from user_attr[1] when we fill up the LDAPMod struct
+     */
+    uxds_attr_t user_attr[] = {
+	{USER, "dummy", "dummy"},	/* dummy values */
+	{USER, "cn", mdata.user},
+	{USER, "givenName", mdata.firstname},
+	{USER, "sn", mdata.lastname},
+	{USER, "uid", mdata.user},
+	{USER, "mail", center(cbuf, mdata.user, AT_EMAIL)},
+	{USER, "gecos", mygecos},
+	{USER, "uidNumber", mdata.uidnum},
+	{USER, "gidNumber", gidnum},
+	{USER, "homeDirectory", "/home/dumbtest"},
+	{USER, "loginShell", "/bin/sh"},
 #ifdef HDB_LDAP
-    char *_krb5principalname[] = { principal, NULL };
-    char *_userpassword[] = { userpwd, NULL };
-    char *_krb5passwordend[] = { "20071231235959Z", NULL };
-    char *_krb5keyversionnumber[] = { "0", NULL };
-    char *_krb5maxlife[] = { "86400", NULL };
-    char *_krb5maxrenew[] = { "604800", NULL };
-    char *_krb5kdcflags[] = { "126", NULL };
-    char *_krb5key[] = { "0", NULL };
+	{USER, "userPassword", center(cbuf, "{K5KEY}", principal)},
 #else
-    char *_userpassword[] = { "DUMMYIKNOWWILLCEECHANGED", NULL };
+	{USER, "userPassword", "DUMMYIKNOWWILLCEECHANGED"},
 #endif				/* HDB_LDAP */
-    char *U_objectclass[] = { "top",
-	"person",
-	"inetOrgPerson",
-	"organizationalPerson",
-	"posixAccount",
+	{USER, "carLicense", "XxXxXxXxXxXxXxXxX"},
 #ifdef QMAIL
-	"qmailUser",
+	{USER, "accountStatus", "active"},
+	{USER, "mailHost", host},
+	{USER, "mailMessageStore", addr},
+	{USER, "mailLocalAddress",
+	 center(cbuf, "/var/qmail/maildirs/", mdata.user)},
+	{USER, "mailAlternateAddress",},
 #endif				/* QMAIL */
 #ifdef HDB_LDAP
-	"krb5Principal",
-	"krb5KDCEntry",
+	{USER, "krb5PrincipalName", principal},
+	{USER, "krb5MaxLife", "86400"},
+	{USER, "krb5MaxRenew", "604800"},
+	{USER, "krb5KDCFlags", "126"},
+	{USER, "krb5KeyVersionNumber", "0"},
+	{USER, "krb5PasswordEnd", "20071231235959Z"},
+	{USER, "krb5Key", "0"},
 #endif				/* HDB_LDAP */
 #ifdef SSH_LPK
-	"ldapPublicKey",
+	{USER, "sshPublicKey", "0"},
 #endif				/* SSH_LPK */
-	"simpleSecurityObject",
-	NULL
+	{0, NULL, NULL}
     };
 
   groupstart:
     if (pxtype == USER) {
+	i = 0;
+	while (user_attr[i].attrib != NULL) {
+	    i++;
+	}
 	int n;
-	n = 13;
-	int modc = n;
-#ifdef HDB_LDAP
-	n = n + 7;
-#endif				/* HDB_LDAP */
-#ifdef QMAIL
-	n = n + 5;
-#endif				/* QMAIL */
-#ifdef SSH_LPK
-	n = n + 1;
-#endif				/* SSH_LPK */
-	n = n + 1;
+	n = i + 1;
 
 	LDAPMod **useradd;
 	useradd = (LDAPMod **) calloc(n, sizeof(LDAPMod *));
-	for (i = 0; i < n; i++) {
-	    useradd[i] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
-	    useradd[i]->mod_op = LDAP_MOD_ADD;
-	    if (useradd[i] == (LDAPMod *) NULL) {
-		fprintf(stderr, "malloc ERROR!\n");
-		exit(ENOMEM);
-	    }
-	}
+	useradd[0] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
+	useradd[0]->mod_op = LDAP_MOD_ADD;
 	useradd[0]->mod_type = "objectClass";
-	useradd[0]->mod_values = U_objectclass;
-	useradd[1]->mod_type = "cn";
-	useradd[1]->mod_values = _u_cn;
-	useradd[2]->mod_type = "sn";
-	useradd[2]->mod_values = _sn;
-	useradd[3]->mod_type = "givenName";
-	useradd[3]->mod_values = _givenname;
-	useradd[4]->mod_type = "uid";
-	useradd[4]->mod_values = _uid;
-	useradd[5]->mod_type = "mail";
-	useradd[5]->mod_values = _mail;
-	useradd[6]->mod_type = "gecos";
-	useradd[6]->mod_values = _gecos;
-	useradd[7]->mod_type = "uidNumber";
-	useradd[7]->mod_values = _uidnumber;
-	useradd[8]->mod_type = "gidNumber";
-	useradd[8]->mod_values = _u_gidnumber;
-	useradd[9]->mod_type = "homeDirectory";
-	useradd[9]->mod_values = _homedirectory;
-	useradd[10]->mod_type = "loginShell";
-	useradd[10]->mod_values = _loginshell;
-	useradd[11]->mod_type = "userPassword";
-	useradd[11]->mod_values = _userpassword;
-	useradd[12]->mod_type = "carLicense";
-	useradd[12]->mod_values = _carlicense;
-#ifdef QMAIL
-	useradd[modc]->mod_type = "accountStatus";
-	useradd[modc]->mod_values = _accountstatus;
-	modc++;
-	useradd[modc]->mod_type = "mailHost";
-	useradd[modc]->mod_values = _mailhost;
-	modc++;
-	useradd[modc]->mod_type = "mailMessageStore";
-	useradd[modc]->mod_values = _mailmessagestore;
-	modc++;
-	useradd[modc]->mod_type = "mailLocalAddress";
-	useradd[modc]->mod_values = _mail;
-	modc++;
-	useradd[modc]->mod_type = "mailAlternateAddress";
-	useradd[modc]->mod_values = _mailalternateaddress;
-	modc++;
-#endif				/* QMAIL */
-#ifdef HDB_LDAP
-	useradd[modc]->mod_type = "krb5PrincipalName";
-	useradd[modc]->mod_values = _krb5principalname;
-	modc++;
-	useradd[modc]->mod_type = "krb5MaxLife";
-	useradd[modc]->mod_values = _krb5maxlife;
-	modc++;
-	useradd[modc]->mod_type = "krb5MaxRenew";
-	useradd[modc]->mod_values = _krb5maxrenew;
-	modc++;
-	useradd[modc]->mod_type = "krb5KDCFlags";
-	useradd[modc]->mod_values = _krb5kdcflags;
-	modc++;
-	useradd[modc]->mod_type = "krb5KeyVersionNumber";
-	useradd[modc]->mod_values = _krb5keyversionnumber;
-	modc++;
-	useradd[modc]->mod_type = "krb5PasswordEnd";
-	useradd[modc]->mod_values = _krb5passwordend;
-	modc++;
-	useradd[modc]->mod_type = "krb5Key";
-	useradd[modc]->mod_values = _krb5key;
-	modc++;
-#endif				/* HDB_LDAP */
-#ifdef SSH_LPK
-	useradd[modc]->mod_type = "sshPublicKey";
-	useradd[modc]->mod_values = _sshpublickey;
-	modc++;
-#endif				/* SSH_LPK */
-	useradd[modc] = NULL;
+	useradd[0]->mod_values = user_oc;
+	for (i = 1; user_attr[i].value != NULL; i++) {
+	    useradd[i] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
+	    if (!useradd[i]) {
+		fprintf(stderr, "ERROR! Not enough memory\n");
+		return ENOMEM;
+	    }
+	    useradd[i]->mod_op = LDAP_MOD_ADD;
+	    useradd[i]->mod_type = user_attr[i].attrib;
+	    useradd[i]->mod_values =
+		calloc(2, strlen(user_attr[i].value) + 1);
+	    useradd[i]->mod_values[0] = user_attr[i].value;
+	}
 
 	if (auth.debug)
 	    fprintf(stderr, "user=%s, group=%s, uid=%s, gecos=%s\n",
-		    mdata.user, mdata.group, mdata.uidnum, ge_cos);
+		    mdata.user, mdata.group, mdata.uidnum, mygecos);
 
 	if (ldap_add_ext_s(ld, user_dn, useradd, NULL, NULL) !=
 	    LDAP_SUCCESS) {
@@ -745,7 +678,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    }
 	    free(useradd);
 	}
-	free(ge_cos);
+	//free(mygecos);
 
 	return 0;
     }
@@ -760,41 +693,68 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    }
 	    mems[i] = NULL;
 	}
+	char *group_oc[] = {
+	    "top",
+	    "posixGroup",
+	    NULL
+	};
+
+	uxds_attr_t group_attr[] = {
+	    {GROUP, "dummy", "dummy"},	/* Dummy Value */
+	    {GROUP, "cn", mdata.group},
+	    {GROUP, "gidNumber", mdata.gidnum},
+	    {GROUP, "description", mdata.comment},
+	    {0, NULL, NULL}
+	};
+        int attrs;
+        if (mems)
+	    attrs = i + 4;
+        else
+            attrs = 4;
 
 	LDAPMod **groupadd;
-
 	groupadd = (LDAPMod **) calloc(a, sizeof(LDAPMod *));
-	for (i = 0; i < a; i++) {
+	for (i = 0; i < attrs; i++) {
 	    groupadd[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
-	    groupadd[i]->mod_op = LDAP_MOD_ADD;
 	    if (groupadd[i] == (LDAPMod *) NULL) {
-		fprintf(stderr, "malloc ERROR!\n");
+		fprintf(stderr, "ERROR! Not enough memory\n");
 		exit(ENOMEM);
 	    }
 	}
-
+	groupadd[0]->mod_op = LDAP_MOD_ADD;
 	groupadd[0]->mod_type = "objectClass";
-	groupadd[0]->mod_values = G_objectclass;
-	groupadd[1]->mod_type = "cn";
-	groupadd[1]->mod_values = _g_cn;
-	groupadd[2]->mod_type = "gidNumber";
-	groupadd[2]->mod_values = _g_gidnumber;
-	groupadd[3]->mod_type = "description";
-	groupadd[3]->mod_values = _description;
-	if (a == 6) {
-	    groupadd[4]->mod_type = "memberUid";
-	    groupadd[4]->mod_values = mems;
-	    groupadd[5] = NULL;
-	} else {
-	    groupadd[4] = NULL;
+	groupadd[0]->mod_values = group_oc;
+
+	for (i = 1; group_attr[i].value != NULL; i++) {
+	    groupadd[i]->mod_op = LDAP_MOD_ADD;
+	    groupadd[i]->mod_type = group_attr[i].attrib;
+	    groupadd[i]->mod_values =
+		calloc(2, strlen(group_attr[i].value) + 1);
+	    groupadd[i]->mod_values[0] = group_attr[i].value;
 	}
+
+	if (mems) {
+	    groupadd[i]->mod_op = LDAP_MOD_ADD;
+	    groupadd[i]->mod_type = "memberUid";
+	    groupadd[i]->mod_values = mems;
+        }
+        groupadd[i + 1] = NULL;
+#if 0
+        for (i = 0; i < (attrs + 1); i++) {
+            printf("groupadd[%i] => %s: %s\n",i, groupadd[i]->mod_type, groupadd[i]->mod_values[0]);
+        }
+#endif
+
 	if (auth.basedn == NULL) {
-	    auth.basedn = strdup(UXDS_POSIX_OU);
+	    auth.basedn = UXDS_POSIX_OU;
 	}
-        group_dn = realloc(group_dn, strlen(mdata.group) + strlen(auth.basedn) + 5);
-        if (!snprintf(group_dn, strlen(mdata.group) + strlen(auth.basedn) + 5,
-                      "cn=%s,%s", mdata.group, auth.basedn))
-            return 1;
+	group_dn =
+	    realloc(group_dn,
+		    strlen(mdata.group) + strlen(auth.basedn) + 5);
+	if (!snprintf
+	    (group_dn, strlen(mdata.group) + strlen(auth.basedn) + 5,
+	     "cn=%s,%s", mdata.group, auth.basedn))
+	    return 1;
 	if (auth.debug)
 	    fprintf(stderr,
 		    "group=%s, gid=%s, descr=%s, memberuid(s)=%s\n",
@@ -816,12 +776,14 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(group_dn, GROUP, ADD, "SUCCESSFUL - IMPORTED");
 #endif				/* TOOL_LOG */
+#if 0
 	if (groupadd) {
 	    for (i = 0; groupadd[i] != NULL; i++) {
 		free(groupadd[i]);
 	    }
 	    free(groupadd);
 	}
+#endif
 
     }
 
@@ -881,7 +843,7 @@ int uxds_acct_del(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	return 1;
     }
     if ((dn = ldap_get_dn(ld, entry)) != NULL) {
-	fprintf(stderr, "%s matched DN: %s\n\n", acct_type, dn);
+	fprintf(stderr, "%s matched DN: %s\n", acct_type, dn);
 	if (pxtype == USER) {
 	    mdata.member = strdup(dn);
 	    if (mdata.user != NULL) {
@@ -950,7 +912,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     char *_g_gidnumber[] = { mdata.gidnum, NULL };
     char *_description[] = { mdata.comment, NULL };
     char *fbuf = NULL;
-    char *ge_cos = NULL;
+    char *mygecos = NULL;
     char *filter = NULL;
     char *acct_type = NULL;
 
@@ -1057,15 +1019,15 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     xgecos = strdup(old_gecos);
     role = strtok(xgecos, ";");
     role = strtok(NULL, ";");
-    ge_cos = realloc(ge_cos, (GC_LEN + 3));
+    mygecos = realloc(mygecos, (GC_LEN + 3));
     if (!snprintf
-	(ge_cos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
+	(mygecos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
 	return 1;
     if (auth.debug)
-	fprintf(stderr, "gecos is now : %s\n", ge_cos);
+	fprintf(stderr, "gecos is now : %s\n", mygecos);
   gecosnull:;
     char *_homedirectory[] = { mdata.homes, NULL };
-    char *_gecos[] = { ge_cos, NULL };
+    char *_gecos[] = { mygecos, NULL };
     char *_givenname[] = { mdata.firstname, NULL };
     char *_sn[] = { mdata.lastname, NULL };
     char *_loginshell[] = { mdata.shell, NULL };
@@ -1203,7 +1165,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    }
 	    free(usermod);
 	}
-	free(ge_cos);
+	free(mygecos);
 
 	return 0;
     }
