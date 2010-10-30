@@ -421,11 +421,13 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     a = 0;
     /* XXX GROUP conditional jump */
     if (pxtype == GROUP) {
+#if 0
 	if (mdata.member == NULL) {
 	    a = 5;
 	} else {
 	    a = 6;
 	}
+#endif
 	goto groupstart;
     }
 
@@ -492,6 +494,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	"inetOrgPerson",
 	"organizationalPerson",
 	"posixAccount",
+        "shadowAccount",
 #ifdef QMAIL
 	"qmailUser",
 #endif
