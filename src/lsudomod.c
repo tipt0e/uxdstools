@@ -50,6 +50,11 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "uxds_sudo_mod failed.\n");
 	exit(EXIT_FAILURE);
     }
+    /* unbind from ds when request completed */
+    if (uxds_ldap_unbind(ld) != 0) {
+        fprintf(stderr, "uxds_ldap_unbind failed.\n");
+        exit(EXIT_FAILURE);
+    }
 
     exit(EXIT_SUCCESS);
 }
