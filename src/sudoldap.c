@@ -63,16 +63,17 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	return 1;
     }
     if ((dn = ldap_get_dn(ld, entry)) != NULL) {
-	fprintf(stderr, "SUDOer matched DN: %s\n\n", dn);
+	fprintf(stderr, "SUDOer matched DN: %s\n", dn);
 	ldap_memfree(dn);
     }
     if (su->type == GROUP) {
 	su->sudoer = center(cbuf, "%", su->sudoer);
     }
-    char *_objectclass[] = { "top", "sudoRole", NULL };
-    char *_cn[] = { su->sudoer, NULL };
-    char *_sudouser[] = { su->sudoer, NULL };
-    char *_sudohost[] = { "ALL", NULL };
+    char *sudo_oc[] = { 
+             "top", 
+             "sudoRole",
+             NULL 
+    };
     cmds = calloc(1, strlen(su->cmd) + 1);
     a = 5;
     i = 0;
@@ -93,37 +94,53 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	}
 	opts[i++] = NULL;
     }
-    a = a + 2;
+
+    /*
+     * XXX dummy values are used here until uxds_acct_t
+     * is changed to contain a union
+     */
+    uxds_attr_t sudo_attr[] = {
+        { SUDOER, "objectClass", "dummy" },
+        { SUDOER, "cn", su->sudoer },
+        { SUDOER, "sudoUser", su->sudoer },
+        { SUDOER, "sudoHost", "ALL" },
+        { SUDOER, "sudoCommand", "dummy" },
+        { SUDOER, "sudoOption", "dummy" },
+        { 0, NULL, NULL }
+    };  
+    i = 0;
+  //  a = 0;
+    while (sudo_attr[i].value != NULL) {
+        i++;
+    }
+    i = i + 1;
 
     LDAPMod **sudoadd;
     sudoadd = (LDAPMod **) calloc(a, sizeof(LDAPMod *));
-    for (i = 0; i < a; i++) {
+    for (i = 0; sudo_attr[i].value != NULL; i++) {
 	sudoadd[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
-	sudoadd[i]->mod_op = LDAP_MOD_ADD;
 	if (sudoadd[i] == (LDAPMod *) NULL) {
-	    fprintf(stderr, "malloc ERROR!\n");
+	    fprintf(stderr, "ERROR! Not enough memory\n");
 	    exit(ENOMEM);
 	}
+        sudoadd[i]->mod_op = LDAP_MOD_ADD;
+        sudoadd[i]->mod_type = sudo_attr[i].attrib;
+        /* XXX */
+        if (!strcmp(sudoadd[i]->mod_type, "objectClass")) {
+            sudoadd[i]->mod_values = sudo_oc;
+        } else if (!strcmp(sudoadd[i]->mod_type, "sudoCommand")) {
+            sudoadd[i]->mod_values = cmds;
+        } else if (!strcmp(sudoadd[i]->mod_type, "sudoOption")) {
+            sudoadd[i]->mod_values = opts;
+        } else {
+            sudoadd[i]->mod_values = calloc(2, strlen(sudo_attr[i].value) + 1);
+            sudoadd[i]->mod_values[0] = sudo_attr[i].value;
+        }
     }
-    sudoadd[0]->mod_type = "objectClass";
-    sudoadd[0]->mod_values = _objectclass;
-    sudoadd[1]->mod_type = "cn";
-    sudoadd[1]->mod_values = _cn;
-    sudoadd[2]->mod_type = "sudoUser";
-    sudoadd[2]->mod_values = _sudouser;
-    sudoadd[3]->mod_type = "sudoHost";
-    sudoadd[3]->mod_values = _sudohost;
-    sudoadd[4]->mod_type = "sudoCommand";
-    sudoadd[4]->mod_values = cmds;
-    if (su->opt != NULL) {
-	sudoadd[5]->mod_type = "sudoOption";
-	sudoadd[5]->mod_values = opts;
-	sudoadd[6] = NULL;
-    } else {
-	sudoadd[5] = NULL;
-    }
+    sudoadd[i] = NULL;
+
     if (auth.basedn == NULL) {
-	auth.basedn = strdup(UXDS_POSIX_OU);
+	auth.basedn = UXDS_POSIX_OU;
     }
     su_dn =
 	center(cbuf,
@@ -190,7 +207,7 @@ int uxds_sudo_del(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	return 1;
     }
     if ((dn = ldap_get_dn(ld, entry)) != NULL) {
-	fprintf(stderr, "SUDOer matched DN: %s\n\n", dn);
+	fprintf(stderr, "SUDOer matched DN: %s\n", dn);
     }
     if (ldap_delete_ext_s(ld, dn, NULL, NULL) != LDAP_SUCCESS) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
@@ -248,7 +265,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	return 1;
     }
     if ((dn = ldap_get_dn(ld, entry)) != NULL) {
-	fprintf(stderr, "SUDOer matched DN: %s\n\n", dn);
+	fprintf(stderr, "SUDOer matched DN: %s\n", dn);
     }
     a = 1;
     i = 0;
@@ -286,7 +303,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	    sudomod[i]->mod_op = LDAP_MOD_ADD;
 	}
 	if (sudomod[i] == (LDAPMod *) NULL) {
-	    fprintf(stderr, "malloc ERROR!\n");
+	    fprintf(stderr, "ERROR! Not enough memory\n");
 	    exit(ENOMEM);
 	}
     }
