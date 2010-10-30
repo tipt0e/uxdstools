@@ -675,7 +675,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     }
     if (pxtype == GROUP) {
 	i = 0;
-	if (a == 6) {
+	if (mdata.member) {
 	    mems = calloc(1, strlen(mdata.member) + 1);
 	    mems[i] = strtok(mdata.member, ",");
 	    i++;
@@ -683,7 +683,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		i++;
 	    }
 	    mems[i] = NULL;
-	}
+        }
 	char *group_oc[] = {
 	    "top",
 	    "posixGroup",
@@ -704,7 +704,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    attrs = 4;
 
 	LDAPMod **groupadd;
-	groupadd = (LDAPMod **) calloc(a, sizeof(LDAPMod *));
+	groupadd = (LDAPMod **) calloc(attrs, sizeof(LDAPMod *));
 	for (i = 0; i < attrs; i++) {
 	    groupadd[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
 	    if (groupadd[i] == (LDAPMod *) NULL) {
