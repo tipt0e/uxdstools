@@ -69,10 +69,10 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     if (su->type == GROUP) {
 	su->sudoer = center(cbuf, "%", su->sudoer);
     }
-    char *sudo_oc[] = { 
-             "top", 
-             "sudoRole",
-             NULL 
+    char *sudo_oc[] = {
+	"top",
+	"sudoRole",
+	NULL
     };
     cmds = calloc(1, strlen(su->cmd) + 1);
     a = 5;
@@ -100,18 +100,24 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
      * is changed to contain a union
      */
     uxds_attr_t sudo_attr[] = {
-        { SUDOER, "objectClass", "dummy" },
-        { SUDOER, "cn", su->sudoer },
-        { SUDOER, "sudoUser", su->sudoer },
-        { SUDOER, "sudoHost", "ALL" },
-        { SUDOER, "sudoCommand", "dummy" },
-        { SUDOER, "sudoOption", "dummy" },
-        { 0, NULL, NULL }
-    };  
+	{SUDOER, "objectClass", "dummy"}
+	,
+	{SUDOER, "cn", su->sudoer}
+	,
+	{SUDOER, "sudoUser", su->sudoer}
+	,
+	{SUDOER, "sudoHost", "ALL"}
+	,
+	{SUDOER, "sudoCommand", "dummy"}
+	,
+	{SUDOER, "sudoOption", "dummy"}
+	,
+	{0, NULL, NULL}
+    };
     i = 0;
-  //  a = 0;
+    //  a = 0;
     while (sudo_attr[i].value != NULL) {
-        i++;
+	i++;
     }
     i = i + 1;
 
@@ -123,19 +129,20 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	    fprintf(stderr, "ERROR! Not enough memory\n");
 	    exit(ENOMEM);
 	}
-        sudoadd[i]->mod_op = LDAP_MOD_ADD;
-        sudoadd[i]->mod_type = sudo_attr[i].attrib;
-        /* XXX */
-        if (!strcmp(sudoadd[i]->mod_type, "objectClass")) {
-            sudoadd[i]->mod_values = sudo_oc;
-        } else if (!strcmp(sudoadd[i]->mod_type, "sudoCommand")) {
-            sudoadd[i]->mod_values = cmds;
-        } else if (!strcmp(sudoadd[i]->mod_type, "sudoOption")) {
-            sudoadd[i]->mod_values = opts;
-        } else {
-            sudoadd[i]->mod_values = calloc(2, strlen(sudo_attr[i].value) + 1);
-            sudoadd[i]->mod_values[0] = sudo_attr[i].value;
-        }
+	sudoadd[i]->mod_op = LDAP_MOD_ADD;
+	sudoadd[i]->mod_type = sudo_attr[i].attrib;
+	/* XXX */
+	if (!strcmp(sudoadd[i]->mod_type, "objectClass")) {
+	    sudoadd[i]->mod_values = sudo_oc;
+	} else if (!strcmp(sudoadd[i]->mod_type, "sudoCommand")) {
+	    sudoadd[i]->mod_values = cmds;
+	} else if (!strcmp(sudoadd[i]->mod_type, "sudoOption")) {
+	    sudoadd[i]->mod_values = opts;
+	} else {
+	    sudoadd[i]->mod_values =
+		calloc(2, strlen(sudo_attr[i].value) + 1);
+	    sudoadd[i]->mod_values[0] = sudo_attr[i].value;
+	}
     }
     sudoadd[i] = NULL;
 

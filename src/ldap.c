@@ -381,7 +381,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     char *mbx = NULL;
     char *addr = NULL;
     char *host = NULL;
-#endif    /* QMAIL */
+#endif				/* QMAIL */
     char *user_dn = NULL;
     char *group_dn = NULL;
     char *filter = NULL;
@@ -484,11 +484,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	gidnum = strdup(vals[0]->bv_val);
     }
     ldap_value_free_len(vals);
-/*
-    if (ber != NULL) {
-	ber_free(ber, 0);
-    }
-*/
     ldap_msgfree(msg);
 
     char *user_oc[] = {
@@ -516,7 +511,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     if (mdata.shell == NULL) {
 	mdata.shell = strdup("/bin/sh");
     }
-    mygecos = realloc(mygecos, (GC_LEN + 3)); 
+    mygecos = realloc(mygecos, (GC_LEN + 3));
     if (!snprintf
 	(mygecos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
 	return 1;
@@ -541,44 +536,44 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
      * from user_attr[1] when we fill up the LDAPMod struct
      */
     uxds_attr_t user_attr[] = {
-	{ USER, "dummy", "dummy" },	/* dummy values */
-	{ USER, "cn", mdata.user },
-	{ USER, "givenName", mdata.firstname },
-	{ USER, "sn", mdata.lastname },
-	{ USER, "uid", mdata.user },
-	{ USER, "mail", center(cbuf, mdata.user, AT_EMAIL) },
-	{ USER, "gecos", mygecos },
-	{ USER, "uidNumber", mdata.uidnum },
-	{ USER, "gidNumber", gidnum },
-	{ USER, "homeDirectory", "/home/dumbtest" },
-	{ USER, "loginShell", "/bin/sh" },
+	{USER, "dummy", "dummy"},	/* dummy values */
+	{USER, "cn", mdata.user},
+	{USER, "givenName", mdata.firstname},
+	{USER, "sn", mdata.lastname},
+	{USER, "uid", mdata.user},
+	{USER, "mail", center(cbuf, mdata.user, AT_EMAIL)},
+	{USER, "gecos", mygecos},
+	{USER, "uidNumber", mdata.uidnum},
+	{USER, "gidNumber", gidnum},
+	{USER, "homeDirectory", "/home/dumbtest"},
+	{USER, "loginShell", "/bin/sh"},
 #ifdef HDB_LDAP
-	{ USER, "userPassword", center(cbuf, "{K5KEY}", principal) },
+	{USER, "userPassword", center(cbuf, "{K5KEY}", principal)},
 #else
-	{ USER, "userPassword", "DUMMYIKNOWWILLCEECHANGED" },
+	{USER, "userPassword", "DUMMYIKNOWWILLCEECHANGED"},
 #endif				/* HDB_LDAP */
-	{ USER, "carLicense", "XxXxXxXxXxXxXxXxX" },
+	{USER, "carLicense", "XxXxXxXxXxXxXxXxX"},
 #ifdef QMAIL
-	{ USER, "accountStatus", "active" },
-	{ USER, "mailHost", host },
-	{ USER, "mailMessageStore", addr },
-	{ USER, "mailLocalAddress",
+	{USER, "accountStatus", "active"},
+	{USER, "mailHost", host},
+	{USER, "mailMessageStore", addr},
+	{USER, "mailLocalAddress",
 	 center(cbuf, "/var/qmail/maildirs/", mdata.user)},
-	{ USER, "mailAlternateAddress", addr },
+	{USER, "mailAlternateAddress", addr},
 #endif				/* QMAIL */
 #ifdef HDB_LDAP
-	{ USER, "krb5PrincipalName", principal},
-	{ USER, "krb5MaxLife", "86400" },
-	{ USER, "krb5MaxRenew", "604800" },
-	{ USER, "krb5KDCFlags", "126" },
-	{ USER, "krb5KeyVersionNumber", "0" },
-	{ USER, "krb5PasswordEnd", "20071231235959Z" },
-	{ USER, "krb5Key", "0" },
+	{USER, "krb5PrincipalName", principal},
+	{USER, "krb5MaxLife", "86400"},
+	{USER, "krb5MaxRenew", "604800"},
+	{USER, "krb5KDCFlags", "126"},
+	{USER, "krb5KeyVersionNumber", "0"},
+	{USER, "krb5PasswordEnd", "20071231235959Z"},
+	{USER, "krb5Key", "0"},
 #endif				/* HDB_LDAP */
 #ifdef SSH_LPK
-	{ USER, "sshPublicKey", "0" },
+	{USER, "sshPublicKey", "0"},
 #endif				/* SSH_LPK */
-	{ 0, NULL, NULL }
+	{0, NULL, NULL}
     };
 
   groupstart:
@@ -608,7 +603,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		calloc(2, strlen(user_attr[i].value) + 1);
 	    useradd[i]->mod_values[0] = user_attr[i].value;
 	}
-        useradd[i + 1] = NULL;
+	useradd[i + 1] = NULL;
 
 	if (auth.debug)
 	    fprintf(stderr, "user=%s, group=%s, uid=%s, gecos=%s\n",
@@ -700,17 +695,17 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	};
 
 	uxds_attr_t group_attr[] = {
-	    { GROUP, "dummy", "dummy" },	/* Dummy Value */
-	    { GROUP, "cn", mdata.group },
-	    { GROUP, "gidNumber", mdata.gidnum },
-	    { GROUP, "description", mdata.comment },
-	    { 0, NULL, NULL }
+	    {GROUP, "dummy", "dummy"},	/* Dummy Value */
+	    {GROUP, "cn", mdata.group},
+	    {GROUP, "gidNumber", mdata.gidnum},
+	    {GROUP, "description", mdata.comment},
+	    {0, NULL, NULL}
 	};
-        int attrs;
-        if (mems)
+	int attrs;
+	if (mems)
 	    attrs = i + 4;
-        else
-            attrs = 4;
+	else
+	    attrs = 4;
 
 	LDAPMod **groupadd;
 	groupadd = (LDAPMod **) calloc(a, sizeof(LDAPMod *));
@@ -737,8 +732,8 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    groupadd[i]->mod_op = LDAP_MOD_ADD;
 	    groupadd[i]->mod_type = "memberUid";
 	    groupadd[i]->mod_values = mems;
-        }
-        groupadd[i + 1] = NULL;
+	}
+	groupadd[i + 1] = NULL;
 
 	if (auth.basedn == NULL) {
 	    auth.basedn = UXDS_POSIX_OU;
@@ -776,10 +771,10 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		free(groupadd[i]);
 	    }
 	}
-        if (mems) {
-           free(groupadd);
-           free(mems);
-        }
+	if (mems) {
+	    free(groupadd);
+	    free(mems);
+	}
 
     }
 
@@ -1023,27 +1018,27 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     char *host = NULL;
     char *addr = NULL;
     if (mdata.mhost != NULL) {
-        host = strdup(mdata.mhost);
+	host = strdup(mdata.mhost);
     }
     if (mdata.altaddr != NULL) {
-        addr = strdup(mdata.altaddr);
+	addr = strdup(mdata.altaddr);
     }
     char *_mailhost[] = { host, NULL };
     char *_mailalternateaddress[] = { addr, NULL };
 #endif
     uxds_attr_t moduser_attr[] = {
-        { USER, "homeDirectory", mdata.homes },
-        { USER, "gecos", mygecos },
-        { USER, "givenName", mdata.firstname },
-        { USER, "sn", mdata.lastname },
-        { USER, "loginShell", mdata.shell },
-        { USER, "uidNumber", mdata.uidnum },
-        { USER, "gidNumber", mdata.gidnum },
+	{USER, "homeDirectory", mdata.homes},
+	{USER, "gecos", mygecos},
+	{USER, "givenName", mdata.firstname},
+	{USER, "sn", mdata.lastname},
+	{USER, "loginShell", mdata.shell},
+	{USER, "uidNumber", mdata.uidnum},
+	{USER, "gidNumber", mdata.gidnum},
 #ifdef QMAIL
-        { USER, "mailHost", host },
-        { USER, "mailAlternateAddress", addr },
-#endif /* QMAIL */
-        { 0, NULL, NULL }
+	{USER, "mailHost", host},
+	{USER, "mailAlternateAddress", addr},
+#endif				/* QMAIL */
+	{0, NULL, NULL}
     };
 #ifdef QMAIL
     char *host = NULL;
@@ -1059,15 +1054,15 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #endif
   groupstart:
     if (pxtype == USER) {
-        i = 0;
-        int n = 0;
-        for (i = 0; moduser_attr[i].attrib != NULL; i++) {
-            if (moduser_attr[i].value != NULL) {
-               n++;
-            }
-        }
-        n = n + 1;
-         
+	i = 0;
+	int n = 0;
+	for (i = 0; moduser_attr[i].attrib != NULL; i++) {
+	    if (moduser_attr[i].value != NULL) {
+		n++;
+	    }
+	}
+	n = n + 1;
+
 	LDAPMod **usermod;
 	usermod = (LDAPMod **) calloc(n, sizeof(LDAPMod *));
 	for (i = 0; i < n; i++) {
@@ -1076,25 +1071,26 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		fprintf(stderr, "ERROR! Not enough memory\n");
 		exit(ENOMEM);
 	    }
-        }
-        n = 0;
-        for (i = 0; moduser_attr[i].attrib != NULL; i++) {
-           if (moduser_attr[i].value != NULL) {
-               usermod[n]->mod_op = LDAP_MOD_REPLACE;
-               usermod[n]->mod_type = moduser_attr[i].attrib;
-               usermod[n]->mod_values = calloc(2, strlen(moduser_attr[i].value) + 1);
-               usermod[n]->mod_values[0] = moduser_attr[i].value;
-               n++;
-           } 
-        }
-        usermod[n] = NULL;
-        
+	}
+	n = 0;
+	for (i = 0; moduser_attr[i].attrib != NULL; i++) {
+	    if (moduser_attr[i].value != NULL) {
+		usermod[n]->mod_op = LDAP_MOD_REPLACE;
+		usermod[n]->mod_type = moduser_attr[i].attrib;
+		usermod[n]->mod_values =
+		    calloc(2, strlen(moduser_attr[i].value) + 1);
+		usermod[n]->mod_values[0] = moduser_attr[i].value;
+		n++;
+	    }
+	}
+	usermod[n] = NULL;
+
 #ifdef HAVE_LDAP_SASL_GSSAPI
 	if ((mdata.cpw == 1) || (mdata.exp == 1)) {
 	    goto skipmod;
 	}
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
-        if (!usermod[0]) { 
+	if (!usermod[0]) {
 	    fprintf(stderr,
 		    "FATAL ERROR.... no attributes came through for modification!\n");
 	    return 1;
@@ -1149,7 +1145,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     if (pxtype == GROUP) {
 	char **mems = NULL;
 	i = 0;
-        int num = 0;
+	int num = 0;
 	if (a == 6) {
 	    mems = calloc(1, strlen(mdata.member) + 1);
 	    mems[i] = strtok(mdata.member, ",");
@@ -1159,21 +1155,23 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    }
 	    mems[i] = NULL;
 	}
-        if (mems)
-           num = num + 1;
-        
-        uxds_attr_t modgroup_attr[] = {
-            { GROUP, "gidNumber", mdata.gidnum },
-            { GROUP, "description", mdata.comment },
-            { 0, NULL, NULL }
-        };
+	if (mems)
+	    num = num + 1;
 
-        for (i = 0; modgroup_attr[i].attrib != NULL; i++) {
-            if (modgroup_attr[i].value != NULL) {
-               num++;
-            }
-        }
-        num = num + 1;
+	uxds_attr_t modgroup_attr[] = {
+	    {GROUP, "gidNumber", mdata.gidnum}
+	    ,
+	    {GROUP, "description", mdata.comment}
+	    ,
+	    {0, NULL, NULL}
+	};
+
+	for (i = 0; modgroup_attr[i].attrib != NULL; i++) {
+	    if (modgroup_attr[i].value != NULL) {
+		num++;
+	    }
+	}
+	num = num + 1;
 
 	LDAPMod **groupmod;
 	groupmod = (LDAPMod **) calloc(num, sizeof(LDAPMod *));
@@ -1184,28 +1182,29 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		exit(ENOMEM);
 	    }
 	}
-        num = 0;
-        for (i = 0; modgroup_attr[i].attrib != NULL; i++) {
-            if (modgroup_attr[i].value != NULL) {
-                groupmod[num]->mod_op = LDAP_MOD_REPLACE;
-                groupmod[num]->mod_type = modgroup_attr[i].attrib;
-                groupmod[num]->mod_values = calloc(2, strlen(modgroup_attr[i].value) + 1);
-                groupmod[num]->mod_values[0] = modgroup_attr[i].value;
-                num++;
-            }
-        }
-        if (mems) {
-            if (mdata.membit == 0)
-                groupmod[num]->mod_op = LDAP_MOD_ADD;
-            else if (mdata.membit == 1)
-                groupmod[num]->mod_op = LDAP_MOD_DELETE;
-            groupmod[num]->mod_type = "memberUid";
-            groupmod[num]->mod_values = mems;
-            num++;
-        }
-        groupmod[num] = NULL;
+	num = 0;
+	for (i = 0; modgroup_attr[i].attrib != NULL; i++) {
+	    if (modgroup_attr[i].value != NULL) {
+		groupmod[num]->mod_op = LDAP_MOD_REPLACE;
+		groupmod[num]->mod_type = modgroup_attr[i].attrib;
+		groupmod[num]->mod_values =
+		    calloc(2, strlen(modgroup_attr[i].value) + 1);
+		groupmod[num]->mod_values[0] = modgroup_attr[i].value;
+		num++;
+	    }
+	}
+	if (mems) {
+	    if (mdata.membit == 0)
+		groupmod[num]->mod_op = LDAP_MOD_ADD;
+	    else if (mdata.membit == 1)
+		groupmod[num]->mod_op = LDAP_MOD_DELETE;
+	    groupmod[num]->mod_type = "memberUid";
+	    groupmod[num]->mod_values = mems;
+	    num++;
+	}
+	groupmod[num] = NULL;
 
-        if (!groupmod[0]) {	
+	if (!groupmod[0]) {
 	    fprintf(stderr,
 		    "FATAL ERROR.... no attributes came through for modification!\n");
 	    return 1;
@@ -1238,7 +1237,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	}
 	if (mems) {
 	    free(mems);
-            free(groupmod);
+	    free(groupmod);
 	}
 
 	return 0;
@@ -1306,24 +1305,23 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	fprintf(stderr, "adding memberUid FAILED\n");
     }
     /* change gidNumber & gecos for user */
-//    char *_gidN[] = { mdata.gidnum, NULL };
-//    char *_gcos[] = { gcos, NULL };
-
     uxds_attr_t gidmod_attr[] = {
-        { USER, "gidNumber", mdata.gidnum },
-        { USER, "gecos", gcos },
-        { 0, NULL, NULL }
+	{USER, "gidNumber", mdata.gidnum}
+	,
+	{USER, "gecos", gcos}
+	,
+	{0, NULL, NULL}
     };
 
     LDAPMod **gidmod;
-
     gidmod = (LDAPMod **) calloc(3, sizeof(LDAPMod *));
     for (i = 0; gidmod_attr[i].attrib != NULL; i++) {
-        gidmod[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
-        gidmod[i]->mod_op = LDAP_MOD_REPLACE;
-        gidmod[i]->mod_type = gidmod_attr[i].attrib;
-        gidmod[i]->mod_values = calloc(2, strlen(gidmod_attr[i].value) + 1);
-        gidmod[i]->mod_values[0] = gidmod_attr[i].value;
+	gidmod[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
+	gidmod[i]->mod_op = LDAP_MOD_REPLACE;
+	gidmod[i]->mod_type = gidmod_attr[i].attrib;
+	gidmod[i]->mod_values =
+	    calloc(2, strlen(gidmod_attr[i].value) + 1);
+	gidmod[i]->mod_values[0] = gidmod_attr[i].value;
     }
     gidmod[i] = NULL;
 
