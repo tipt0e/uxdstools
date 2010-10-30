@@ -100,29 +100,22 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
      * is changed to contain a union
      */
     uxds_attr_t sudo_attr[] = {
-	{SUDOER, "objectClass", "dummy"}
-	,
-	{SUDOER, "cn", su->sudoer}
-	,
-	{SUDOER, "sudoUser", su->sudoer}
-	,
-	{SUDOER, "sudoHost", "ALL"}
-	,
-	{SUDOER, "sudoCommand", "dummy"}
-	,
-	{SUDOER, "sudoOption", "dummy"}
-	,
+	{SUDOER, "objectClass", "dummy"},
+	{SUDOER, "cn", su->sudoer},
+	{SUDOER, "sudoUser", su->sudoer},
+	{SUDOER, "sudoHost", "ALL"},
+	{SUDOER, "sudoCommand", "dummy"},
+	{SUDOER, "sudoOption", "dummy"},
 	{0, NULL, NULL}
     };
     i = 0;
-    //  a = 0;
     while (sudo_attr[i].value != NULL) {
 	i++;
     }
     i = i + 1;
 
     LDAPMod **sudoadd;
-    sudoadd = (LDAPMod **) calloc(a, sizeof(LDAPMod *));
+    sudoadd = (LDAPMod **) calloc(i, sizeof(LDAPMod *));
     for (i = 0; sudo_attr[i].value != NULL; i++) {
 	sudoadd[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
 	if (sudoadd[i] == (LDAPMod *) NULL) {
@@ -134,9 +127,11 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	/* XXX */
 	if (!strcmp(sudoadd[i]->mod_type, "objectClass")) {
 	    sudoadd[i]->mod_values = sudo_oc;
-	} else if (!strcmp(sudoadd[i]->mod_type, "sudoCommand")) {
+	} else if (!strcmp(sudoadd[i]->mod_type, "sudoCommand")
+            && (cmds)) {
 	    sudoadd[i]->mod_values = cmds;
-	} else if (!strcmp(sudoadd[i]->mod_type, "sudoOption")) {
+	} else if (!strcmp(sudoadd[i]->mod_type, "sudoOption")
+            && (opts)) {
 	    sudoadd[i]->mod_values = opts;
 	} else {
 	    sudoadd[i]->mod_values =
@@ -298,7 +293,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	opts[i++] = NULL;
 	a++;
     }
-    a++;
+    a = a + 2;
 
     LDAPMod **sudomod;
     sudomod = (LDAPMod **) calloc(a, sizeof(LDAPMod *));
