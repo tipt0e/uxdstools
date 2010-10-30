@@ -310,7 +310,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	if ((dn = ldap_get_dn(ld, entry)) != NULL) {
 	    if (accttype == NULL)
 		accttype = "Your account";
-	    fprintf(stderr, "%s matched DN: %s\n\n", accttype, dn);
+	    fprintf(stderr, "%s matched DN: %s\n", accttype, dn);
 	    if (auth.ldif != NULL) {
 		fp = fopen(auth.ldif, "w");
 		file_chkerr(fp);
@@ -1271,7 +1271,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     /* get out present DN */
     if ((dn = ldap_get_dn(ld, entry)) != NULL) {
 	if (auth.debug)
-	    fprintf(stderr, "Matched DN: %s\n\n", dn);
+	    fprintf(stderr, "Matched DN: %s\n", dn);
 	old_dn = strdup(dn);
 	if (auth.debug)
 	    fprintf(stderr, "MODRDN using old DN:%s\n", old_dn);
@@ -1306,22 +1306,26 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	fprintf(stderr, "adding memberUid FAILED\n");
     }
     /* change gidNumber & gecos for user */
-    char *_gidN[] = { mdata.gidnum, NULL };
-    char *_gcos[] = { gcos, NULL };
+//    char *_gidN[] = { mdata.gidnum, NULL };
+//    char *_gcos[] = { gcos, NULL };
+
+    uxds_attr_t gidmod_attr[] = {
+        { USER, "gidNumber", mdata.gidnum },
+        { USER, "gecos", gcos },
+        { 0, NULL, NULL }
+    };
 
     LDAPMod **gidmod;
 
     gidmod = (LDAPMod **) calloc(3, sizeof(LDAPMod *));
-    gidmod[0] = (LDAPMod *) malloc(sizeof(LDAPMod));
-    gidmod[1] = (LDAPMod *) malloc(sizeof(LDAPMod));
-
-    gidmod[0]->mod_op = LDAP_MOD_REPLACE;
-    gidmod[0]->mod_type = "gidNumber";
-    gidmod[0]->mod_values = _gidN;
-    gidmod[1]->mod_op = LDAP_MOD_REPLACE;
-    gidmod[1]->mod_type = "gecos";
-    gidmod[1]->mod_values = _gcos;
-    gidmod[2] = NULL;
+    for (i = 0; gidmod_attr[i].attrib != NULL; i++) {
+        gidmod[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
+        gidmod[i]->mod_op = LDAP_MOD_REPLACE;
+        gidmod[i]->mod_type = gidmod_attr[i].attrib;
+        gidmod[i]->mod_values = calloc(2, strlen(gidmod_attr[i].value) + 1);
+        gidmod[i]->mod_values[0] = gidmod_attr[i].value;
+    }
+    gidmod[i] = NULL;
 
     mod_dn = center(fbuf, center(fbuf, new_rdn, ","), mod_dn);
     if (auth.debug)
