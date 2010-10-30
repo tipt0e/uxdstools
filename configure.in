@@ -153,7 +153,7 @@ AC_FUNC_MALLOC
 AC_CHECK_FUNCS(putenv strncasecmp strstr ldap_initialize ldap_err2string ldap_set_option ldap_sasl_bind_s ldap_search_ext_s ldap_first_entry ldap_get_dn ldap_memfree ldap_first_attribute ldap_next_attribute ldap_get_values_len ldap_value_free_len ldap_msgfree ldap_add_ext_s ldap_delete_ext_s ldap_modify_ext_s ldap_unbind_ext_s)
 
 if test "$SASL" = "yes"; then
-    AC_CHECK_FUNCS(ldap_sasl_interactive_bind_s sasl_client_init sasl_done)
+    AC_CHECK_FUNCS(ldap_sasl_interactive_bind_s)
 fi
 
 if test "$GSSAPI" = "yes"; then
