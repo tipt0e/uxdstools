@@ -702,6 +702,8 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    attrs = i + 4;
 	else
 	    attrs = 4;
+        
+        attrs = attrs + 1;
 
 	LDAPMod **groupadd;
 	groupadd = (LDAPMod **) calloc(attrs, sizeof(LDAPMod *));
