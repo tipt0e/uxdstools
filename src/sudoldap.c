@@ -147,10 +147,12 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     if (auth.basedn == NULL) {
 	auth.basedn = UXDS_POSIX_OU;
     }
-    su_dn =
-	center(cbuf,
-	       center(cbuf, center(cbuf, "cn=", su->sudoer),
-		      ",ou=sudoers,"), auth.basedn);
+    /* 16 is len of "cn=" + ",ou=sudoers," + 1 for null byte */
+    su_dn = calloc(1, strlen(su->sudoer) + strlen(auth.basedn) + 16);
+    if (!snprintf(su_dn, strlen(su->sudoer) + strlen(auth.basedn) + 16,
+            "%s%s%s%s", "cn=", su->sudoer, ",ou=sudoers,", auth.basedn))
+        return 1;
+
     fprintf(stderr, "DN is %s\n", su_dn);
     if (ldap_add_ext_s(ld, su_dn, sudoadd, NULL, NULL) != LDAP_SUCCESS) {
 	fprintf(stderr, "Attempted DN: %s, len %lu\n", su_dn,
@@ -175,6 +177,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	    free(sudoadd[i]);
 	}
     }
+    free(su_dn);
 
     return 0;
 }
@@ -239,7 +242,6 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 
     int c;
     char *su_dn;
-    char *cbuf = NULL;
     char **cmds = NULL;
     char **opts = NULL;
     char *filter = (char *) calloc(1, (SU_LEN + 1));
@@ -304,7 +306,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	sudomod[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
 	if (su->tool == DEL) {
 	    sudomod[i]->mod_op = LDAP_MOD_DELETE;
-	} else {
+        } else {
 	    sudomod[i]->mod_op = LDAP_MOD_ADD;
 	}
 	if (sudomod[i] == (LDAPMod *) NULL) {
@@ -330,10 +332,10 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     if (auth.basedn == NULL) {
 	auth.basedn = strdup(UXDS_POSIX_OU);
     }
-    su_dn =
-	center(cbuf,
-	       center(cbuf, center(cbuf, "cn=", su->sudoer),
-		      ",ou=sudoers,"), auth.basedn);
+    su_dn = calloc(1, strlen(su->sudoer) + strlen(auth.basedn) + 16);
+    if (!snprintf(su_dn, strlen(su->sudoer) + strlen(auth.basedn) + 16,
+            "%s%s%s%s", "cn=", su->sudoer, ",ou=sudoers,", auth.basedn)) 
+        return 1;
 
     if (ldap_modify_ext_s(ld, su_dn, sudomod, NULL, NULL) != LDAP_SUCCESS) {
 	fprintf(stdout, "Attempted DN: %s, len %lu\n", su_dn,
@@ -355,6 +357,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	    free(sudomod[i]);
 	}
     }
+    free(su_dn);
 
     return 0;
 }
