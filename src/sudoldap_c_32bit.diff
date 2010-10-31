@@ -1,5 +1,5 @@
---- /vicepa/git/uxdstools.git/src/sudoldap.c	2010-10-30 15:18:36.908279011 -0700
-+++ /vicepa/git/uxdstools.git/src/sudoldap32.c	2010-10-30 15:18:59.831621141 -0700
+--- /vicepa/git/uxdstools.git/src/sudoldap.c	2010-10-30 23:43:37.742049593 -0700
++++ /vicepa/git/uxdstools.git/src/sudoldap32.c	2010-10-30 23:43:59.461505700 -0700
 @@ -40,7 +40,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxd
  	    return 1;
      }
@@ -9,7 +9,7 @@
      if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
  			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
  	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-@@ -150,7 +150,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxd
+@@ -153,7 +153,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxd
  		      ",ou=sudoers,"), auth.basedn);
      fprintf(stderr, "DN is %s\n", su_dn);
      if (ldap_add_ext_s(ld, su_dn, sudoadd, NULL, NULL) != LDAP_SUCCESS) {
@@ -18,7 +18,7 @@
  		strlen(su_dn));
  #ifdef TOOL_LOG
  	log_event(su_dn, SUDOER, ADD, "attempt FAILED");
-@@ -186,7 +186,7 @@ int uxds_sudo_del(uxds_authz_t auth, uxd
+@@ -189,7 +189,7 @@ int uxds_sudo_del(uxds_authz_t auth, uxd
      if (!snprintf(filter, SU_LEN, SUDOUSER, su->sudoer))
  	return 1;
      if (auth.debug)
@@ -27,7 +27,7 @@
      if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
  			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
  	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-@@ -244,7 +244,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxd
+@@ -247,7 +247,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxd
      if (!snprintf(filter, SU_LEN, SUDOUSER, su->sudoer))
  	return 1;
      if (auth.debug)
@@ -36,7 +36,7 @@
      if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
  			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
  	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-@@ -333,7 +333,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxd
+@@ -336,7 +336,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxd
  		      ",ou=sudoers,"), auth.basedn);
  
      if (ldap_modify_ext_s(ld, su_dn, sudomod, NULL, NULL) != LDAP_SUCCESS) {

@@ -137,6 +137,9 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	    sudoadd[i]->mod_values =
 		calloc(2, strlen(sudo_attr[i].value) + 1);
 	    sudoadd[i]->mod_values[0] = sudo_attr[i].value;
+            if (!strcmp(sudoadd[i]->mod_values[0], "dummy")) {
+                break; /* XXX foe sho */
+            }
 	}
     }
     sudoadd[i] = NULL;
