@@ -541,7 +541,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	{USER, "gecos", mygecos},
 	{USER, "uidNumber", mdata.uidnum},
 	{USER, "gidNumber", gidnum},
-	{USER, "homeDirectory", "/home/dumbtest"},
+	{USER, "homeDirectory", mdata.homes},
 	{USER, "loginShell", "/bin/sh"},
 #ifdef HDB_LDAP
 	{USER, "userPassword", center(cbuf, "{K5KEY}", principal)},
