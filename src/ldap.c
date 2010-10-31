@@ -542,7 +542,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	{USER, "uidNumber", mdata.uidnum},
 	{USER, "gidNumber", gidnum},
 	{USER, "homeDirectory", mdata.homes},
-	{USER, "loginShell", "/bin/sh"},
+	{USER, "loginShell", mdata.shell},
 #ifdef HDB_LDAP
 	{USER, "userPassword", center(cbuf, "{K5KEY}", principal)},
 #else
