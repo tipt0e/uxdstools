@@ -731,7 +731,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    groupadd[i]->mod_type = "memberUid";
 	    groupadd[i]->mod_values = mems;
 	}
-	groupadd[i + 1] = NULL;
+	groupadd[i] = NULL;
 
 	if (auth.basedn == NULL) {
 	    auth.basedn = UXDS_POSIX_OU;
@@ -1047,8 +1047,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     if (mdata.altaddr != NULL) {
 	addr = strdup(mdata.altaddr);
     }
-    char *_mailhost[] = { host, NULL };
-    char *_mailalternateaddress[] = { addr, NULL };
 #endif
   groupstart:
     if (pxtype == USER) {
@@ -1304,10 +1302,8 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     }
     /* change gidNumber & gecos for user */
     uxds_attr_t gidmod_attr[] = {
-	{USER, "gidNumber", mdata.gidnum}
-	,
-	{USER, "gecos", gcos}
-	,
+	{USER, "gidNumber", mdata.gidnum},
+	{USER, "gecos", gcos},
 	{0, NULL, NULL}
     };
 
