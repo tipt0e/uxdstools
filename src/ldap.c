@@ -730,6 +730,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    groupadd[i]->mod_op = LDAP_MOD_ADD;
 	    groupadd[i]->mod_type = "memberUid";
 	    groupadd[i]->mod_values = mems;
+            i++;
 	}
 	groupadd[i] = NULL;
 
@@ -1155,10 +1156,8 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    num = num + 1;
 
 	uxds_attr_t modgroup_attr[] = {
-	    {GROUP, "gidNumber", mdata.gidnum}
-	    ,
-	    {GROUP, "description", mdata.comment}
-	    ,
+	    {GROUP, "gidNumber", mdata.gidnum},
+	    {GROUP, "description", mdata.comment},
 	    {0, NULL, NULL}
 	};
 
