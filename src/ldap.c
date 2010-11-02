@@ -584,6 +584,10 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	LDAPMod **useradd;
 	useradd = (LDAPMod **) calloc(n, sizeof(LDAPMod *));
 	useradd[0] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
+        if (useradd[0] == (LDAPMod *) NULL) {
+            fprintf(stderr, "ERROR! Not enough memory\n");
+            exit(ENOMEM);
+        }
 	useradd[0]->mod_op = LDAP_MOD_ADD;
 	useradd[0]->mod_type = "objectClass";
 	useradd[0]->mod_values = user_oc;
@@ -591,7 +595,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    useradd[i] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
 	    if (!useradd[i]) {
 		fprintf(stderr, "ERROR! Not enough memory\n");
-		return ENOMEM;
+		exit(ENOMEM);
 	    }
 	    useradd[i]->mod_op = LDAP_MOD_ADD;
 	    useradd[i]->mod_type = user_attr[i].attrib;
@@ -1310,6 +1314,10 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     gidmod = (LDAPMod **) calloc(3, sizeof(LDAPMod *));
     for (i = 0; gidmod_attr[i].attrib != NULL; i++) {
 	gidmod[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
+        if (gidmod[i] == (LDAPMod *) NULL) {
+            fprintf(stderr, "ERROR! Not enough memory\n");
+            exit(ENOMEM);
+        }
 	gidmod[i]->mod_op = LDAP_MOD_REPLACE;
 	gidmod[i]->mod_type = gidmod_attr[i].attrib;
 	gidmod[i]->mod_values =
@@ -1372,7 +1380,10 @@ int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
 
     members = (LDAPMod **) calloc(2, sizeof(LDAPMod *));
     members[0] = (LDAPMod *) malloc(sizeof(LDAPMod));
-
+    if (members[0] == (LDAPMod *) NULL) {
+        fprintf(stderr, "ERROR! Not enough memory\n");
+        exit(ENOMEM);
+    }
     members[0]->mod_op = mtype;
     members[0]->mod_type = "memberUid";
     members[0]->mod_values = _memberuid;
@@ -1446,6 +1457,10 @@ int uxds_user_expire(int type, char *dn, LDAP * ld)
     exp = (LDAPMod **) calloc(e, sizeof(LDAPMod *));
     for (i = 0; i < e; i++) {
 	exp[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
+        if (exp[i] == (LDAPMod *) NULL) {
+            fprintf(stderr, "ERROR! Not enough memory\n");
+            exit(ENOMEM);
+        }
     }
     exp[0]->mod_op = LDAP_MOD_REPLACE;
     exp[0]->mod_type = expiry;
@@ -1499,7 +1514,7 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
 	for (i = 0; i < 9; i++) {
 	    pts_str[i] = (char *) malloc(sizeof(char));
 	    if (pts_str[i] == (char *) NULL) {
-		fprintf(stderr, "malloc ERROR!\n");
+		fprintf(stderr, "ERROR! Not enough memory\n");
 		exit(ENOMEM);
 	    }
 	}
