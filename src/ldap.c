@@ -1026,8 +1026,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     if (mdata.altaddr != NULL) {
 	addr = strdup(mdata.altaddr);
     }
-    char *_mailhost[] = { host, NULL };
-    char *_mailalternateaddress[] = { addr, NULL };
 #endif
     uxds_attr_t moduser_attr[] = {
 	{USER, "homeDirectory", mdata.homes},
