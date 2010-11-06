@@ -1041,16 +1041,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #endif				/* QMAIL */
 	{0, NULL, NULL}
     };
-#ifdef QMAIL
-    char *host = NULL;
-    char *addr = NULL;
-    if (mdata.mhost != NULL) {
-	host = strdup(mdata.mhost);
-    }
-    if (mdata.altaddr != NULL) {
-	addr = strdup(mdata.altaddr);
-    }
-#endif
   groupstart:
     if (pxtype == USER) {
 	i = 0;

@@ -1,5 +1,5 @@
---- /vicepa/git/uxdstools.git/src/ldap.c	2010-11-04 16:59:00.248049805 -0700
-+++ /vicepa/git/uxdstools.git/src/ldap32.c	2010-11-04 17:00:46.800505821 -0700
+--- /vicepa/git/uxdstools.git/src/ldap.c	2010-11-05 21:46:24.257295667 -0700
++++ /vicepa/git/uxdstools.git/src/ldap32.c	2010-11-05 21:47:20.884077434 -0700
 @@ -221,7 +221,7 @@ int uxds_acct_parse(uxds_bind_t bind, ux
  	    kuser = get_krbname(auth, FALSE);
  	    if (auth.debug)
@@ -90,7 +90,7 @@
  		    strlen(vals[0]->bv_val));
  	old_gecos = strdup(vals[0]->bv_val);
      }
-@@ -1096,7 +1096,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
+@@ -1086,7 +1086,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
  	}
  	if (ldap_modify_ext_s(ld, mod_dn, usermod, NULL, NULL) !=
  	    LDAP_SUCCESS) {
