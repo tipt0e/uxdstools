@@ -622,6 +622,11 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		break;
 	    case 'N':
 		i++;
+                if (!argv[i]) {
+                    fprintf(stderr, "[-N] needs <idnum> argument\n");
+                    optmask("<idnum>", atype, opts, c);
+                    exit(EXIT_FAILURE); 
+                }
 		if (atype == SELF) {
 		    fprintf(stderr, "not a PARSING option\n");
 		    exit(EXIT_FAILURE);
