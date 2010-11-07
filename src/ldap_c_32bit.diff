@@ -1,5 +1,5 @@
---- /vicepa/git/uxdstools.git/src/ldap.c	2010-11-05 21:47:35.439875384 -0700
-+++ /vicepa/git/uxdstools.git/src/ldap32.c	2010-11-05 22:07:28.603306223 -0700
+--- /vicepa/git/uxdstools.git/src/ldap.c	2010-11-07 10:34:24.575005797 -0800
++++ /vicepa/git/uxdstools.git/src/ldap32.c	2010-11-07 10:34:45.986398509 -0800
 @@ -221,7 +221,7 @@ int uxds_acct_parse(uxds_bind_t bind, ux
  	    kuser = get_krbname(auth, FALSE);
  	    if (auth.debug)
@@ -45,7 +45,7 @@
  		    strlen(user_dn));
  	    ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
  	    fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
-@@ -814,7 +814,7 @@ int uxds_acct_del(uxds_acct_t pxtype, ux
+@@ -822,7 +822,7 @@ int uxds_acct_del(uxds_acct_t pxtype, ux
  	break;
      }
      if (auth.debug)
@@ -54,7 +54,7 @@
  		strlen(filter));
      if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
  			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
-@@ -930,7 +930,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
+@@ -945,7 +945,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
      }
  
      if (auth.debug)
@@ -63,7 +63,7 @@
      if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
  			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
  	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-@@ -982,7 +982,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
+@@ -997,7 +997,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
  	vals = ldap_get_values_len(ld, entry, "givenName");
  	if (vals[0]->bv_val != NULL) {
  	    if (auth.debug)
@@ -72,7 +72,7 @@
  			vals[0]->bv_val, strlen(vals[0]->bv_val));
  	    mdata.firstname = strdup(vals[0]->bv_val);
  	    ldap_value_free_len(vals);
-@@ -992,7 +992,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
+@@ -1007,7 +1007,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
  	vals = ldap_get_values_len(ld, entry, "sn");
  	if (vals[0]->bv_val != NULL) {
  	    if (auth.debug)
@@ -81,7 +81,7 @@
  			strlen(vals[0]->bv_val));
  	    mdata.lastname = strdup(vals[0]->bv_val);
  	    ldap_value_free_len(vals);
-@@ -1001,7 +1001,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
+@@ -1016,7 +1016,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
      vals = ldap_get_values_len(ld, entry, "gecos");
      if (vals[0]->bv_val != NULL) {
  	if (auth.debug)
@@ -90,7 +90,7 @@
  		    strlen(vals[0]->bv_val));
  	old_gecos = strdup(vals[0]->bv_val);
      }
-@@ -1086,7 +1086,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
+@@ -1101,7 +1101,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
  	}
  	if (ldap_modify_ext_s(ld, mod_dn, usermod, NULL, NULL) !=
  	    LDAP_SUCCESS) {

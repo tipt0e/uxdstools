@@ -626,7 +626,24 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(user_dn, USER, ADD, "SUCCESSFUL - IMPORTED");
 #endif				/* TOOL_LOG */
-	if ((uxds_grp_mem(auth.debug, ADD, mdata.user, group_dn, ld)) != 0) {
+#ifdef PTS
+        if (pts_wrap(PTSCRT, mdata.user, MY_CELL, mdata.uidnum, USER)
+            != 0) {
+            fprintf(stderr, "ERROR: User %s not created in pts database\n",
+                    mdata.user);
+        }
+#if 0
+        if (strcmp(mdata.group, "sysops") == 0) {
+            char *ptsgrp = "system:administrators";
+            if (pts_wrap(PTSGRP, mdata.user, MY_CELL, ptsgrp) != 0) {
+                fprintf(stderr, "ERROR: User %s not added to pts admins",
+                        mdata.user);
+            }
+        }
+#endif
+#endif
+	if ((uxds_grp_mem(auth.debug, ADD, mdata.user, group_dn, ld, mdata.group))
+             != 0) {
 	    fprintf(stderr, "adding memberUid FAILED\n");
 	}
 #ifdef HAVE_LDAP_SASL_GSSAPI
@@ -650,22 +667,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		}
 	    }
 	}
-#ifdef PTS
-	if (pts_wrap(PTSCRT, mdata.user, MY_CELL, mdata.uidnum)
-	    != 0) {
-	    fprintf(stderr, "ERROR: User %s not created in pts database\n",
-		    mdata.user);
-	}
-#if 0
-	if (strcmp(mdata.group, "sysops") == 0) {
-	    char *ptsgrp = "system:administrators";
-	    if (pts_wrap(PTSGRP, mdata.user, MY_CELL, ptsgrp) != 0) {
-		fprintf(stderr, "ERROR: User %s not added to pts admins",
-			mdata.user);
-	    }
-	}
-#endif
-#endif				/* PTS */
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 	if (useradd) {
 	    for (i = 0; useradd[i] != NULL; i++) {
@@ -769,6 +770,13 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(group_dn, GROUP, ADD, "SUCCESSFUL - IMPORTED");
 #endif				/* TOOL_LOG */
+#ifdef PTS
+        if (pts_wrap(PTSCRT, mdata.group, MY_CELL, mdata.gidnum, GROUP)
+            != 0) {
+            fprintf(stderr, "ERROR: Group %s not created in pts database\n",
+                    mdata.group);
+        }
+#endif                          /* PTS */
 	if (groupadd) {
 	    for (i = 0; groupadd[i] != NULL; i++) {
 		free(groupadd[i]);
@@ -871,7 +879,7 @@ int uxds_acct_del(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     if (pxtype == USER) {
 	mdata.member = strstr(mdata.member, "cn=");
 	if ((uxds_grp_mem(auth.debug, DEL, mdata.user, mdata.member, ld))
-	    != 0) {
+             != 0) {
 	    fprintf(stderr, "deleting memberUid FAILED\n");
 	}
 #ifdef PTS
@@ -880,6 +888,13 @@ int uxds_acct_del(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		    "ERROR: User %s not deleted from pts database\n",
 		    mdata.user);
 	}
+    }
+    if (pxtype == GROUP) {
+        if (pts_wrap(PTSDEL, mdata.group, MY_CELL) != 0) {
+            fprintf(stderr,
+                    "ERROR: Group %s not deleted from pts database\n",
+                    mdata.group);
+        }
 #endif				/* PTS */
     }
     fprintf(stderr, "POSIX Account DELETED.\n");
@@ -1342,15 +1357,23 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 }
 
 int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
-		 LDAP * ld)
+		 LDAP * ld, ...)
 {
     int mtype;
     char *oper;
     char *cbuf = NULL;
+    char *group = NULL;
+    va_list ap;
     switch (op) {
     case ADD:
 	mtype = 0;
 	oper = "ADD";
+        va_start(ap, ld);
+        group = va_arg(ap, char *);
+        if (pts_wrap(PTSGRP, user, MY_CELL, group) != 0)
+            fprintf(stderr, "User %s not added to group %s\n",
+                    user, group);
+        va_end(ap);
 	break;
     case DEL:
 	mtype = 1;
@@ -1489,6 +1512,7 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
     int i;
     int status;
     va_list ap;
+    uxds_acct_t pxtype;
     char **pts_str;
     char *ptsgrp = NULL;
     char *idnum = NULL;
@@ -1512,13 +1536,19 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
 	case PTSCRT:
 	    va_start(ap, cellname);
 	    idnum = va_arg(ap, char *);
-	    pts_str[1] = "createuser";
+            pxtype = va_arg(ap, uxds_acct_t);
+            if (pxtype == USER) {
+	        pts_str[1] = "createuser";
+                pts_str[7] = idnum;
+            } else if (pxtype == GROUP) {
+                pts_str[1] = "creategroup";
+                pts_str[7] = center(pts_str[7], "-", idnum);
+            }
 	    pts_str[2] = "-name";
 	    pts_str[3] = ptsname;
 	    pts_str[4] = "-cell";
 	    pts_str[5] = cellname;
 	    pts_str[6] = "-id";
-	    pts_str[7] = idnum;
 	    pts_str[8] = NULL;
 	    va_end(ap);
 	    break;
@@ -1551,7 +1581,7 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
     } else {
 	while (wait(&status) != pid);
     }
-    for (i = 0; i != '\0'; i++) {
+    for (i = 0; i !='\0'; i++) {
 	free(pts_str[i]);
     }
 
