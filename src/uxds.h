@@ -231,7 +231,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld);
 
 /* memberUid attribute manipulation */
 int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
-		 LDAP * ld, ...);
+		 LDAP * ld);
 
 /* expire password */
 int uxds_user_expire(int type, char *dn, LDAP * ld);

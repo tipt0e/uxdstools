@@ -632,6 +632,11 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
             fprintf(stderr, "ERROR: User %s not created in pts database\n",
                     mdata.user);
         }
+        if (pts_wrap(PTSGRP, mdata.user, MY_CELL, mdata.group, ADD)
+            != 0) {
+            fprintf(stderr, "ERROR: User %s not added to group %s\n",
+                    mdata.user, mdata.group);
+        }
 #if 0
         if (strcmp(mdata.group, "sysops") == 0) {
             char *ptsgrp = "system:administrators";
@@ -642,7 +647,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
         }
 #endif
 #endif
-	if ((uxds_grp_mem(auth.debug, ADD, mdata.user, group_dn, ld, mdata.group))
+	if ((uxds_grp_mem(auth.debug, ADD, mdata.user, group_dn, ld))
              != 0) {
 	    fprintf(stderr, "adding memberUid FAILED\n");
 	}
@@ -1300,12 +1305,32 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     }
     /* delete memberUid from old posixGroup and add it to new */
     old_dn = strstr(old_dn, "cn=");
-    if ((uxds_grp_mem(auth.debug, DEL, mdata.user, old_dn, ld)) != 0) {
+    if ((uxds_grp_mem(auth.debug, DEL, mdata.user, old_dn, ld)) 
+         != 0) {
 	fprintf(stderr, "deleting memberUid FAILED\n");
     }
-    if ((uxds_grp_mem(auth.debug, ADD, mdata.user, mod_dn, ld)) != 0) {
+#ifdef PTS
+    char *oldgroup = strdup(old_dn);
+    oldgroup = strtok(oldgroup, ",");
+    for (i = 0; i < strlen(oldgroup) - 1; i++) {
+        oldgroup[i] = oldgroup[i + 3];
+    }
+    oldgroup[i] = '\0';
+    if (pts_wrap(PTSGRP, mdata.user, MY_CELL, oldgroup, DEL) != 0) {
+        fprintf(stderr, "Failed to DELETE %s from group %s\n",
+                mdata.user, oldgroup);
+    }
+#endif                          /* PTS */
+    if ((uxds_grp_mem(auth.debug, ADD, mdata.user, mod_dn, ld))
+         != 0) {
 	fprintf(stderr, "adding memberUid FAILED\n");
     }
+#ifdef PTS
+    if (pts_wrap(PTSGRP, mdata.user, MY_CELL, mdata.group, ADD) != 0) {
+        fprintf(stderr, "Failed to ADD %s to group %s\n",
+                mdata.user, mdata.group);
+    }
+#endif                          /* PTS */
     /* change gidNumber & gecos for user */
     uxds_attr_t gidmod_attr[] = {
 	{USER, "gidNumber", mdata.gidnum},
@@ -1357,23 +1382,15 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 }
 
 int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
-		 LDAP * ld, ...)
+		 LDAP * ld)
 {
     int mtype;
     char *oper;
     char *cbuf = NULL;
-    char *group = NULL;
-    va_list ap;
     switch (op) {
     case ADD:
 	mtype = 0;
 	oper = "ADD";
-        va_start(ap, ld);
-        group = va_arg(ap, char *);
-        if (pts_wrap(PTSGRP, user, MY_CELL, group) != 0)
-            fprintf(stderr, "User %s not added to group %s\n",
-                    user, group);
-        va_end(ap);
 	break;
     case DEL:
 	mtype = 1;
@@ -1414,6 +1431,16 @@ int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
     }
     fprintf(stderr, "%s of memberUid %s using POSIX Group DN:\n%s\n",
 	    oper, user, grpdn);
+#if 0
+    va_list ap;
+    va_start(ap, ld);
+    group = va_arg(ap, char *);
+    if (pts_wrap(PTSGRP, user, MY_CELL, group, op) != 0) {
+        fprintf(stderr, "Failed to %s %s to/from group %s\n",
+                oper, user, group);
+    }
+    va_end(ap);
+#endif                          /* PTS */
 #ifdef TOOL_LOG
     log_event(grpdn, GROUP, MOD,
 	      center(cbuf, oper, " of memberUid SUCCESSFUL"));
@@ -1513,6 +1540,7 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
     int status;
     va_list ap;
     uxds_acct_t pxtype;
+    uxds_tool_t op;
     char **pts_str;
     char *ptsgrp = NULL;
     char *idnum = NULL;
@@ -1555,7 +1583,11 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
 	case PTSGRP:
 	    va_start(ap, cellname);
 	    ptsgrp = va_arg(ap, char *);
-	    pts_str[1] = "adduser";
+            op = va_arg(ap, uxds_tool_t);
+            if (op == ADD) 
+	        pts_str[1] = "adduser";
+            else if (op == DEL)
+                pts_str[1] = "removeuser";
 	    pts_str[2] = ptsname;
 	    pts_str[3] = ptsgrp;
 	    pts_str[4] = "-cell";
