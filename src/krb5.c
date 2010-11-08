@@ -201,9 +201,6 @@ int get_tkts(char *user, char *service, uxds_authz_t auth)
 					   0, 0, NULL,
 					   auth.password->bv_val);
     }
-    /* circumventing krb5_prompter_posix() with getpwd() */
-    krb5_get_init_creds_opt_set_pa_password(context, opt,
-					    auth.password->bv_val, NULL);
 
     /* set up auth */
     error = krb5_get_init_creds_password(context, &cred, target, NULL, NULL,	/* <- krb5_prompter_posix, */
