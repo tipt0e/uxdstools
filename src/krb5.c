@@ -82,15 +82,9 @@ char *get_krbname(uxds_authz_t auth, int parse)
     if (error) {
 	krb5_err(context, 1, error, "krb5_cc_get_principal");
     }
-    if (parse == 0) {
-	error =
-	    krb5_unparse_name_flags(context, creds.client,
-				    KRB5_PRINCIPAL_UNPARSE_NO_REALM, &buf);
-    } else {
-	error =
-	    krb5_unparse_name_flags(context, creds.client,
-				    KRB5_PRINCIPAL_UNPARSE_DISPLAY, &buf);
-    }
+    error =
+        krb5_unparse_name_flags(context, creds.client,
+       			        KRB5_PRINCIPAL_UNPARSE_NO_REALM, &buf);
 
     if (error) {
 	krb5_err(context, 1, error, "krb5_unparse_name_flags");
