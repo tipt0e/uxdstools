@@ -190,7 +190,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
     };
 
     char *filter =
-	(char *) calloc(1, (strlen(SUDOUSER) + strlen(auth.pxacct) + 1));
+	(char *) calloc(1, 128 + strlen(auth.pxacct) + 1);
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *kuser = NULL;
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
@@ -206,13 +206,14 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	switch (bind) {
 	case SIMPLE:
 	    base = strdup(auth.binddn);
-	    filter = "uid=*";
+	    filter = strtok(auth.binddn, ",");
 	    if (auth.debug)
 		fprintf(stderr, "search filter string: %s\n", filter);
 	    break;
 #ifdef HAVE_LDAP_SASL
 	case SASL:
-	    filter = center(fbuf, "uid=", auth.username);
+            if (!filter)
+	        filter = center(fbuf, "uid=", auth.username);
 	    if (auth.debug)
 		fprintf(stderr, "search filter string: %s\n", filter);
 	    break;
@@ -277,7 +278,8 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	return 1;
     }
 
-    free(filter);
+    //if (filter)
+    //    free(filter);
 
     if (auth.debug) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
@@ -523,9 +525,9 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	addr = strdup(mbx);
     }
 #endif				/* QMAIL */
-
+#ifdef HAVE_LDAP_SASL_GSSAPI
     char *principal = center(cbuf, mdata.user, AT_REALM);
-
+#endif				/* HAVE_LDAP_SASL_GSSAPI */
     /*
      * because objectClass is already an array, we have to
      * put dummy values for user_attr[0] so we can start
@@ -1387,7 +1389,6 @@ int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
 {
     int mtype;
     char *oper;
-    char *cbuf = NULL;
     switch (op) {
     case ADD:
 	mtype = 0;
