@@ -1320,6 +1320,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
         fprintf(stderr, "Failed to DELETE %s from group %s\n",
                 mdata.user, oldgroup);
     }
+    free(oldgroup);
 #endif                          /* PTS */
     if ((uxds_grp_mem(auth.debug, ADD, mdata.user, mod_dn, ld))
          != 0) {
