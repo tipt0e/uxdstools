@@ -13,18 +13,14 @@ case $1 in
        DOMAIN=$1
        ;;
     *)
-       DOMAIN=`cat /etc/resolv.conf | grep domain | awk '{print $2}'`
-       SEARCH=`cat /etc/resolv.conf | grep search | awk '{print $2}'`
+	DOMAIN=`grep -a1 realms /etc/krb5.conf | grep '=' | awk '{print $1}' | tr \[:upper:\] \[:lower:\]` 
        ;;
 esac
 
 echo "searching for domain components in /etc/resolv.conf......"
 if [ ${DOMAIN} ]; then
-    echo "found domain -> which is:  ${DOMAIN}"
+    echo "found domain -> which is: ${DOMAIN}"
     DOM=${DOMAIN}
-elif [ ${SEARCH} != NULL ]; then
-   echo "found search -> which is:  ${SEARCH}"
-    DOM=${SEARCH}
 else
     echo "no domain found...."
     exit 1
