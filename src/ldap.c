@@ -194,7 +194,6 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *kuser = NULL;
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
-
     base = NULL;
     if (auth.debug)
 	fprintf(stderr, "account type vars: account = %i\n", auth.acct);
@@ -205,7 +204,6 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
     case SELF:
 	switch (bind) {
 	case SIMPLE:
-	    base = strdup(auth.binddn);
 	    filter = strtok(auth.binddn, ",");
 	    if (auth.debug)
 		fprintf(stderr, "search filter string: %s\n", filter);
@@ -278,8 +276,8 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	return 1;
     }
 
-    //if (filter)
-    //    free(filter);
+    if (filter)
+	free(filter);
 
     if (auth.debug) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
