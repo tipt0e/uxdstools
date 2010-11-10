@@ -178,7 +178,7 @@ typedef struct uxds_data_t {
 
 /* structure for entry into LDAP tree */
 typedef struct uxds_attr_t {
-    uxds_acct_t type;
+    uxds_acct_t type;           /* future use */
     char *attrib;
     char *value;
     /* uxds_attr_t *next_attr */
@@ -200,7 +200,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 /* LDAP authorization handler */
 int uxds_user_authz(int select, uxds_authz_t auth, LDAP * ld);
 
-/* unbind form directory service */
+/* unbind from directory service */
 int uxds_ldap_unbind(LDAP * ld);
 
 /* parse account handler */
