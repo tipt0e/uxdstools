@@ -189,8 +189,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	(char *) 0
     };
 
-    char *filter =
-	(char *) calloc(1, 128 + strlen(auth.pxacct) + 1);
+    char *filter = (char *) calloc(1, 128 + strlen(auth.pxacct) + 1);
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *kuser = NULL;
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
@@ -210,8 +209,8 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	    break;
 #ifdef HAVE_LDAP_SASL
 	case SASL:
-            if (!filter)
-	        filter = center(fbuf, "uid=", auth.username);
+	    if (!filter)
+		filter = center(fbuf, "uid=", auth.username);
 	    if (auth.debug)
 		fprintf(stderr, "search filter string: %s\n", filter);
 	    break;
@@ -458,7 +457,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		      "uid=%s,%s", mdata.user, dn))
 	    return 1;
 	group_dn = strdup(dn);
-
 	ldap_memfree(dn);
     }
     vals = ldap_get_values_len(ld, entry, "description");
@@ -487,7 +485,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	"inetOrgPerson",
 	"organizationalPerson",
 	"posixAccount",
-        "shadowAccount",
+	"shadowAccount",
 #ifdef QMAIL
 	"qmailUser",
 #endif
@@ -527,7 +525,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     char *principal = center(cbuf, mdata.user, AT_REALM);
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
     /*
-     * because objectClass is already an array, we have to
+     * XXX because objectClass is already an array, we 
      * put dummy values for user_attr[0] so we can start
      * from user_attr[1] when we fill up the LDAPMod struct
      */
@@ -578,16 +576,17 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	while (user_attr[i].attrib != NULL) {
 	    i++;
 	}
+	/* XXX Magic #'s */
 	int n;
 	n = i + 1;
 
 	LDAPMod **useradd;
 	useradd = (LDAPMod **) calloc(n, sizeof(LDAPMod *));
 	useradd[0] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
-        if (useradd[0] == (LDAPMod *) NULL) {
-            fprintf(stderr, "ERROR! Not enough memory\n");
-            exit(ENOMEM);
-        }
+	if (useradd[0] == (LDAPMod *) NULL) {
+	    fprintf(stderr, "ERROR! Not enough memory\n");
+	    exit(ENOMEM);
+	}
 	useradd[0]->mod_op = LDAP_MOD_ADD;
 	useradd[0]->mod_type = "objectClass";
 	useradd[0]->mod_values = user_oc;
@@ -627,28 +626,28 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	log_event(user_dn, USER, ADD, "SUCCESSFUL - IMPORTED");
 #endif				/* TOOL_LOG */
 #ifdef PTS
-        if (pts_wrap(PTSCRT, mdata.user, MY_CELL, mdata.uidnum, USER)
-            != 0) {
-            fprintf(stderr, "ERROR: User %s not created in pts database\n",
-                    mdata.user);
-        }
-        if (pts_wrap(PTSGRP, mdata.user, MY_CELL, mdata.group, ADD)
-            != 0) {
-            fprintf(stderr, "ERROR: User %s not added to group %s\n",
-                    mdata.user, mdata.group);
-        }
+	if (pts_wrap(PTSCRT, mdata.user, MY_CELL, mdata.uidnum, USER)
+	    != 0) {
+	    fprintf(stderr, "ERROR: User %s not created in pts database\n",
+		    mdata.user);
+	}
+	if (pts_wrap(PTSGRP, mdata.user, MY_CELL, mdata.group, ADD)
+	    != 0) {
+	    fprintf(stderr, "ERROR: User %s not added to group %s\n",
+		    mdata.user, mdata.group);
+	}
 #if 0
-        if (strcmp(mdata.group, "sysops") == 0) {
-            char *ptsgrp = "system:administrators";
-            if (pts_wrap(PTSGRP, mdata.user, MY_CELL, ptsgrp) != 0) {
-                fprintf(stderr, "ERROR: User %s not added to pts admins",
-                        mdata.user);
-            }
-        }
+	if (strcmp(mdata.group, "sysops") == 0) {
+	    char *ptsgrp = "system:administrators";
+	    if (pts_wrap(PTSGRP, mdata.user, MY_CELL, ptsgrp) != 0) {
+		fprintf(stderr, "ERROR: User %s not added to pts admins",
+			mdata.user);
+	    }
+	}
 #endif
 #endif
 	if ((uxds_grp_mem(auth.debug, ADD, mdata.user, group_dn, ld))
-             != 0) {
+	    != 0) {
 	    fprintf(stderr, "adding memberUid FAILED\n");
 	}
 #ifdef HAVE_LDAP_SASL_GSSAPI
@@ -693,7 +692,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		i++;
 	    }
 	    mems[i] = NULL;
-        }
+	}
 	char *group_oc[] = {
 	    "top",
 	    "posixGroup",
@@ -708,12 +707,13 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    {0, NULL, NULL}
 	};
 	int attrs;
+	/* XXX Magic # (strlen("cn=") + 1) */
 	if (mems)
 	    attrs = i + 4;
 	else
 	    attrs = 4;
-        
-        attrs = attrs + 1;
+
+	attrs = attrs + 1;
 
 	LDAPMod **groupadd;
 	groupadd = (LDAPMod **) calloc(attrs, sizeof(LDAPMod *));
@@ -740,7 +740,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    groupadd[i]->mod_op = LDAP_MOD_ADD;
 	    groupadd[i]->mod_type = "memberUid";
 	    groupadd[i]->mod_values = mems;
-            i++;
+	    i++;
 	}
 	groupadd[i] = NULL;
 
@@ -776,12 +776,13 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	log_event(group_dn, GROUP, ADD, "SUCCESSFUL - IMPORTED");
 #endif				/* TOOL_LOG */
 #ifdef PTS
-        if (pts_wrap(PTSCRT, mdata.group, MY_CELL, mdata.gidnum, GROUP)
-            != 0) {
-            fprintf(stderr, "ERROR: Group %s not created in pts database\n",
-                    mdata.group);
-        }
-#endif                          /* PTS */
+	if (pts_wrap(PTSCRT, mdata.group, MY_CELL, mdata.gidnum, GROUP)
+	    != 0) {
+	    fprintf(stderr,
+		    "ERROR: Group %s not created in pts database\n",
+		    mdata.group);
+	}
+#endif				/* PTS */
 	if (groupadd) {
 	    for (i = 0; groupadd[i] != NULL; i++) {
 		free(groupadd[i]);
@@ -884,7 +885,7 @@ int uxds_acct_del(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     if (pxtype == USER) {
 	mdata.member = strstr(mdata.member, "cn=");
 	if ((uxds_grp_mem(auth.debug, DEL, mdata.user, mdata.member, ld))
-             != 0) {
+	    != 0) {
 	    fprintf(stderr, "deleting memberUid FAILED\n");
 	}
 #ifdef PTS
@@ -895,11 +896,11 @@ int uxds_acct_del(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	}
     }
     if (pxtype == GROUP) {
-        if (pts_wrap(PTSDEL, mdata.group, MY_CELL) != 0) {
-            fprintf(stderr,
-                    "ERROR: Group %s not deleted from pts database\n",
-                    mdata.group);
-        }
+	if (pts_wrap(PTSDEL, mdata.group, MY_CELL) != 0) {
+	    fprintf(stderr,
+		    "ERROR: Group %s not deleted from pts database\n",
+		    mdata.group);
+	}
 #endif				/* PTS */
     }
     fprintf(stderr, "POSIX Account DELETED.\n");
@@ -922,7 +923,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     char *mod_dn = NULL;
     char *old_gecos = NULL;
     char *xgecos = NULL;
-    char *fbuf = NULL;
     char *mygecos = NULL;
     char *filter = NULL;
     char *acct_type = NULL;
@@ -969,8 +969,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	return 1;
     }
 
-    free(filter);
-
     if ((dn = ldap_get_dn(ld, entry)) != NULL) {
 	fprintf(stderr, "%s matched DN: %s\n", acct_type, dn);
 	mod_dn = strdup(dn);
@@ -985,8 +983,16 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	vals = ldap_get_values_len(ld, entry, "description");
 	mdata.comment = strdup(vals[0]->bv_val);
 	ldap_value_free_len(vals);
-	goto modrdn;
+	if (uxds_acct_modrdn
+	    (mdata, mod_dn, filter, auth.debug, entry, msg, ld)) {
+	    fprintf(stderr, "modrdn procedure FAILED...\n");
+	    return 1;
+	}
+	return 0;
     }
+
+    free(filter);
+
     if (pxtype == GROUP) {
 	if (mdata.member != NULL) {
 	    a = 6;
@@ -1246,13 +1252,19 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    free(mems);
 	    free(groupmod);
 	}
-
-	return 0;
     }
-    /* MODRDN operation for POSIX user primary group change */
-  modrdn:;
+    return 0;
+}
+
+/* MODRDN operation for POSIX user primary group change */
+int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
+		     int debug, LDAPMessage * entry, LDAPMessage * msg,
+		     LDAP * ld)
+{
+    char *fbuf = NULL;
     char *old_dn = NULL;
-    filter = (char *) calloc(1, (PA_LEN + 1));
+    char *dn = NULL;
+
     if (!snprintf(filter, PA_LEN, POSIXACCOUNT, mdata.user))
 	return 1;
     if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
@@ -1262,7 +1274,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	return 1;
     }
 
-    if (auth.debug) {
+    if (debug) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	fprintf(stderr, "The number of entries returned was %d\n",
@@ -1276,10 +1288,10 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
     /* get out present DN */
     if ((dn = ldap_get_dn(ld, entry)) != NULL) {
-	if (auth.debug)
+	if (debug)
 	    fprintf(stderr, "Matched DN: %s\n", dn);
 	old_dn = strdup(dn);
-	if (auth.debug)
+	if (debug)
 	    fprintf(stderr, "MODRDN using old DN:%s\n", old_dn);
 	ldap_memfree(dn);
     }
@@ -1299,39 +1311,40 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
 	return 1;
     }
-    if (auth.debug) {
+    if (debug) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
     }
     /* delete memberUid from old posixGroup and add it to new */
     old_dn = strstr(old_dn, "cn=");
-    if ((uxds_grp_mem(auth.debug, DEL, mdata.user, old_dn, ld)) 
-         != 0) {
+    if ((uxds_grp_mem(debug, DEL, mdata.user, old_dn, ld))
+	!= 0) {
 	fprintf(stderr, "deleting memberUid FAILED\n");
     }
 #ifdef PTS
+    int i;
     char *oldgroup = strdup(old_dn);
     oldgroup = strtok(oldgroup, ",");
     for (i = 0; i < strlen(oldgroup) - 1; i++) {
-        oldgroup[i] = oldgroup[i + 3];
+	oldgroup[i] = oldgroup[i + 3];
     }
     oldgroup[i] = '\0';
     if (pts_wrap(PTSGRP, mdata.user, MY_CELL, oldgroup, DEL) != 0) {
-        fprintf(stderr, "Failed to DELETE %s from group %s\n",
-                mdata.user, oldgroup);
+	fprintf(stderr, "Failed to DELETE %s from group %s\n",
+		mdata.user, oldgroup);
     }
     free(oldgroup);
-#endif                          /* PTS */
-    if ((uxds_grp_mem(auth.debug, ADD, mdata.user, mod_dn, ld))
-         != 0) {
+#endif				/* PTS */
+    if ((uxds_grp_mem(debug, ADD, mdata.user, mod_dn, ld))
+	!= 0) {
 	fprintf(stderr, "adding memberUid FAILED\n");
     }
 #ifdef PTS
     if (pts_wrap(PTSGRP, mdata.user, MY_CELL, mdata.group, ADD) != 0) {
-        fprintf(stderr, "Failed to ADD %s to group %s\n",
-                mdata.user, mdata.group);
+	fprintf(stderr, "Failed to ADD %s to group %s\n",
+		mdata.user, mdata.group);
     }
-#endif                          /* PTS */
+#endif				/* PTS */
     /* change gidNumber & gecos for user */
     uxds_attr_t gidmod_attr[] = {
 	{USER, "gidNumber", mdata.gidnum},
@@ -1343,10 +1356,10 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     gidmod = (LDAPMod **) calloc(3, sizeof(LDAPMod *));
     for (i = 0; gidmod_attr[i].attrib != NULL; i++) {
 	gidmod[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
-        if (gidmod[i] == (LDAPMod *) NULL) {
-            fprintf(stderr, "ERROR! Not enough memory\n");
-            exit(ENOMEM);
-        }
+	if (gidmod[i] == (LDAPMod *) NULL) {
+	    fprintf(stderr, "ERROR! Not enough memory\n");
+	    exit(ENOMEM);
+	}
 	gidmod[i]->mod_op = LDAP_MOD_REPLACE;
 	gidmod[i]->mod_type = gidmod_attr[i].attrib;
 	gidmod[i]->mod_values =
@@ -1356,7 +1369,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     gidmod[i] = NULL;
 
     mod_dn = center(fbuf, center(fbuf, new_rdn, ","), mod_dn);
-    if (auth.debug)
+    if (debug)
 	fprintf(stderr, "%s -> new dn\n", mod_dn);
     if (ldap_modify_ext_s(ld, mod_dn, gidmod, NULL, NULL) != LDAP_SUCCESS) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
@@ -1409,8 +1422,8 @@ int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
     members = (LDAPMod **) calloc(2, sizeof(LDAPMod *));
     members[0] = (LDAPMod *) malloc(sizeof(LDAPMod));
     if (members[0] == (LDAPMod *) NULL) {
-        fprintf(stderr, "ERROR! Not enough memory\n");
-        exit(ENOMEM);
+	fprintf(stderr, "ERROR! Not enough memory\n");
+	exit(ENOMEM);
     }
     members[0]->mod_op = mtype;
     members[0]->mod_type = "memberUid";
@@ -1436,11 +1449,11 @@ int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
     va_start(ap, ld);
     group = va_arg(ap, char *);
     if (pts_wrap(PTSGRP, user, MY_CELL, group, op) != 0) {
-        fprintf(stderr, "Failed to %s %s to/from group %s\n",
-                oper, user, group);
+	fprintf(stderr, "Failed to %s %s to/from group %s\n",
+		oper, user, group);
     }
     va_end(ap);
-#endif                          /* PTS */
+#endif				/* PTS */
 #ifdef TOOL_LOG
     log_event(grpdn, GROUP, MOD,
 	      center(cbuf, oper, " of memberUid SUCCESSFUL"));
@@ -1495,10 +1508,10 @@ int uxds_user_expire(int type, char *dn, LDAP * ld)
     exp = (LDAPMod **) calloc(e, sizeof(LDAPMod *));
     for (i = 0; i < e; i++) {
 	exp[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
-        if (exp[i] == (LDAPMod *) NULL) {
-            fprintf(stderr, "ERROR! Not enough memory\n");
-            exit(ENOMEM);
-        }
+	if (exp[i] == (LDAPMod *) NULL) {
+	    fprintf(stderr, "ERROR! Not enough memory\n");
+	    exit(ENOMEM);
+	}
     }
     exp[0]->mod_op = LDAP_MOD_REPLACE;
     exp[0]->mod_type = expiry;
@@ -1564,14 +1577,14 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
 	case PTSCRT:
 	    va_start(ap, cellname);
 	    idnum = va_arg(ap, char *);
-            pxtype = va_arg(ap, uxds_acct_t);
-            if (pxtype == USER) {
-	        pts_str[1] = "createuser";
-                pts_str[7] = idnum;
-            } else if (pxtype == GROUP) {
-                pts_str[1] = "creategroup";
-                pts_str[7] = center(pts_str[7], "-", idnum);
-            }
+	    pxtype = va_arg(ap, uxds_acct_t);
+	    if (pxtype == USER) {
+		pts_str[1] = "createuser";
+		pts_str[7] = idnum;
+	    } else if (pxtype == GROUP) {
+		pts_str[1] = "creategroup";
+		pts_str[7] = center(pts_str[7], "-", idnum);
+	    }
 	    pts_str[2] = "-name";
 	    pts_str[3] = ptsname;
 	    pts_str[4] = "-cell";
@@ -1583,11 +1596,11 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
 	case PTSGRP:
 	    va_start(ap, cellname);
 	    ptsgrp = va_arg(ap, char *);
-            op = va_arg(ap, uxds_tool_t);
-            if (op == ADD) 
-	        pts_str[1] = "adduser";
-            else if (op == DEL)
-                pts_str[1] = "removeuser";
+	    op = va_arg(ap, uxds_tool_t);
+	    if (op == ADD)
+		pts_str[1] = "adduser";
+	    else if (op == DEL)
+		pts_str[1] = "removeuser";
 	    pts_str[2] = ptsname;
 	    pts_str[3] = ptsgrp;
 	    pts_str[4] = "-cell";
@@ -1613,7 +1626,7 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
     } else {
 	while (wait(&status) != pid);
     }
-    for (i = 0; i !='\0'; i++) {
+    for (i = 0; i != '\0'; i++) {
 	free(pts_str[i]);
     }
 

@@ -232,6 +232,11 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld);
 int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
 		 LDAP * ld);
 
+/* user primary group change - modrdn */
+int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter, 
+                     int debug,  LDAPMessage * entry, LDAPMessage * msg,
+                     LDAP * ld);
+
 /* expire password */
 int uxds_user_expire(int type, char *dn, LDAP * ld);
 
