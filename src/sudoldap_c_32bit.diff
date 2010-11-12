@@ -1,5 +1,5 @@
---- /vicepa/git/uxdstools.git/src/sudoldap.c	2010-10-31 08:49:23.847925001 -0700
-+++ /vicepa/git/uxdstools.git/src/sudoldap32.c	2010-11-11 08:50:43.226469564 -0800
+--- /vicepa/git/uxdstools.git/src/sudoldap.c	2010-11-11 16:56:04.228821206 -0800
++++ /vicepa/git/uxdstools.git/src/sudoldap32.c	2010-11-11 16:56:56.156660731 -0800
 @@ -40,7 +40,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxd
  	    return 1;
      }
@@ -18,7 +18,7 @@
  		strlen(su_dn));
  #ifdef TOOL_LOG
  	log_event(su_dn, SUDOER, ADD, "attempt FAILED");
-@@ -192,7 +192,7 @@ int uxds_sudo_del(uxds_authz_t auth, uxd
+@@ -193,7 +193,7 @@ int uxds_sudo_del(uxds_authz_t auth, uxd
      if (!snprintf(filter, SU_LEN, SUDOUSER, su->sudoer))
  	return 1;
      if (auth.debug)
@@ -27,7 +27,7 @@
      if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
  			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
  	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-@@ -249,7 +249,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxd
+@@ -252,7 +252,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxd
      if (!snprintf(filter, SU_LEN, SUDOUSER, su->sudoer))
  	return 1;
      if (auth.debug)
@@ -36,7 +36,7 @@
      if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
  			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
  	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-@@ -338,7 +338,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxd
+@@ -341,7 +341,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxd
          return 1;
  
      if (ldap_modify_ext_s(ld, su_dn, sudomod, NULL, NULL) != LDAP_SUCCESS) {

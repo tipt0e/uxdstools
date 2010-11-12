@@ -320,6 +320,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	    }
 	    ldap_memfree(dn);
 	    if (auth.acct == SELF) {
+		ldap_msgfree(msg);
 
 		return 0;
 	    }
@@ -477,7 +478,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	gidnum = strdup(vals[0]->bv_val);
     }
     ldap_value_free_len(vals);
-    ldap_msgfree(msg);
 
     char *user_oc[] = {
 	"top",
@@ -679,6 +679,8 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    free(useradd);
 	}
 	free(mygecos);
+        if (msg)
+	    ldap_msgfree(msg);
 
 	return 0;
     }
@@ -904,6 +906,8 @@ int uxds_acct_del(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #endif				/* PTS */
     }
     fprintf(stderr, "POSIX Account DELETED.\n");
+    if (msg)
+        ldap_msgfree(msg);
 
     return 0;
 }
@@ -988,6 +992,9 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    fprintf(stderr, "modrdn procedure FAILED...\n");
 	    return 1;
 	}
+        if (msg)
+	    ldap_msgfree(msg);
+
 	return 0;
     }
 
@@ -1391,6 +1398,8 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
 	}
 	free(gidmod);
     }
+    center_free(mod_dn);
+    ldap_msgfree(msg);
 
     return 0;
 }
@@ -1691,6 +1700,7 @@ struct posixid get_next_pxid(LDAP * ld, LDAPMessage * msg,
 	    ldap_memfree(attr);
 	}
     }
+    ldap_msgfree(msg);
     return pxid;
 }
 

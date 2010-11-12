@@ -47,7 +47,6 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	fprintf(stderr, "%s: %s", res, ldap_err2string(rc));
 	return 1;
     }
-
     free(filter);
 
     if (auth.debug) {
@@ -62,6 +61,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 		su->sudoer);
 	return 1;
     }
+
     if ((dn = ldap_get_dn(ld, entry)) != NULL) {
 	fprintf(stderr, "SUDOer matched DN: %s\n", dn);
 	ldap_memfree(dn);
@@ -177,6 +177,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	    free(sudoadd[i]);
 	}
     }
+    ldap_msgfree(msg);
     free(su_dn);
 
     return 0;
@@ -230,6 +231,8 @@ int uxds_sudo_del(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 #ifdef TOOL_LOG
     log_event(dn, SUDOER, DEL, "attempt SUCCESSFUL - DELETED");
 #endif				/* TOOL_LOG */
+    if (msg)
+	ldap_msgfree(msg);
 
     return 0;
 
@@ -358,6 +361,8 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	}
     }
     free(su_dn);
+    if (msg)
+	ldap_msgfree(msg);
 
     return 0;
 }
