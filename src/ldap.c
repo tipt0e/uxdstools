@@ -1317,7 +1317,6 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
 
     ldap_value_free_len(fname);
     ldap_value_free_len(lname);
-    free(gecos);
 
     fprintf(stderr, "MODRDN to new parent DN: %s\n", mod_dn);
     char *new_rdn = center(fbuf, "uid=", mdata.user);
@@ -1410,6 +1409,7 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
 	}
 	free(gidmod);
     }
+    free(gecos);
     center_free(mod_dn);
     ldap_msgfree(msg);
 
