@@ -189,7 +189,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	(char *) 0
     };
 
-    char *filter = (char *) calloc(1, 128 + strlen(auth.pxacct) + 1);
+    char *filter = (char *) calloc(1, strlen(SUDOUSER) + strlen(auth.pxacct) + 1);
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *kuser = NULL;
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
