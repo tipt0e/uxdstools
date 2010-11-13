@@ -1,5 +1,5 @@
---- /vicepa/git/uxdstools.git/src/ldap.c	2010-11-13 12:00:45.988103113 -0800
-+++ /vicepa/git/uxdstools.git/src/ldap32.c	2010-11-13 12:01:38.722607415 -0800
+--- /vicepa/git/uxdstools.git/src/ldap.c	2010-11-13 14:19:56.451000271 -0800
++++ /vicepa/git/uxdstools.git/src/ldap32.c	2010-11-13 14:20:33.209128699 -0800
 @@ -219,7 +219,7 @@ int uxds_acct_parse(uxds_bind_t bind, ux
  	    kuser = get_krbname(auth, FALSE);
  	    if (auth.debug)
@@ -63,34 +63,7 @@
      if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
  			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
  	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-@@ -1013,7 +1013,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
- 	vals = ldap_get_values_len(ld, entry, "givenName");
- 	if (vals[0]->bv_val != NULL) {
- 	    if (auth.debug)
--		fprintf(stderr, "%s : first name, len %lu\n",
-+		fprintf(stderr, "%s : first name, len %i\n",
- 			vals[0]->bv_val, strlen(vals[0]->bv_val));
- 	    mdata.firstname = strdup(vals[0]->bv_val);
- 	    ldap_value_free_len(vals);
-@@ -1023,7 +1023,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
- 	vals = ldap_get_values_len(ld, entry, "sn");
- 	if (vals[0]->bv_val != NULL) {
- 	    if (auth.debug)
--		fprintf(stderr, "%s : sn, len %lu\n", vals[0]->bv_val,
-+		fprintf(stderr, "%s : sn, len %i\n", vals[0]->bv_val,
- 			strlen(vals[0]->bv_val));
- 	    mdata.lastname = strdup(vals[0]->bv_val);
- 	    ldap_value_free_len(vals);
-@@ -1032,7 +1032,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
-     vals = ldap_get_values_len(ld, entry, "gecos");
-     if (vals[0]->bv_val != NULL) {
- 	if (auth.debug)
--	    fprintf(stderr, "%s : gecos, len %lu\n", vals[0]->bv_val,
-+	    fprintf(stderr, "%s : gecos, len %i\n", vals[0]->bv_val,
- 		    strlen(vals[0]->bv_val));
- 	old_gecos = strdup(vals[0]->bv_val);
-     }
-@@ -1117,7 +1117,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
+@@ -1084,7 +1084,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
  	}
  	if (ldap_modify_ext_s(ld, mod_dn, usermod, NULL, NULL) !=
  	    LDAP_SUCCESS) {
@@ -99,3 +72,30 @@
  		    strlen(mod_dn));
  #ifdef TOOL_LOG
  	    log_event(mod_dn, USER, MOD, "FAILED");
+@@ -1707,7 +1707,7 @@ char *build_gecos(uxds_data_t mdata, LDA
+         vals = ldap_get_values_len(ld, entry, "givenName");
+         if (vals[0]->bv_val != NULL) {
+             if (debug)
+-                fprintf(stderr, "%s : first name, len %lu\n",
++                fprintf(stderr, "%s : first name, len %i\n",
+                         vals[0]->bv_val, strlen(vals[0]->bv_val));
+             mdata.firstname = strdup(vals[0]->bv_val);
+             ldap_value_free_len(vals);
+@@ -1717,7 +1717,7 @@ char *build_gecos(uxds_data_t mdata, LDA
+         vals = ldap_get_values_len(ld, entry, "sn");
+         if (vals[0]->bv_val != NULL) {
+             if (debug)
+-                fprintf(stderr, "%s : sn, len %lu\n", vals[0]->bv_val,
++                fprintf(stderr, "%s : sn, len %i\n", vals[0]->bv_val,
+                         strlen(vals[0]->bv_val));
+             mdata.lastname = strdup(vals[0]->bv_val);
+             ldap_value_free_len(vals);
+@@ -1726,7 +1726,7 @@ char *build_gecos(uxds_data_t mdata, LDA
+     vals = ldap_get_values_len(ld, entry, "gecos");
+     if (vals[0]->bv_val != NULL) {
+         if (debug)
+-            fprintf(stderr, "%s : gecos, len %lu\n", vals[0]->bv_val,
++            fprintf(stderr, "%s : gecos, len %i\n", vals[0]->bv_val,
+                     strlen(vals[0]->bv_val));
+         old_gecos = strdup(vals[0]->bv_val);
+     }

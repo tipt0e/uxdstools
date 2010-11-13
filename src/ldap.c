@@ -922,10 +922,10 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     int i;
     char *cbuf = NULL;
     char *dn = NULL;
-    char *role = NULL;
+ //   char *role = NULL;
     char *mod_dn = NULL;
-    char *old_gecos = NULL;
-    char *xgecos = NULL;
+ //   char *old_gecos = NULL;
+ //   char *xgecos = NULL;
     char *mygecos = NULL;
     char *filter = NULL;
     char *acct_type = NULL;
@@ -1004,50 +1004,17 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     if (pxtype == GROUP) {
 	if (mdata.member != NULL) 
 	    havemem = 1;
-	goto groupstart;
+	goto groupstart; /* XXX */
     }
-    if ((mdata.firstname == NULL) && (mdata.lastname == NULL)) {
-	goto gecosnull;
-    }
-    if (mdata.firstname == NULL) {
-	vals = ldap_get_values_len(ld, entry, "givenName");
-	if (vals[0]->bv_val != NULL) {
-	    if (auth.debug)
-		fprintf(stderr, "%s : first name, len %lu\n",
-			vals[0]->bv_val, strlen(vals[0]->bv_val));
-	    mdata.firstname = strdup(vals[0]->bv_val);
-	    ldap_value_free_len(vals);
+    if ((mdata.firstname != NULL) && (mdata.lastname != NULL)) {
+	mygecos = build_gecos(mdata, entry, auth.debug, ld);
+	if (mygecos) {
+	    fprintf(stderr, "FATAL: could not build GECOS attribute\n");
+	    return 1;
 	}
     }
-    if (mdata.lastname == NULL) {
-	vals = ldap_get_values_len(ld, entry, "sn");
-	if (vals[0]->bv_val != NULL) {
-	    if (auth.debug)
-		fprintf(stderr, "%s : sn, len %lu\n", vals[0]->bv_val,
-			strlen(vals[0]->bv_val));
-	    mdata.lastname = strdup(vals[0]->bv_val);
-	    ldap_value_free_len(vals);
-	}
-    }
-    vals = ldap_get_values_len(ld, entry, "gecos");
-    if (vals[0]->bv_val != NULL) {
-	if (auth.debug)
-	    fprintf(stderr, "%s : gecos, len %lu\n", vals[0]->bv_val,
-		    strlen(vals[0]->bv_val));
-	old_gecos = strdup(vals[0]->bv_val);
-    }
-    ldap_value_free_len(vals);
-    ldap_msgfree(msg);
-    xgecos = strdup(old_gecos);
-    role = strtok(xgecos, ";");
-    role = strtok(NULL, ";");
-    mygecos = realloc(mygecos, (GC_LEN + 3));
-    if (!snprintf
-	(mygecos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
-	return 1;
-    if (auth.debug)
-	fprintf(stderr, "gecos is now : %s\n", mygecos);
-  gecosnull:;
+    if (msg)
+	ldap_ldap_msgfree(msg);
 #ifdef QMAIL
     char *host = NULL;
     char *addr = NULL;
@@ -1727,4 +1694,50 @@ char *return_idnum(LDAP * ld, LDAPMessage * entry, char *attr)
     ldap_value_free_len(vals);
 
     return idnum;
+}
+
+char *build_gecos(uxds_data_t mdata, LDAPMessage * entry, int debug,
+		  LDAP * ld)
+{
+    char *role = NULL;
+    char *old_gecos = NULL;
+    char *xgecos = NULL;
+
+    if (mdata.firstname == NULL) {
+        vals = ldap_get_values_len(ld, entry, "givenName");
+        if (vals[0]->bv_val != NULL) {
+            if (debug)
+                fprintf(stderr, "%s : first name, len %lu\n",
+                        vals[0]->bv_val, strlen(vals[0]->bv_val));
+            mdata.firstname = strdup(vals[0]->bv_val);
+            ldap_value_free_len(vals);
+        }
+    }
+    if (mdata.lastname == NULL) {
+        vals = ldap_get_values_len(ld, entry, "sn");
+        if (vals[0]->bv_val != NULL) {
+            if (debug)
+                fprintf(stderr, "%s : sn, len %lu\n", vals[0]->bv_val,
+                        strlen(vals[0]->bv_val));
+            mdata.lastname = strdup(vals[0]->bv_val);
+            ldap_value_free_len(vals);
+        }
+    }
+    vals = ldap_get_values_len(ld, entry, "gecos");
+    if (vals[0]->bv_val != NULL) {
+        if (debug)
+            fprintf(stderr, "%s : gecos, len %lu\n", vals[0]->bv_val,
+                    strlen(vals[0]->bv_val));
+        old_gecos = strdup(vals[0]->bv_val);
+    }
+    ldap_value_free_len(vals);
+    xgecos = strdup(old_gecos);
+    role = strtok(xgecos, ";");
+    role = strtok(NULL, ";");
+    char *mygecos = (char *) calloc(1, (GC_LEN + 3));
+    if (!snprintf
+        (mygecos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
+        return NULL;
+
+    return mygecos;
 }
