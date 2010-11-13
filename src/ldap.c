@@ -1271,6 +1271,9 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
     char *fbuf = NULL;
     char *old_dn = NULL;
     char *dn = NULL;
+    char *gecos;
+    struct berval **fname;
+    struct berval **lname;
 
     if (!snprintf(filter, PA_LEN, POSIXACCOUNT, mdata.user))
 	return 1;
@@ -1302,11 +1305,20 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
 	    fprintf(stderr, "MODRDN using old DN:%s\n", old_dn);
 	ldap_memfree(dn);
     }
-    vals = ldap_get_values_len(ld, entry, "gecos");
-    char *gcos =
-	center(cbuf, center(cbuf, strtok(vals[0]->bv_val, ";"), ";"),
-	       mdata.comment);
-    ldap_value_free_len(vals);
+    fname = ldap_get_values_len(ld, entry, "givenName");
+    lname = ldap_get_values_len(ld, entry, "sn");
+#define MRDN_LEN    (strlen(MY_GECOS) + strlen(fname[0]->bv_val) + \
+		     strlen(lname[0]->bv_val) + strlen(mdata.comment) + 1)
+    gecos = calloc(1, MRDN_LEN);
+    if (!snprintf
+        (gecos, MRDN_LEN, MY_GECOS, fname[0]->bv_val, lname[0]->bv_val,
+         mdata.comment))
+        return 1;
+
+    ldap_value_free_len(fname);
+    ldap_value_free_len(lname);
+    free(gecos);
+
     fprintf(stderr, "MODRDN to new parent DN: %s\n", mod_dn);
     char *new_rdn = center(fbuf, "uid=", mdata.user);
     /* do it */
@@ -1355,7 +1367,7 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
     /* change gidNumber & gecos for user */
     uxds_attr_t gidmod_attr[] = {
 	{USER, "gidNumber", mdata.gidnum},
-	{USER, "gecos", gcos},
+	{USER, "gecos", gecos},
 	{0, NULL, NULL}
     };
 
