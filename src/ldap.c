@@ -1011,7 +1011,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	}
     }
     if (msg)
-	ldap_ldap_msgfree(msg);
+	ldap_msgfree(msg);
 #ifdef QMAIL
     char *host = NULL;
     char *addr = NULL;
