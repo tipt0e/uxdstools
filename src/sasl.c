@@ -17,7 +17,7 @@ int uxds_sasl_interact(LDAP * ld, unsigned flags, void *defaults, void *in)
     while (interact->id != SASL_CB_LIST_END) {
 	if (auth->debug)
 	    fprintf(stderr, "sasl callback is: %lu\n", interact->id);
-	interact->defresult = calloc(1, sizeof(sasl_interact_t));
+//	interact->defresult = calloc(1, sizeof(sasl_interact_t));
 
 	switch (interact->id) {
 	case SASL_CB_GETREALM:
