@@ -920,7 +920,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     static uxds_authz_t auth;
 
     int i;
-    int a = 0;
     char *cbuf = NULL;
     char *dn = NULL;
     char *role = NULL;
@@ -930,6 +929,8 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     char *mygecos = NULL;
     char *filter = NULL;
     char *acct_type = NULL;
+    
+    int havemem = 0;
 
     if (mdata.modrdn == 1) {
 	pxtype = GROUP;
@@ -1001,11 +1002,8 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     free(filter);
 
     if (pxtype == GROUP) {
-	if (mdata.member != NULL) {
-	    a = 6;
-	} else {
-	    a = 5;
-	}
+	if (mdata.member != NULL) 
+	    havemem = 1;
 	goto groupstart;
     }
     if ((mdata.firstname == NULL) && (mdata.lastname == NULL)) {
@@ -1083,7 +1081,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		n++;
 	    }
 	}
-	n = n + 1;
+	n++;
 
 	LDAPMod **usermod;
 	usermod = (LDAPMod **) calloc(n, sizeof(LDAPMod *));
@@ -1168,7 +1166,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	char **mems = NULL;
 	i = 0;
 	int num = 0;
-	if (a == 6) {
+	if (havemem) {
 	    mems = calloc(1, strlen(mdata.member) + 1);
 	    mems[i] = strtok(mdata.member, ",");
 	    i++;
