@@ -922,10 +922,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     int i;
     char *cbuf = NULL;
     char *dn = NULL;
- //   char *role = NULL;
     char *mod_dn = NULL;
- //   char *old_gecos = NULL;
- //   char *xgecos = NULL;
     char *mygecos = NULL;
     char *filter = NULL;
     char *acct_type = NULL;
