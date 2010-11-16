@@ -709,11 +709,12 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    {0, NULL, NULL}
 	};
 	int attrs;
-	/* XXX Magic # (strlen("cn=") + 1) */
+	/* (strlen("cn=") + 1) */
+#define CN_LEN	4
 	if (mems)
-	    attrs = i + 4;
+	    attrs = i + CN_LEN;
 	else
-	    attrs = 4;
+	    attrs = CN_LEN;
 
 	attrs = attrs + 1;
 
