@@ -1004,9 +1004,9 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    havemem = 1;
 	goto groupstart; /* XXX */
     }
-    if ((mdata.firstname != NULL) && (mdata.lastname != NULL)) {
+    if ((mdata.firstname != NULL) || (mdata.lastname != NULL)) {
 	mygecos = build_gecos(mdata, entry, auth.debug, ld);
-	if (mygecos) {
+	if (!mygecos) {
 	    fprintf(stderr, "FATAL: could not build GECOS attribute\n");
 	    return 1;
 	}
@@ -1096,7 +1096,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		mdata.user);
 	fprintf(stdout, "Modified DN: %s\n", mod_dn);
 #ifdef HAVE_LDAP_SASL_GSSAPI
-      skipmod:;
+      skipmod:
 	if (mdata.cpw == 1) {
 	    char *name = get_krbname(auth, FALSE);
 	    putenv(center(cbuf, "KRB5CCNAME=/tmp/kacache_", name));
@@ -1428,16 +1428,6 @@ int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
     }
     fprintf(stderr, "%s of memberUid %s using POSIX Group DN:\n%s\n",
 	    oper, user, grpdn);
-#if 0
-    va_list ap;
-    va_start(ap, ld);
-    group = va_arg(ap, char *);
-    if (pts_wrap(PTSGRP, user, MY_CELL, group, op) != 0) {
-	fprintf(stderr, "Failed to %s %s to/from group %s\n",
-		oper, user, group);
-    }
-    va_end(ap);
-#endif				/* PTS */
 #ifdef TOOL_LOG
     log_event(grpdn, GROUP, MOD,
 	      center(cbuf, oper, " of memberUid SUCCESSFUL"));
@@ -1699,7 +1689,6 @@ char *build_gecos(uxds_data_t mdata, LDAPMessage * entry, int debug,
 {
     char *role = NULL;
     char *old_gecos = NULL;
-    char *xgecos = NULL;
 
     if (mdata.firstname == NULL) {
         vals = ldap_get_values_len(ld, entry, "givenName");
@@ -1729,8 +1718,8 @@ char *build_gecos(uxds_data_t mdata, LDAPMessage * entry, int debug,
         old_gecos = strdup(vals[0]->bv_val);
     }
     ldap_value_free_len(vals);
-    xgecos = strdup(old_gecos);
-    role = strtok(xgecos, ";");
+    role = strdup(old_gecos);
+    role = strtok(role, ";");
     role = strtok(NULL, ";");
     char *mygecos = (char *) calloc(1, (GC_LEN + 3));
     if (!snprintf
