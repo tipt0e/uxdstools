@@ -313,6 +313,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
     auth->basedn = NULL;
     auth->ldif = NULL;
     auth->password = calloc(1, sizeof(struct berval));
+    ERRNOMEM(auth->password);
     auth->password->bv_val = NULL;
     auth->password->bv_len = 0;
     if ((atype == SELF) || (atype == SUDOER)) {
@@ -355,6 +356,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
     }
     if (atype == SUDOER) {
 	mdata->su = calloc(1, sizeof(uxds_sudo_t));
+	ERRNOMEM(mdata->su);
 	mdata->su->sudoer = NULL;
 	mdata->su->cmd = NULL;
 	mdata->su->opt = NULL;

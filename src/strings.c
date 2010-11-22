@@ -79,6 +79,7 @@ char *center(char *buf, char *left, char *right)
     /* Thanks to phant0m for ditching strncat & strncpy here */
     buf =
 	(char *) calloc(1, strlen(left) + strlen(right) + sizeof(char *));
+    ERRNOMEM(buf);
     snprintf(buf, strlen(left) + strlen(right) + 1, "%s%s", left, right);
     buf[strlen(buf) + 1] = '\0';
     return buf;

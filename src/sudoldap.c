@@ -26,6 +26,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     char **opts = NULL;
     char *su_dn;
     char *filter = (char *) calloc(1, (SU_LEN + 1));
+    ERRNOMEM(filter);
 
     if (su->type == USER) {
 	if (!snprintf
@@ -75,6 +76,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	NULL
     };
     cmds = calloc(1, strlen(su->cmd) + 1);
+    ERRNOMEM(cmds);
     a = 5;
     i = 0;
     cmds[i] = strtok(su->cmd, ",");
@@ -86,6 +88,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     if (su->opt != NULL) {
 	a++;
 	opts = calloc(1, strlen(su->opt) + 1);
+	ERRNOMEM(opts);
 	i = 0;
 	opts[i] = strtok(su->opt, ",");
 	i++;
@@ -116,12 +119,10 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 
     LDAPMod **sudoadd;
     sudoadd = (LDAPMod **) calloc(i, sizeof(LDAPMod *));
+    ERRNOMEM(sudoadd);
     for (i = 0; sudo_attr[i].value != NULL; i++) {
 	sudoadd[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
-	if (sudoadd[i] == (LDAPMod *) NULL) {
-	    fprintf(stderr, "ERROR! Not enough memory\n");
-	    exit(ENOMEM);
-	}
+	ERRNOMEM(sudoadd[i]);
 	sudoadd[i]->mod_op = LDAP_MOD_ADD;
 	sudoadd[i]->mod_type = sudo_attr[i].attrib;
 	/* XXX */
@@ -136,6 +137,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	} else {
 	    sudoadd[i]->mod_values =
 		calloc(2, strlen(sudo_attr[i].value) + 1);
+	    ERRNOMEM(sudoadd[i]->mod_values);
 	    sudoadd[i]->mod_values[0] = sudo_attr[i].value;
             if (!strcmp(sudoadd[i]->mod_values[0], "dummy")) {
                 break; /* XXX foe sho */
@@ -149,6 +151,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     }
     /* 16 is len of "cn=" + ",ou=sudoers," + 1 for null byte */
     su_dn = calloc(1, strlen(su->sudoer) + strlen(auth.basedn) + 16);
+    ERRNOMEM(su_dn);
     if (!snprintf(su_dn, strlen(su->sudoer) + strlen(auth.basedn) + 16,
             "%s%s%s%s", "cn=", su->sudoer, ",ou=sudoers,", auth.basedn))
         return 1;
@@ -189,6 +192,7 @@ int uxds_sudo_del(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     LDAPMessage *entry;
 
     char *filter = (char *) calloc(1, (SU_LEN + 1));
+    ERRNOMEM(filter);
 
     if (!snprintf(filter, SU_LEN, SUDOUSER, su->sudoer))
 	return 1;
@@ -248,6 +252,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     char **cmds = NULL;
     char **opts = NULL;
     char *filter = (char *) calloc(1, (SU_LEN + 1));
+    ERRNOMEM(filter);
 
     if (!snprintf(filter, SU_LEN, SUDOUSER, su->sudoer))
 	return 1;
@@ -281,6 +286,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     i = 0;
     if (su->cmd != NULL) {
 	cmds = calloc(1, strlen(su->cmd) + 1);
+	ERRNOMEM(cmds);
 	cmds[i] = strtok(su->cmd, ",");
 	i++;
 	while ((cmds[i] = strtok(NULL, ",")) != NULL) {
@@ -293,6 +299,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     if (su->opt != NULL) {
 	a++;
 	opts = calloc(1, strlen(su->opt) + 1);
+	ERRNOMEM(opts);
 	opts[i] = strtok(su->opt, ",");
 	i++;
 	while ((opts[i] = strtok(NULL, ",")) != NULL) {
@@ -305,16 +312,14 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 
     LDAPMod **sudomod;
     sudomod = (LDAPMod **) calloc(a, sizeof(LDAPMod *));
+    ERRNOMEM(sudomod);
     for (i = 0; i < a; i++) {
 	sudomod[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
+	ERRNOMEM(sudomod[i]);
 	if (su->tool == DEL) {
 	    sudomod[i]->mod_op = LDAP_MOD_DELETE;
         } else {
 	    sudomod[i]->mod_op = LDAP_MOD_ADD;
-	}
-	if (sudomod[i] == (LDAPMod *) NULL) {
-	    fprintf(stderr, "ERROR! Not enough memory\n");
-	    exit(ENOMEM);
 	}
     }
 
@@ -336,6 +341,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	auth.basedn = strdup(UXDS_POSIX_OU);
     }
     su_dn = calloc(1, strlen(su->sudoer) + strlen(auth.basedn) + 16);
+    ERRNOMEM(su_dn);
     if (!snprintf(su_dn, strlen(su->sudoer) + strlen(auth.basedn) + 16,
             "%s%s%s%s", "cn=", su->sudoer, ",ou=sudoers,", auth.basedn)) 
         return 1;

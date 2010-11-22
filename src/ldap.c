@@ -190,6 +190,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
     };
 
     char *filter = (char *) calloc(1, strlen(SUDOUSER) + strlen(auth.pxacct) + 1);
+    ERRNOMEM(filter);
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *kuser = NULL;
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
@@ -542,7 +543,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	{USER, "homeDirectory", mdata.homes},
 	{USER, "loginShell", mdata.shell},
 #ifdef HDB_LDAP
-	{USER, "userPassword", center(cbuf, "{K5KEY}", principal)},
+	{USER, "userPassword", "{K5KEY}"},
 #else
 	{USER, "userPassword", "DUMMYIKNOWWILLCEECHANGED"},
 #endif				/* HDB_LDAP */
@@ -582,24 +583,20 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
 	LDAPMod **useradd;
 	useradd = (LDAPMod **) calloc(n, sizeof(LDAPMod *));
+	ERRNOMEM(useradd);
 	useradd[0] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
-	if (useradd[0] == (LDAPMod *) NULL) {
-	    fprintf(stderr, "ERROR! Not enough memory\n");
-	    exit(ENOMEM);
-	}
+	ERRNOMEM(useradd[0]);
 	useradd[0]->mod_op = LDAP_MOD_ADD;
 	useradd[0]->mod_type = "objectClass";
 	useradd[0]->mod_values = user_oc;
 	for (i = 1; user_attr[i].value != NULL; i++) {
 	    useradd[i] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
-	    if (!useradd[i]) {
-		fprintf(stderr, "ERROR! Not enough memory\n");
-		exit(ENOMEM);
-	    }
+	    ERRNOMEM(useradd[i]);
 	    useradd[i]->mod_op = LDAP_MOD_ADD;
 	    useradd[i]->mod_type = user_attr[i].attrib;
 	    useradd[i]->mod_values =
 		calloc(2, strlen(user_attr[i].value) + 1);
+		ERRNOMEM(useradd[i]->mod_values);
 	    useradd[i]->mod_values[0] = user_attr[i].value;
 	}
 	useradd[i + 1] = NULL;
@@ -688,6 +685,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	i = 0;
 	if (mdata.member) {
 	    mems = calloc(1, strlen(mdata.member) + 1);
+	    ERRNOMEM(mems);
 	    mems[i] = strtok(mdata.member, ",");
 	    i++;
 	    while ((mems[i] = strtok(NULL, ",")) != NULL) {
@@ -720,12 +718,10 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
 	LDAPMod **groupadd;
 	groupadd = (LDAPMod **) calloc(attrs, sizeof(LDAPMod *));
+	ERRNOMEM(groupadd);
 	for (i = 0; i < attrs; i++) {
 	    groupadd[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
-	    if (groupadd[i] == (LDAPMod *) NULL) {
-		fprintf(stderr, "ERROR! Not enough memory\n");
-		exit(ENOMEM);
-	    }
+	    ERRNOMEM(groupadd[i]);
 	}
 	groupadd[0]->mod_op = LDAP_MOD_ADD;
 	groupadd[0]->mod_type = "objectClass";
@@ -736,6 +732,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    groupadd[i]->mod_type = group_attr[i].attrib;
 	    groupadd[i]->mod_values =
 		calloc(2, strlen(group_attr[i].value) + 1);
+	    ERRNOMEM(groupadd[i]->mod_values);
 	    groupadd[i]->mod_values[0] = group_attr[i].value;
 	}
 
@@ -1050,12 +1047,10 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
 	LDAPMod **usermod;
 	usermod = (LDAPMod **) calloc(n, sizeof(LDAPMod *));
+	ERRNOMEM(usermod);
 	for (i = 0; i < n; i++) {
 	    usermod[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
-	    if (usermod[i] == (LDAPMod *) NULL) {
-		fprintf(stderr, "ERROR! Not enough memory\n");
-		exit(ENOMEM);
-	    }
+	    ERRNOMEM(usermod[i]);
 	}
 	n = 0;
 	for (i = 0; moduser_attr[i].attrib != NULL; i++) {
@@ -1064,6 +1059,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		usermod[n]->mod_type = moduser_attr[i].attrib;
 		usermod[n]->mod_values =
 		    calloc(2, strlen(moduser_attr[i].value) + 1);
+		ERRNOMEM(usermod[n]->mod_values);
 		usermod[n]->mod_values[0] = moduser_attr[i].value;
 		n++;
 	    }
@@ -1133,6 +1129,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	int num = 0;
 	if (havemem) {
 	    mems = calloc(1, strlen(mdata.member) + 1);
+	    ERRNOMEM(mems);
 	    mems[i] = strtok(mdata.member, ",");
 	    i++;
 	    while ((mems[i] = strtok(NULL, ",")) != NULL) {
@@ -1158,12 +1155,10 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
 	LDAPMod **groupmod;
 	groupmod = (LDAPMod **) calloc(num, sizeof(LDAPMod *));
+	ERRNOMEM(groupmod);
 	for (i = 0; i < num; i++) {
 	    groupmod[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
-	    if (groupmod[i] == (LDAPMod *) NULL) {
-		fprintf(stderr, "ERROR! Not enough memory\n");
-		exit(ENOMEM);
-	    }
+	    ERRNOMEM(groupmod[i]);
 	}
 	num = 0;
 	for (i = 0; modgroup_attr[i].attrib != NULL; i++) {
@@ -1172,6 +1167,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		groupmod[num]->mod_type = modgroup_attr[i].attrib;
 		groupmod[num]->mod_values =
 		    calloc(2, strlen(modgroup_attr[i].value) + 1);
+		ERRNOMEM(groupmod[num]->mod_values);
 		groupmod[num]->mod_values[0] = modgroup_attr[i].value;
 		num++;
 	    }
@@ -1273,6 +1269,7 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
 #define MRDN_LEN    (strlen(MY_GECOS) + strlen(fname[0]->bv_val) + \
 		     strlen(lname[0]->bv_val) + strlen(mdata.comment) + 1)
     gecos = calloc(1, MRDN_LEN);
+    ERRNOMEM(gecos);
     if (!snprintf
         (gecos, MRDN_LEN, MY_GECOS, fname[0]->bv_val, lname[0]->bv_val,
          mdata.comment))
@@ -1335,16 +1332,15 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
 
     LDAPMod **gidmod;
     gidmod = (LDAPMod **) calloc(3, sizeof(LDAPMod *));
+    ERRNOMEM(gidmod);
     for (i = 0; gidmod_attr[i].attrib != NULL; i++) {
 	gidmod[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
-	if (gidmod[i] == (LDAPMod *) NULL) {
-	    fprintf(stderr, "ERROR! Not enough memory\n");
-	    exit(ENOMEM);
-	}
+	ERRNOMEM(gidmod[i]);
 	gidmod[i]->mod_op = LDAP_MOD_REPLACE;
 	gidmod[i]->mod_type = gidmod_attr[i].attrib;
 	gidmod[i]->mod_values =
 	    calloc(2, strlen(gidmod_attr[i].value) + 1);
+	ERRNOMEM(gidmod[i]->mod_values);
 	gidmod[i]->mod_values[0] = gidmod_attr[i].value;
     }
     gidmod[i] = NULL;
@@ -1404,11 +1400,9 @@ int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
     LDAPMod **members;
 
     members = (LDAPMod **) calloc(2, sizeof(LDAPMod *));
+    ERRNOMEM(members);
     members[0] = (LDAPMod *) malloc(sizeof(LDAPMod));
-    if (members[0] == (LDAPMod *) NULL) {
-	fprintf(stderr, "ERROR! Not enough memory\n");
-	exit(ENOMEM);
-    }
+    ERRNOMEM(members[0]);
     members[0]->mod_op = mtype;
     members[0]->mod_type = "memberUid";
     members[0]->mod_values = _memberuid;
@@ -1480,12 +1474,10 @@ int uxds_user_expire(int type, char *dn, LDAP * ld)
     LDAPMod **exp;
 
     exp = (LDAPMod **) calloc(e, sizeof(LDAPMod *));
+    ERRNOMEM(exp);
     for (i = 0; i < e; i++) {
 	exp[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
-	if (exp[i] == (LDAPMod *) NULL) {
-	    fprintf(stderr, "ERROR! Not enough memory\n");
-	    exit(ENOMEM);
-	}
+	ERRNOMEM(exp[i]);
     }
     exp[0]->mod_op = LDAP_MOD_REPLACE;
     exp[0]->mod_type = expiry;
@@ -1538,12 +1530,10 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
 	return 1;
     } else if (pid == 0) {
 	pts_str = (char **) calloc(9, sizeof(char *));
+	ERRNOMEM(pts_str);
 	for (i = 0; i < 9; i++) {
 	    pts_str[i] = (char *) malloc(sizeof(char));
-	    if (pts_str[i] == (char *) NULL) {
-		fprintf(stderr, "ERROR! Not enough memory\n");
-		exit(ENOMEM);
-	    }
+	    ERRNOMEM(pts_str[i]);
 	}
 
 	pts_str[0] = "pts";
@@ -1722,6 +1712,7 @@ char *build_gecos(uxds_data_t mdata, LDAPMessage * entry, int debug,
     role = strtok(role, ";");
     role = strtok(NULL, ";");
     char *mygecos = (char *) calloc(1, (GC_LEN + 3));
+    ERRNOMEM(mygecos);
     if (!snprintf
         (mygecos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
         return NULL;

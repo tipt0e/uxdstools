@@ -1,5 +1,12 @@
 /* strings.h */
 
+/* macro for memory check after malloc()/calloc() */
+#define ERRNOMEM(m) \
+    if (!m) { \
+	fprintf(stderr, "FATAL: Not enough memory\n"); \
+	exit(ENOMEM); \
+    }
+
 /* shadow password input terminal handler */
 int inpwd(void);
 
