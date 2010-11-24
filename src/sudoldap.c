@@ -13,7 +13,6 @@ int rc;
 int a;
 int i;
 char *dn;
-char *res;
 struct berval **vals;
 
 int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)

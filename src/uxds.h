@@ -101,6 +101,9 @@
 #define FALSE	0
 #define TRUE	1
 
+/* holds message for ldap_err2string() return */
+#define res	      "ldap_err2string returned"
+
 /* account type */
 typedef enum { SELF, USER, GROUP, SUDOER } uxds_acct_t;
 
@@ -236,6 +239,10 @@ int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
 int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter, 
                      int debug,  LDAPMessage * entry, LDAPMessage * msg,
                      LDAP * ld);
+
+/* build gecos attribute */
+char *build_gecos(uxds_data_t mdata, LDAPMessage * entry, int debug, 
+		  LDAP * ld);
 
 /* expire password */
 int uxds_user_expire(int type, char *dn, LDAP * ld);

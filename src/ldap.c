@@ -17,7 +17,6 @@
 
 int rc;
 char *cbuf = NULL;
-char *res = "ldap_err2string returned";
 struct berval **vals;
 
 int uxds_user_authz(int select, uxds_authz_t auth, LDAP * ld)
@@ -57,9 +56,9 @@ int uxds_user_authz(int select, uxds_authz_t auth, LDAP * ld)
 #endif				/* HAVE_LDAP_SASL */
     /* simple authentication chosen */
 #ifdef HAVE_LDAP_SASL_GSSAPI
-    if ((select == 0) && (!auth.pkcert))
+    if ((!select) && (!auth.pkcert))
 #else
-    if (select == 0)
+    if (!select)
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 	authmethod = LDAP_AUTH_SIMPLE;
 
@@ -186,7 +185,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	"sudoRole",
 	"sudoCommand",
 	"sudoOption",
-	(char *) 0
+	NULL
     };
 
     char *filter = (char *) calloc(1, strlen(SUDOUSER) + strlen(auth.pxacct) + 1);
@@ -545,7 +544,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef HDB_LDAP
 	{USER, "userPassword", "{K5KEY}"},
 #else
-	{USER, "userPassword", "DUMMYIKNOWWILLCEECHANGED"},
+	{USER, "userPassword", "thanksceetoogiving"},
 #endif				/* HDB_LDAP */
 	{USER, "carLicense", "XxXxXxXxXxXxXxXxX"},
 #ifdef QMAIL
@@ -596,7 +595,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    useradd[i]->mod_type = user_attr[i].attrib;
 	    useradd[i]->mod_values =
 		calloc(2, strlen(user_attr[i].value) + 1);
-		ERRNOMEM(useradd[i]->mod_values);
+	    ERRNOMEM(useradd[i]->mod_values);
 	    useradd[i]->mod_values[0] = user_attr[i].value;
 	}
 	useradd[i + 1] = NULL;
@@ -1067,15 +1066,32 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	usermod[n] = NULL;
 
 #ifdef HAVE_LDAP_SASL_GSSAPI
-	if ((mdata.cpw == 1) || (mdata.exp == 1)) {
-	    goto skipmod;
+	if ((!mdata.cpw) && (!mdata.exp) && (!mdata.setpass)) {
+	    if (!usermod[0]) {
+		fprintf(stderr,
+		        "FATAL ERROR.... no attributes came through for modification!\n");
+		return 1;
+	    } 
 	}
+	if ((mdata.cpw == 1) || (mdata.setpass)) {
+	    char *name = get_krbname(auth, FALSE);
+	    putenv(center(cbuf, "KRB5CCNAME=/tmp/kacache_", name));
+	    if (mdata.cpw == 1)
+		mdata.setpass = randstr();
+	    if (setpwd(mdata.user, mdata.setpass) != 0)
+			fprintf(stderr, "Password not set for %s\n", mdata.user);
+	}
+	if (mdata.exp == 1) {
+	    if ((uxds_user_expire(0, mod_dn, ld)) != 0) 
+		fprintf(stderr, "Password not EXPIRED for %s\n",
+			mdata.user);
+	    fprintf(stdout, "Password for %s EXPIRED to 12-31-1999\n",
+		    mdata.user);
+	} 
+	if (!usermod[0]) 
+	    return 0;
+	    
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
-	if (!usermod[0]) {
-	    fprintf(stderr,
-		    "FATAL ERROR.... no attributes came through for modification!\n");
-	    return 1;
-	}
 	if (ldap_modify_ext_s(ld, mod_dn, usermod, NULL, NULL) !=
 	    LDAP_SUCCESS) {
 	    fprintf(stdout, "Attempted DN: %s, len %lu\n", mod_dn,
@@ -1091,25 +1107,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		"POSIX User Account Modification of %s SUCCESSFUL.\n",
 		mdata.user);
 	fprintf(stdout, "Modified DN: %s\n", mod_dn);
-#ifdef HAVE_LDAP_SASL_GSSAPI
-      skipmod:
-	if (mdata.cpw == 1) {
-	    char *name = get_krbname(auth, FALSE);
-	    putenv(center(cbuf, "KRB5CCNAME=/tmp/kacache_", name));
-	    if (setpwd(mdata.user, randstr()) != 0) {
-		fprintf(stderr, "Password not set for %s\n", mdata.user);
-	    }
-	}
-
-	if (mdata.exp == 1) {
-	    if ((uxds_user_expire(0, mod_dn, ld)) != 0) {
-		fprintf(stderr, "Password not EXPIRED for %s\n",
-			mdata.user);
-	    }
-	    fprintf(stdout, "Password for %s EXPIRED to 12-31-1999\n",
-		    mdata.user);
-	}
-#endif				/* HAVE_LDAP_SASL_GSSAPI */
 #ifdef TOOL_LOG
 	log_event(mod_dn, USER, MOD, "SUCCESSFUL");
 #endif				/* TOOL_LOG */
@@ -1677,6 +1674,7 @@ char *return_idnum(LDAP * ld, LDAPMessage * entry, char *attr)
 char *build_gecos(uxds_data_t mdata, LDAPMessage * entry, int debug,
 		  LDAP * ld)
 {
+    int i;
     char *role = NULL;
     char *old_gecos = NULL;
 
@@ -1710,7 +1708,10 @@ char *build_gecos(uxds_data_t mdata, LDAPMessage * entry, int debug,
     ldap_value_free_len(vals);
     role = strdup(old_gecos);
     role = strtok(role, ";");
-    role = strtok(NULL, ";");
+    /* move 2 positions along the string */
+    for (i = 0; i < 2; i++) {
+	role = strtok(NULL, ";");
+    }
     char *mygecos = (char *) calloc(1, (GC_LEN + 3));
     ERRNOMEM(mygecos);
     if (!snprintf

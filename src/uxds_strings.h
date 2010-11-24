@@ -3,7 +3,7 @@
 /* macro for memory check after malloc()/calloc() */
 #define ERRNOMEM(m) \
     if (!m) { \
-	fprintf(stderr, "FATAL: Not enough memory\n"); \
+	fprintf(stderr, "FATAL: Not enough memory... EXITING!\n"); \
 	exit(ENOMEM); \
     }
 

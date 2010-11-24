@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     if ((auth.pkcert) && (argc < 8)) {
 	if ((!mdata.exp) || (!mdata.cpw)) {
 	    fprintf(stderr,
-		    "At least attribute must be selected to use lusermod.\n");
+		    "At least ONE attribute must be selected to use lusermod.\n");
 	    fprintf(stderr, "parse_args failed.\n");
 	    exit(EXIT_FAILURE);
 	}
