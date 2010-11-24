@@ -647,25 +647,20 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    fprintf(stderr, "adding memberUid FAILED\n");
 	}
 #ifdef HAVE_LDAP_SASL_GSSAPI
-	if ((mdata.cpw == 1) || (mdata.setpass != NULL)) {
+	if ((mdata.cpw == 1) || (mdata.setpass)) {
 	    char *name = get_krbname(auth, FALSE);
 	    putenv(center(cbuf, "KRB5CCNAME=/tmp/kacache_", name));
-	    if (mdata.cpw == 1) {
-		if (setpwd(mdata.user, randstr()) != 0) {
-		    fprintf(stderr, "Password NOT set");
-		}
-		if (mdata.exp == 1) {
-		    if ((uxds_user_expire(0, user_dn, ld)) != 0) {
-			fprintf(stderr, "Password not EXPIRED for %s\n",
-				mdata.user);
-		    }
-
-		}
-	    } else if (mdata.setpass != NULL) {
-		if (setpwd(mdata.user, mdata.setpass) != 0) {
-		    fprintf(stderr, "Password NOT set\n");
-		}
-	    }
+	    if (mdata.cpw == 1) 
+		mdata.setpass = randstr();
+	    if (setpwd(mdata.user, mdata.setpass) != 0)
+		fprintf(stderr, "Password NOT set for %s\n", mdata.user);
+	}
+	if (mdata.exp == 1) { 
+	    if ((uxds_user_expire(0, user_dn, ld)) != 0)
+		fprintf(stderr, "Password not EXPIRED for %s\n",
+			mdata.user);
+            fprintf(stdout, "Password for %s EXPIRED to 12-31-1999\n",
+                    mdata.user);
 	}
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 	if (useradd) {
