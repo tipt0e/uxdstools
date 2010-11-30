@@ -208,6 +208,7 @@ int get_tkts(char *user, char *service, uxds_authz_t auth)
     case 0:
 	break;
     case KRB5_LIBOS_PWDINTR:
+	fprintf(stderr, "FATAL: Password read interrupted!\n");
 	exit(EXIT_FAILURE);
     case KRB5KRB_AP_ERR_BAD_INTEGRITY:
     case KRB5KRB_AP_ERR_MODIFIED:
