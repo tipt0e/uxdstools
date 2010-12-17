@@ -297,6 +297,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	    }
 
 	}
+	ldap_msgfree(msg);
 	return 0;
 
     } else {
@@ -321,6 +322,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	    ldap_memfree(dn);
 	    if (auth.acct == SELF) {
 		ldap_msgfree(msg);
+		ldap_msgfree(entry);
 
 		return 0;
 	    }
@@ -357,6 +359,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
     if (ber != NULL) {
 	ber_free(ber, 0);
     }
+    //ldap_msgfree(entry);
     ldap_msgfree(msg);
 
     return 0;
