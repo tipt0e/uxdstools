@@ -177,7 +177,7 @@ SUOBJS = sudoldap.o args.o strings.o sasl.o ldap.o log.o
 endif
 
 CFLAGS = -I/usr/local/include -Wall -g -c
-DEBUG = -O2 
+DEBUG = -O2
 
 if SUDOON
 all: lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod lsudoadd lsudodel lsudomod
@@ -290,9 +290,9 @@ endif
 
 strip:
 if SUDOON
-	test -z "lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod lsudoadd lsudodel lsudomod" || strip -d lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod lsudoadd lsudodel lsudomod
+	test -z "lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod lsudoadd lsudodel lsudomod" || strip -s lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod lsudoadd lsudodel lsudomod
 else
-	test -z "lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod" || strip -d lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod
+	test -z "lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod" || strip -s lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod
 endif
 
-install: install-am
+install: strip install-am
