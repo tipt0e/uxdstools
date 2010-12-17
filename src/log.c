@@ -61,8 +61,8 @@ int log_event(char *acct, uxds_acct_t type, uxds_tool_t op, char *text)
 	    "%s - Change attempted by: ** %s **\n - %s Account %s of %s %s\n",
 	    curdate(), admin, blurb, oper, acct, text);
 
-    if (fsync(fp)) {
-	fprintf(stderr, "log file was not properly fsync()d\n");
+    if (fflush(fp)) {
+	fprintf(stderr, "log file was not properly fflush()d\n");
 	return 1;
     }
     fclose(fp);
