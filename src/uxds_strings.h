@@ -2,10 +2,12 @@
 
 /* macro for memory check after malloc()/calloc() */
 #define ERRNOMEM(m) \
+do { \
     if (!m) { \
 	fprintf(stderr, "FATAL: Not enough memory... EXITING!\n"); \
 	exit(ENOMEM); \
     }
+} while (0)
 
 /* shadow password input terminal handler */
 int inpwd(void);

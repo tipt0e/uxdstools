@@ -1,5 +1,5 @@
 --- /vicepa/git/uxdstools.git/src/sudoldap.c	2010-11-24 13:05:50.077739696 -0800
-+++ /vicepa/git/uxdstools.git/src/sudoldap32.c	2010-12-17 14:20:38.909461103 -0800
++++ /vicepa/git/uxdstools.git/src/sudoldap32.c	2010-12-20 18:39:47.895292444 -0800
 @@ -40,7 +40,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxd
  	    return 1;
      }
