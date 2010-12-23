@@ -100,7 +100,7 @@ char *get_krbname(uxds_authz_t auth, int parse)
 }
 
 /* get krb5 initial ticket for service */
-int get_tkts(char *user, char *service, uxds_authz_t auth)
+krb5_error_code get_tkts(char *user, char *service, uxds_authz_t auth)
 {
     krb5_context context;
     krb5_error_code error;
@@ -303,7 +303,7 @@ int get_tkts(char *user, char *service, uxds_authz_t auth)
  * randstr() could be moved in here if no 2nd arg desired 
  * is was just placed for future use (i.e. pwds on cmd line)
  */
-int setpwd(char *user, char *passwd)
+krb5_error_code setpwd(char *user, char *passwd)
 {
     krb5_context context;
     krb5_principal target;
