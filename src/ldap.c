@@ -359,7 +359,6 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
     if (ber != NULL) {
 	ber_free(ber, 0);
     }
-    //ldap_msgfree(entry);
     ldap_msgfree(msg);
 
     return 0;
@@ -394,7 +393,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	if (mdata.group == NULL) {
 	    fprintf(stderr,
 		    "No POSIX GROUP (-G <group>) selected for USER ADD, Exiting...\n");
-	    exit(EXIT_FAILURE);
+	    return 1;
 	}
 	if (mdata.uidnum == NULL) {
 	    pxid =
@@ -870,7 +869,7 @@ int uxds_acct_del(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	log_event(dn, pxtype, DEL, "FAILED");
 #endif				/* TOOL_LOG */
 
-	exit(EXIT_FAILURE);
+	return 1;
     }
     if (auth.debug) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);

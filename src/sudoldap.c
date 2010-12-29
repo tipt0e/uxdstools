@@ -228,7 +228,7 @@ int uxds_sudo_del(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	log_event(dn, SUDOER, DEL, "attempt FAILED");
 #endif				/* TOOL_LOG */
 	fprintf(stderr, "SUDOer Account deletion UNSUCCESSFUL.");
-	exit(EXIT_FAILURE);
+	return 1;
     }
     fprintf(stderr, "SUDOer Account %s DELETED.\n", su->sudoer);
 #ifdef TOOL_LOG

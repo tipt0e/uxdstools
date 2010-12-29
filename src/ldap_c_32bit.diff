@@ -1,5 +1,5 @@
---- /vicepa/git/uxdstools.git/src/ldap.c	2010-12-17 14:21:21.741543544 -0800
-+++ /vicepa/git/uxdstools.git/src/ldap32.c	2010-12-23 13:35:01.501439657 -0800
+--- /vicepa/git/uxdstools.git/src/ldap.c	2010-12-29 12:58:28.135142032 -0800
++++ /vicepa/git/uxdstools.git/src/ldap32.c	2010-12-29 13:00:14.932877388 -0800
 @@ -219,7 +219,7 @@ int uxds_acct_parse(uxds_bind_t bind, ux
  	    kuser = get_krbname(auth, FALSE);
  	    if (auth.debug)
@@ -9,7 +9,7 @@
  			kuser, sizeof(kuser), strlen(kuser));
  	    filter = (center(fbuf, "uid=", kuser));
  	    if (auth.debug)
-@@ -431,7 +431,7 @@ int uxds_acct_add(uxds_acct_t pxtype, ux
+@@ -430,7 +430,7 @@ int uxds_acct_add(uxds_acct_t pxtype, ux
      if (!snprintf(filter, PG_LEN, POSIXGROUP, mdata.group))
  	return 1;
      if (auth.debug)
@@ -18,7 +18,7 @@
      if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
  			  NULL, NULL, NULL, 0, &msg)
  	!= LDAP_SUCCESS) {
-@@ -466,7 +466,7 @@ int uxds_acct_add(uxds_acct_t pxtype, ux
+@@ -465,7 +465,7 @@ int uxds_acct_add(uxds_acct_t pxtype, ux
      vals = ldap_get_values_len(ld, entry, "description");
      if (vals[0]->bv_val != NULL) {
  	if (auth.debug)
@@ -27,7 +27,7 @@
  		    strlen(vals[0]->bv_val));
  	role = strdup(vals[0]->bv_val);
      }
-@@ -476,7 +476,7 @@ int uxds_acct_add(uxds_acct_t pxtype, ux
+@@ -475,7 +475,7 @@ int uxds_acct_add(uxds_acct_t pxtype, ux
      char *gidnum = NULL;
      if (vals[0]->bv_val != NULL) {
  	if (auth.debug)
@@ -36,7 +36,7 @@
  		    strlen(vals[0]->bv_val));
  	gidnum = strdup(vals[0]->bv_val);
      }
-@@ -609,7 +609,7 @@ int uxds_acct_add(uxds_acct_t pxtype, ux
+@@ -608,7 +608,7 @@ int uxds_acct_add(uxds_acct_t pxtype, ux
  
  	if (ldap_add_ext_s(ld, user_dn, useradd, NULL, NULL) !=
  	    LDAP_SUCCESS) {
@@ -45,7 +45,7 @@
  		    strlen(user_dn));
  	    ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
  	    fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
-@@ -825,7 +825,7 @@ int uxds_acct_del(uxds_acct_t pxtype, ux
+@@ -824,7 +824,7 @@ int uxds_acct_del(uxds_acct_t pxtype, ux
  	break;
      }
      if (auth.debug)
@@ -54,7 +54,7 @@
  		strlen(filter));
      if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
  			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
-@@ -947,7 +947,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
+@@ -946,7 +946,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
      }
  
      if (auth.debug)
@@ -63,7 +63,7 @@
      if (ldap_search_ext_s(ld, NULL, LDAP_SCOPE_SUBTREE, filter, NULL, 0,
  			  NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
  	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-@@ -1092,7 +1092,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
+@@ -1091,7 +1091,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, ux
  #endif				/* HAVE_LDAP_SASL_GSSAPI */
  	if (ldap_modify_ext_s(ld, mod_dn, usermod, NULL, NULL) !=
  	    LDAP_SUCCESS) {
@@ -72,7 +72,7 @@
  		    strlen(mod_dn));
  #ifdef TOOL_LOG
  	    log_event(mod_dn, USER, MOD, "FAILED");
-@@ -1680,7 +1680,7 @@ char *build_gecos(uxds_data_t mdata, LDA
+@@ -1679,7 +1679,7 @@ char *build_gecos(uxds_data_t mdata, LDA
          vals = ldap_get_values_len(ld, entry, "givenName");
          if (vals[0]->bv_val != NULL) {
              if (debug)
@@ -81,7 +81,7 @@
                          vals[0]->bv_val, strlen(vals[0]->bv_val));
              mdata.firstname = strdup(vals[0]->bv_val);
              ldap_value_free_len(vals);
-@@ -1690,7 +1690,7 @@ char *build_gecos(uxds_data_t mdata, LDA
+@@ -1689,7 +1689,7 @@ char *build_gecos(uxds_data_t mdata, LDA
          vals = ldap_get_values_len(ld, entry, "sn");
          if (vals[0]->bv_val != NULL) {
              if (debug)
@@ -90,7 +90,7 @@
                          strlen(vals[0]->bv_val));
              mdata.lastname = strdup(vals[0]->bv_val);
              ldap_value_free_len(vals);
-@@ -1699,7 +1699,7 @@ char *build_gecos(uxds_data_t mdata, LDA
+@@ -1698,7 +1698,7 @@ char *build_gecos(uxds_data_t mdata, LDA
      vals = ldap_get_values_len(ld, entry, "gecos");
      if (vals[0]->bv_val != NULL) {
          if (debug)
