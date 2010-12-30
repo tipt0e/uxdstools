@@ -68,7 +68,6 @@ char *getpwd(char *user)
 void center_free(char *buf)
 {
     if (buf != NULL) {
-	//memset(buf, 0, sizeof(buf));
 	free(buf);
     }
 }
@@ -76,7 +75,6 @@ void center_free(char *buf)
 /* concatenate two strings */
 char *center(char *buf, char *left, char *right)
 {
-    /* Thanks to phant0m for ditching strncat & strncpy here */
     buf =
 	(char *) calloc(1, strlen(left) + strlen(right) + sizeof(char *));
     ERRNOMEM(buf);
@@ -137,7 +135,6 @@ char *curdate(void)
     snprintf(tbuf, 22, "%i-%i-%i %s:%s:%s",
 	     tvals->tm_mon + 1, tvals->tm_mday, tvals->tm_year + 1900,
 	     hour, min, sec);
-    //tvals->tm_hour,tvals->tm_min,tvals->tm_sec);
 
     char *tdate = strdup(tbuf);
     return tdate;
@@ -159,18 +156,16 @@ char *randstr(void)
     k = 0;
     l = 0;
     for (i = 0; i < scope; i++) {
-	if (len == 8) {
+	if (len == 8) 
 	    break;
-	}
 	/* ha ha i know it's kludgy and sux but
 	 * this is my first random string function 
 	 */
 	ch = 33 + (int) (75.0 * rand() / (RAND_MAX));
 	while (ch > 32 && ch < 123) {
 	    /* chars we don't want */
-	    if (ch > 90 && ch < 97) {
+	    if (ch > 90 && ch < 97) 
 		break;
-	    }
 	    /* we only want one at most of these */
 	    if ((ch > 32 && ch < 48) || (ch > 57 && ch < 65)) {
 		if (j == 1)
@@ -202,9 +197,8 @@ char *randstr(void)
 /* my isdigit() for ASCII only */
 int isnum(int c)
 {
-    if (c > 57 || c < 48) {
+    if (c > 57 || c < 48)
 	return 1;
-    }
     return 0;
 }
 
@@ -213,9 +207,8 @@ int strnum(char *str)
 {
     unsigned int i;
     for (i = 0; i < strlen(str); i++) {
-	if (isnum(str[i]) != 0) {
+	if (isnum(str[i]) != 0) 
 	    return 1;
-	}
     }
     return 0;
 }
@@ -235,7 +228,6 @@ char *base64(char *str, int len)
     target = BIO_new(BIO_s_mem());
     b64 = BIO_push(b64, target);
     BIO_write(b64, str, len);
-    //BIO_flush(b64);
     BIO_get_mem_ptr(b64, &ossl);
 
     char *buf = (char *) malloc(ossl->length);

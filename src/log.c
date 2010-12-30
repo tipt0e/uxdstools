@@ -45,11 +45,10 @@ int log_event(char *acct, uxds_acct_t type, uxds_tool_t op, char *text)
     }
 
 #ifdef HAVE_LDAP_SASL_GSSAPI
-    if (auth.username == NULL) {
+    if (auth.username == NULL) 
 	admin = strdup(get_krbname(auth, FALSE));
-    } else {
+    else 
 	admin = strdup(auth.username);
-    }
 #else
     admin = strtok(auth.binddn, ",");
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
