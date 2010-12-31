@@ -29,8 +29,9 @@ int main(int argc, char *argv[])
     int rc;
     int sflag;
     uxds_authz_t auth;
+    uxds_data_t mdata;
     char *bin = argv[0];
-    sflag = parse_args(argc, argv, SELF, EYE, 3, &auth, NULL, bin);
+    sflag = parse_args(argc, argv, SELF, EYE, 3, &auth, &mdata, bin);
 
     /* initialize LDAP context */
     rc = ldap_initialize(&ld, auth.uri);
