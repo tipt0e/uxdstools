@@ -292,7 +292,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	       char *binary)
 {
     int i;
-    int sflag;
+    uxds_bind_t sflag;
 
     struct cmdopts opts;
 
@@ -362,7 +362,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	mdata->su->ou = NULL;
     }
     /* option arguments */
-    sflag = 0;
+    sflag = SIMPLE;
     int c = 0;
     for (i = 1; i < argc; i++) {
 	if (argv[i][0] == '-') {
@@ -414,19 +414,19 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		optmask("<SASLMECH> or NONE for", atype, opts, c);
 		auth->saslmech = argv[i + 1];
 		if (!(strncasecmp("GSSAPI", argv[i + 1], 4))) {
-		    sflag = 2;
+		    sflag = GSSAPI;
 		    auth->username = NULL;
 		    auth->binddn = NULL;
 		    auth->saslmech = "GSSAPI";
 		} else {
-		    sflag = 1;
+		    sflag = SASL;
 		}
 		break;
 #endif				/* HAVE_LDAP_SASL */
 	    case 'D':		/* LDAP authorization DN */
 		i++;
 #ifdef HAVE_LDAP_SASL_GSSAPI
-		if (sflag == 2) {
+		if (sflag == GSSAPI) {
 		    fprintf(stderr,
 			    "option [-D] is unnecessary with GSSAPI\n\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
@@ -439,14 +439,14 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 #ifdef HAVE_LDAP_SASL_GSSAPI
 	    case 'c':		/* Krb5 credentials cache */
 		i++;
-		if (sflag < 2) {
+		if (sflag < GSSAPI) {
 		    fprintf(stderr,
 			    "option [-c] is only available with GSSAPI mech\n\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 		optmask("<ccache>", atype, opts, c);
 		auth->credcache = strdup(argv[i]);
-		if (sflag == 3) {
+		if (sflag == KINIT) {
 		    putenv(center(cbuf, "KRB5CCNAME=", auth->credcache));
 		    printf("%s is var\n", getenv("KRB5CCNAME"));
 		}
@@ -457,9 +457,9 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	    case 'u':		/* SASL authentication identity */
 		i++;
 #ifdef HAVE_LDAP_SASL_GSSAPI
-		if (((sflag != 2) && (auth->saslmech == NULL))
+		if (((sflag != GSSAPI) && (auth->saslmech == NULL))
 		    || (auth->pkcert != NULL)) {
-		    sflag = 3;
+		    sflag = KINIT;
 		}
 #else
 		c = XBIND;
@@ -492,7 +492,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 			    "MUST HAVE [-u] option for [-K] option\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
-		if ((sflag < 3) || (auth->saslmech) || (auth->binddn)) {
+		if ((sflag < KINIT) || (auth->saslmech) || (auth->binddn)) {
 		    fprintf(stderr,
 			    "[-D|-P|-m] options CONFLICT with [-K] option\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
@@ -849,7 +849,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	    case 'p':		/* Password for SASL or SIMPLE bind */
 		i++;
 #ifdef HAVE_LDAP_SASL_GSSAPI
-		if ((sflag == 2) || (auth->pkcert != NULL)) {
+		if ((sflag == GSSAPI) || (auth->pkcert != NULL)) {
 		    fprintf(stderr,
 			    "option -p is unnecessary with GSSAPI or PKINIT\n\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
@@ -866,7 +866,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	    case 'P':		/* enter password on command line */
 		i++;
 #ifdef HAVE_LDAP_SASL_GSSAPI
-		if ((sflag == 2) || (auth->pkcert != NULL)) {
+		if ((sflag == GSSAPI) || (auth->pkcert != NULL)) {
 		    fprintf(stderr,
 			    "option -P is unnecessary with GSSAPI or PKINIT\n\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
@@ -878,21 +878,21 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 		switch (sflag) {
-		case 0:
+		case SIMPLE:
 		    fprintf(stdout, "SIMPLE Bind selected.\n");
 		    break;
 #ifdef HAVE_LDAP_SASL
-		case 1:
+		case SASL:
 		    fprintf(stdout, "SASL Bind selected with %s mech.\n",
 			    auth->saslmech);
 		    break;
 #ifdef HAVE_LDAP_SASL_GSSAPI
-		case 2:
+		case GSSAPI:
 		    fprintf(stderr,
 			    "[-P] incompatible with [-m] GSSAPI mech.\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
 		    break;
-		case 3:
+		case KINIT:
 		    fprintf(stdout,
 			    "KINIT with SASL/GSSAPI Bind selected.\n");
 		    auth->password->bv_val =
@@ -947,7 +947,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 #ifdef HAVE_LDAP_SASL_GSSAPI
     sflag = finalize_auth(sflag, atype, auth, mdata, op);
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
-    if (sflag == 2)
+    if (sflag == GSSAPI)
 	auth->username = NULL;
 
     return sflag;
@@ -1048,11 +1048,10 @@ int sanitize_sudo_ops(uxds_authz_t * auth, uxds_sudo_t * su,
 }
 
 #ifdef HAVE_LDAP_SASL_GSSAPI
-int finalize_auth(int sflag, uxds_acct_t atype, uxds_authz_t * auth,
-		  uxds_data_t * mdata, uxds_tool_t op)
+uxds_bind_t finalize_auth(uxds_bind_t sflag, uxds_acct_t atype, 
+			  uxds_authz_t * auth, uxds_data_t * mdata, 
+			  uxds_tool_t op)
 {
-    enum { SIMPLE, SASL, GSSAPI, KINIT };
-
     if ((auth->password != NULL) || (auth->pkcert != NULL)) {
 	switch (sflag) {
 	case SIMPLE:

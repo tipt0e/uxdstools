@@ -19,7 +19,7 @@ int rc;
 char *cbuf = NULL;
 struct berval **vals;
 
-int uxds_user_authz(int select, uxds_authz_t auth, LDAP * ld)
+int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
 {
     int proto;
     int authmethod = 0;
@@ -29,14 +29,14 @@ int uxds_user_authz(int select, uxds_authz_t auth, LDAP * ld)
 #endif				/* HAVE_LDAP_SASL */
 
     if (auth.debug) {
-	fprintf(stderr, "sflag value is %i -> ", select);
+	fprintf(stderr, "sflag value is %i -> ", sflag);
 	fprintf(stderr,
 		"(0 = SIMPLE, 1 = SASL non GSSAPI, 2 = SASL/GSSAPI)\n");
 	fprintf(stderr, "LDAP host URI is: %s\n", auth.uri);
     }
 #ifdef HAVE_LDAP_SASL
 /* SASL authentication chosen */
-    if ((select > 0) || (auth.pkcert)) {
+    if ((sflag > SIMPLE) || (auth.pkcert)) {
 	authmethod = LDAP_AUTH_SASL;
 	sasl_mech = auth.saslmech;
 	if (auth.verb == 1) {
@@ -45,7 +45,7 @@ int uxds_user_authz(int select, uxds_authz_t auth, LDAP * ld)
 	    sasl_flags = LDAP_SASL_QUIET;	/* default */
 	}
 #ifdef HAVE_LDAP_SASL_GSSAPI
-	if (select == 2) {
+	if (sflag == GSSAPI) {
 	    if (auth.debug)
 		fprintf(stderr,
 			"used GSSAPI -> credentials cache is: %s\n",
@@ -56,9 +56,9 @@ int uxds_user_authz(int select, uxds_authz_t auth, LDAP * ld)
 #endif				/* HAVE_LDAP_SASL */
     /* simple authentication chosen */
 #ifdef HAVE_LDAP_SASL_GSSAPI
-    if ((!select) && (!auth.pkcert))
+    if ((sflag == SIMPLE) && (!auth.pkcert))
 #else
-    if (!select)
+    if (sflag == SIMPLE)
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 	authmethod = LDAP_AUTH_SIMPLE;
 
@@ -75,7 +75,7 @@ int uxds_user_authz(int select, uxds_authz_t auth, LDAP * ld)
 #ifdef HAVE_LDAP_SASL
     case LDAP_AUTH_SASL:
 #ifdef HAVE_LDAP_SASL_GSSAPI
-	if (select == 2) {
+	if (sflag == GSSAPI) {
 	    if (auth.credcache != NULL) {
 		auth.credcache =
 		    center(cbuf, "KRB5CCNAME=", auth.credcache);

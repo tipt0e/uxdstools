@@ -136,7 +136,7 @@ typedef struct uxds_authz_t {
 typedef enum { UXDS_USAGE, UXDS_HELP, UXDS_VERSION } uxds_usage_t;
 typedef enum { ADD, MOD, DEL, EYE } uxds_tool_t;
 typedef enum { XARGS, XACCT, XBOTH, XBIND } uxds_flag_t;
-typedef enum { SIMPLE, SASL, GSSAPI } uxds_bind_t;
+typedef enum { SIMPLE, SASL, GSSAPI, KINIT } uxds_bind_t;
 
 /* options to parse cmd line input and process output :*/
 struct cmdopts {
@@ -203,7 +203,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	       char *binary);
 
 /* LDAP authorization handler */
-int uxds_user_authz(int select, uxds_authz_t auth, LDAP * ld);
+int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld);
 
 /* unbind from directory service */
 int uxds_ldap_unbind(LDAP * ld);
@@ -263,7 +263,8 @@ int sanitize_add_ops(uxds_data_t * mdata, uxds_acct_t atype, uxds_tool_t op,
 int sanitize_sudo_ops(uxds_authz_t * auth, uxds_sudo_t * su, uxds_tool_t op,
                       uxds_acct_t atype, char *binary);
 
-int finalize_auth(int sflag, uxds_acct_t atype, uxds_authz_t * auth, 
-		  uxds_data_t * mdata, uxds_tool_t op);
+uxds_bind_t finalize_auth(uxds_bind_t sflag, uxds_acct_t atype,
+                          uxds_authz_t * auth, uxds_data_t * mdata,
+                          uxds_tool_t op);
 
 #endif		    /* _UXDS_H_ */

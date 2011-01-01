@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 {
     LDAP *ld;
     int rc;
-    int sflag;
+    uxds_bind_t sflag;
     uxds_authz_t auth;
     uxds_data_t mdata;
     char *bin = argv[0];
