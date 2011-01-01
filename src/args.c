@@ -322,7 +322,6 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
     mdata->exp = 0;
     mdata->cpw = 0;
     mdata->membit = 0;
-    mdata->_entry = 0;
     mdata->ou = NULL;
     mdata->user = NULL;
     mdata->group = NULL;
@@ -418,6 +417,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		    sflag = 2;
 		    auth->username = NULL;
 		    auth->binddn = NULL;
+		    auth->saslmech = "GSSAPI";
 		} else {
 		    sflag = 1;
 		}
@@ -457,8 +457,8 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	    case 'u':		/* SASL authentication identity */
 		i++;
 #ifdef HAVE_LDAP_SASL_GSSAPI
-		if ((sflag != 2 && auth->saslmech == NULL)
-		    || auth->pkcert != NULL) {
+		if (((sflag != 2) && (auth->saslmech == NULL))
+		    || (auth->pkcert != NULL)) {
 		    sflag = 3;
 		}
 #else
@@ -614,7 +614,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		}
 		if (op == ADD) {
 		    fprintf(stderr,
-			    "%s: [-A] Relevant for SUDOER ADD ONLY\n",
+			    "%s: [-A] Relevant for SUDOER DELETE ONLY\n",
 			    binary);
 		    exit(EXIT_FAILURE);
 		}
@@ -624,10 +624,10 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		break;
 	    case 'N':
 		i++;
-                if (!argv[i]) {
-                    optmask("<idnum>", atype, opts, c);
-                    exit(EXIT_FAILURE); 
-                }
+		if (!argv[i]) {
+		    optmask("<idnum>", atype, opts, c);
+		    exit(EXIT_FAILURE);
+		}
 		if (atype == SELF) {
 		    fprintf(stderr, "not a PARSING option\n");
 		    exit(EXIT_FAILURE);
@@ -913,7 +913,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		    auth->password->bv_len =
 			strlen(auth->password->bv_val);
 		}
-/* if GSSAPI enabled we let 
+/* if GSSAPI is enabled we let 
  * krb5_posix_prompter take care if it
  */
 #ifndef HAVE_LDAP_SASL_GSSAPI
@@ -932,67 +932,37 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		break;
 	    }
 	}
-	if ((atype == SELF) || (atype == SUDOER)) {
-	    goto nextparse;
-	}
-	if (op != DEL) {
-	    if (atype == USER) {
-		if (mdata->firstname != NULL) {
-		    mdata->_entry++;
-		}
-		if (mdata->lastname != NULL) {
-		    mdata->_entry++;
-		}
-		if (mdata->uidnum != NULL) {
-		    mdata->_entry++;
-		}
-		if (mdata->shell != NULL) {
-		    mdata->_entry++;
-		}
-		if (mdata->homes != NULL) {
-		    mdata->_entry++;
-		}
-		if ((mdata->firstname != NULL)
-		    || (mdata->lastname != NULL)) {
-		    mdata->_entry++;
-		}
-		if (mdata->cpw != 0) {
-		    mdata->_entry++;
-		}
-#ifdef QMAIL
-		if (mdata->mhost != NULL) {
-		    mdata->_entry++;
-		}
-		if (mdata->altaddr != NULL) {
-		    mdata->_entry++;
-		}
-#endif				/* QMAIL */
-	    }
-	    if (atype == GROUP) {
-		if (mdata->gidnum != NULL) {
-		    mdata->_entry = 1;
-		}
-		if (mdata->comment != NULL) {
-		    mdata->_entry++;
-		}
-		if (mdata->member != NULL) {
-		    mdata->_entry++;
-		}
-	    }
-	}
-      nextparse:;
     }
+
     if ((atype == SELF) || (atype == SUDOER)) {
-	goto againparse;
+	if (sanitize_sudo_ops(auth, mdata->su, op, atype, binary)) {
+	    exit(EXIT_FAILURE);
+	}
     }
-    /* this can be tweak to allow custom GECOS */
+    if ((op == ADD) || (op == MOD))
+	if (sanitize_add_ops(mdata, atype, op, binary)) {
+	    fprintf(stderr, "DEBUG: sanitize_add_ops failed\n");
+	    exit(EXIT_FAILURE);
+	}
+#ifdef HAVE_LDAP_SASL_GSSAPI
+    sflag = finalize_auth(sflag, atype, auth, mdata, op);
+#endif				/* HAVE_LDAP_SASL_GSSAPI */
+    if (sflag == 2)
+	auth->username = NULL;
+
+    return sflag;
+}
+
+int sanitize_add_ops(uxds_data_t * mdata, uxds_acct_t atype,
+		     uxds_tool_t op, char *binary)
+{
     if ((op == ADD) && (atype == USER)) {
 	if ((mdata->firstname == NULL) || (mdata->lastname == NULL) ||
 	    (mdata->group == NULL)) {
 	    fprintf(stderr,
-		    "%s: [-G <group>],[-f <first name>],[-l <last name>] all REQUIRED for USER ADD\n",
-		    binary);
-	    exit(EXIT_FAILURE);
+		    "%s %s: [-G <group>],[-f <first name>],[-l <last name>] all REQUIRED for USER ADD\n",
+		    binary, mdata->group);
+	    return 1;
 	}
     }
     if ((op == ADD) && (atype == GROUP)) {
@@ -1000,7 +970,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	    fprintf(stderr,
 		    "%s: [-I] <description> is REQUIRED for POSIX GROUP ADD\n",
 		    binary);
-	    exit(EXIT_FAILURE);
+	    return 1;
 	}
     }
 
@@ -1009,7 +979,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	    fprintf(stderr,
 		    "%s: [-U] <username> is REQUIRED for POSIX USER ADD\n",
 		    binary);
-	    exit(EXIT_FAILURE);
+	    return 1;
 	}
     }
 
@@ -1018,17 +988,26 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	    fprintf(stderr,
 		    "%s: [-U] <username> REQUIRED for POSIX USER OPS\n",
 		    binary);
-	    exit(EXIT_FAILURE);
+	    return 1;
 	}
 
 	if ((atype == GROUP) && (mdata->group == NULL)) {
 	    fprintf(stderr,
 		    "%s: [-G] <group> REQUIRED for POSIX GROUP OPS\n",
 		    binary);
-	    exit(EXIT_FAILURE);
+	    return 1;
 	}
     }
-  againparse:;
+    return 0;
+}
+
+int sanitize_sudo_ops(uxds_authz_t * auth, uxds_sudo_t * su,
+		      uxds_tool_t op, uxds_acct_t atype, char *binary)
+{
+
+    if ((atype != SELF) && (atype != SUDOER)) {
+	return 1;
+    }
     if (atype == SELF) {
 	if (auth->pxacct == NULL) {
 	    auth->pxacct = "*";
@@ -1037,22 +1016,21 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 		auth->acct = SELF;
 	    }
 	}
-    }
-    if (atype == SUDOER) {
-	if ((op != DEL) && (mdata->su->cmd == NULL)) {
+    } else if (atype == SUDOER) {
+	if ((op != DEL) && (su->cmd == NULL)) {
 	    if (op == ADD) {
 		fprintf(stderr,
 			"%s: At least ONE [-C] <cmd> argument MUST be supplied for SUDOER ADD\n",
 			binary);
-		exit(EXIT_FAILURE);
-	    } else if (mdata->su->opt == NULL) {
+		return 1;
+	    } else if (su->opt == NULL) {
 		fprintf(stderr,
 			"%s: At least ONE [-C] <cmd> or [-O] <opt> MUST be supplied for SUDOER MODIFY\n",
 			binary);
-		exit(EXIT_FAILURE);
+		return 1;
 	    }
 	}
-	if (mdata->su->sudoer == NULL) {
+	if (su->sudoer == NULL) {
 	    if (op == ADD) {
 		fprintf(stderr,
 			"%s: A POSIX USER or GROUP account MUST be chosen for SUDOER OPS\n",
@@ -1062,30 +1040,38 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 			"%s: A SUDOER Account MUST be chosen for SUDOER OPS\n",
 			binary);
 	    }
-	    exit(EXIT_FAILURE);
+	    printf("DEBUG: step 4 failure.\n");
+	    return 1;
 	}
-
     }
+    return 0;
+}
+
 #ifdef HAVE_LDAP_SASL_GSSAPI
+int finalize_auth(int sflag, uxds_acct_t atype, uxds_authz_t * auth,
+		  uxds_data_t * mdata, uxds_tool_t op)
+{
+    enum { SIMPLE, SASL, GSSAPI, KINIT };
+
     if ((auth->password != NULL) || (auth->pkcert != NULL)) {
 	switch (sflag) {
-	case 0:
+	case SIMPLE:
 	    if (auth->debug)
 		fprintf(stderr, "SIMPLE BIND selected.\n");
 	    break;
-	case 1:
+	case SASL:
 	    if (auth->debug)
 		fprintf(stderr, "SASL - %s selected as mech.\n",
 			auth->saslmech);
 	    break;
-	case 2:
+	case GSSAPI:
 	    if (auth->password->bv_val != NULL) {
 		fprintf(stderr,
 			"-m GSSAPI is INCOMPATIBLE with [-u] and [-p|-P]\n");
 		exit(EXIT_FAILURE);
 	    }
 	    break;
-	case 3:
+	case KINIT:
 	    if (get_tkts(auth->username, NULL, *auth) == 0) {
 		if ((atype == USER) && (op != DEL)) {
 		    if ((mdata->cpw == 1) || (mdata->setpass != NULL)) {
@@ -1105,9 +1091,7 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 			center_free(ccbuf);
 		    }
 		}
-		auth->username = NULL;
-		auth->saslmech = "GSSAPI";
-		sflag = 2;
+		sflag = GSSAPI;
 	    } else {
 		fprintf(stderr, "error in obtaining krbtgt ticket\n");
 		fprintf(stderr,
@@ -1115,9 +1099,11 @@ int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
 	    }
 	    break;
 	default:
+	    fprintf(stderr, "FATAL ERROR, bailing...\n");
+	    exit(EXIT_FAILURE);
 	    break;
 	}
     }
-#endif				/* HAVE_LDAP_SASL_GSSAPI */
     return sflag;
 }
+#endif				/* HAVE_LDAP_SASL_GSSAPI */

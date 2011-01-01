@@ -18,6 +18,9 @@
  *
  */
 
+#ifndef _UXDS_H_
+#define _UXDS_H_
+
 /* std headers */
 #include <stdio.h>
 #include <stdlib.h>
@@ -129,7 +132,7 @@ typedef struct uxds_authz_t {
     char *basedn;		/* base dn for ops */
 } uxds_authz_t;
 
-/* primitve enum types - will have to consolidate */
+/* primitive enum types - will have to consolidate */
 typedef enum { UXDS_USAGE, UXDS_HELP, UXDS_VERSION } uxds_usage_t;
 typedef enum { ADD, MOD, DEL, EYE } uxds_tool_t;
 typedef enum { XARGS, XACCT, XBOTH, XBIND } uxds_flag_t;
@@ -155,7 +158,6 @@ typedef struct uxds_sudo_t {
 
 /* account data passed to LDAPMod structs */
 typedef struct uxds_data_t {
-    int _entry;			/* calc args for op */
     int modrdn;			/* flag for modrdn op */
     int membit;			/* flag for memberUid add/del */
     int cpw;			/* change pwd flag */
@@ -254,3 +256,14 @@ int uxds_sudo_del(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld);
 
 int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld);
 
+/* sanitize/finalize for parse_args() */
+int sanitize_add_ops(uxds_data_t * mdata, uxds_acct_t atype, uxds_tool_t op,
+                 char *binary);
+
+int sanitize_sudo_ops(uxds_authz_t * auth, uxds_sudo_t * su, uxds_tool_t op,
+                      uxds_acct_t atype, char *binary);
+
+int finalize_auth(int sflag, uxds_acct_t atype, uxds_authz_t * auth, 
+		  uxds_data_t * mdata, uxds_tool_t op);
+
+#endif		    /* _UXDS_H_ */
