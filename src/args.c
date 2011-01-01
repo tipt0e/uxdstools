@@ -287,9 +287,9 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 
 
 /* command line parser */
-int parse_args(int argc, char **argv, uxds_acct_t atype, uxds_tool_t op,
-	       int numargs, uxds_authz_t * auth, uxds_data_t * mdata,
-	       char *binary)
+uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype, 
+                       uxds_tool_t op, int numargs, uxds_authz_t * auth,
+                       uxds_data_t * mdata, char *binary)
 {
     int i;
     uxds_bind_t sflag;
