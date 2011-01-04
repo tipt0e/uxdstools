@@ -1,6 +1,6 @@
 /*
  * UNIX Directory Service SUDOer Account Modify 
- * (c) 2008-2010 Michael Brown
+ * (c) 2008-2011 Michael Brown
  *
  *   Part of:
  *

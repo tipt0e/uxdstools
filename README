@@ -315,7 +315,7 @@ before it can authenticate to the directory.
 
 *** for 'luseradd' & 'lusermod' if Qmail attributes are enabled:
 
--K email
+-E email
 Sets mailAlternateAddress attribute for mail delivery.
 Defaults to whats in 'mail'.
 
