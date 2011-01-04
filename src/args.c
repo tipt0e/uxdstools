@@ -558,7 +558,7 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		int g = 7;
 		if (auth->debug)
 		    g++;
-		if (auth->pkcert)
+		if (auth->username)
 		    g = g + 2;
 		if ((atype != GROUP) && (atype != SUDOER) && (op != ADD)) {
 		    if ((op == MOD) && (argc > g)) {
@@ -579,7 +579,10 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 			break;
 		    } else {
 			mdata->modrdn = 1;
-			goto modrdn;
+			optmask("<group>", atype, opts, c);
+			mdata->group = strdup(argv[i]);
+			i--;
+			break;
 		    }
 		    fprintf(stderr,
 			    "%s: [-G] not an option for existing POSIX USER DELETE\n",
@@ -599,11 +602,6 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		    i--;
 		    break;
 		}
-	      modrdn:;
-		optmask("<group>", atype, opts, c);
-		mdata->group = strdup(argv[i]);
-		i--;
-		break;
 	    case 'A':
 		i++;
 		if (atype != SUDOER) {
