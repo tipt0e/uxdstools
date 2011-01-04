@@ -316,29 +316,27 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
     ERRNOMEM(auth->password);
     auth->password->bv_val = NULL;
     auth->password->bv_len = 0;
-    if ((atype == SELF) || (atype == SUDOER)) {
-	goto parse;
-    }
-    mdata->exp = 0;
-    mdata->cpw = 0;
-    mdata->membit = 0;
-    mdata->ou = NULL;
-    mdata->user = NULL;
-    mdata->group = NULL;
-    mdata->firstname = NULL;
-    mdata->lastname = NULL;
-    mdata->member = NULL;
-    mdata->shell = NULL;
-    mdata->comment = NULL;
-    mdata->uidnum = NULL;
-    mdata->gidnum = NULL;
-    mdata->homes = NULL;
-    mdata->setpass = NULL;
+    if ((atype != SELF) && (atype != SUDOER)) {
+	mdata->exp = 0;
+	mdata->cpw = 0;
+	mdata->membit = 0;
+	mdata->ou = NULL;
+	mdata->user = NULL;
+	mdata->group = NULL;
+	mdata->firstname = NULL;
+	mdata->lastname = NULL;
+	mdata->member = NULL;
+	mdata->shell = NULL;
+	mdata->comment = NULL;
+	mdata->uidnum = NULL;
+	mdata->gidnum = NULL;
+	mdata->homes = NULL;
+	mdata->setpass = NULL;
 #ifdef QMAIL
     mdata->mhost = NULL;
     mdata->altaddr = NULL;
 #endif				/* QMAIL */
-  parse:
+    }
     if (argv[1] == NULL) {
 	usage(UXDS_USAGE, argv[0], atype, op);
     }
