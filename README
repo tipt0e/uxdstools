@@ -176,7 +176,14 @@ Not tested and totally optional at this point. With debugging enabled,
 (see -d, below) it is possible to see if this is needed by you, as the
 callbacks are spelled out.
 
-** This next option requires GSSAPI support to be enabled. **
+** The next options requires GSSAPI support to be enabled. **
+
+-K FILE:/path/to/x509_certificate
+
+With GSSAPI enabled, this allows for rudimentary PK-INIT authentication 
+using an x509 certificate.  At this time it does not accept passphrases for 
+private keys.  It will gain a kadmin/changepw ticket for use in changing 
+principal passwords. Requires '-u <krb5Principal>' argument.
 
 -c ccache 
 With '-m GSSAPI', an alternate location for the Kerberos credentials
@@ -419,4 +426,4 @@ Support MIT kerberos in addition to Heimdal
 Enable attributes for SAMBA accounts
 Enable attributes for Active Directory accounts
 
-Copyright (c) 2008-2010, Michael Brown <mikal@mikro-net.com>
+Copyright (c) 2008-2011, Michael Brown <mikal@mikro-net.com>
