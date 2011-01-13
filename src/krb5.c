@@ -356,11 +356,9 @@ krb5_error_code setpwd(char *user, char *passwd)
     krb5_data_free(&result_code_string);
     krb5_data_free(&result_string);
 
-    //krb5_cc_destroy(context, ccache);
     krb5_cc_close(context, ccache);
     krb5_free_context(context);
     /* if you want to delete or keep it is good for 5 min */
-    //unlink("/tmp/kadmin_cache");
 
     return error != 0;
 }
