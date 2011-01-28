@@ -283,12 +283,6 @@ krb5_error_code get_tkts(char *user, char *service, uxds_authz_t auth)
     }
 #endif
     krb5_free_cred_contents(context, &cred);
-
-    /*
-       if (enctype)
-       free(enctype);
-     */
-
     krb5_cc_close(context, ccache);
     krb5_free_context(context);
 
