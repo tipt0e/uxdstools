@@ -38,8 +38,6 @@
 #include <sys/wait.h>
 #include "config.h"
 #include "realm.h"
-//#define rpl_malloc malloc
-/* config.h */
 
 #ifdef HAVE_LDAP_SASL
 #ifdef HAVE_SASL_SASL_H
