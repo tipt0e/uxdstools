@@ -12,7 +12,8 @@ void optmask(char *label, uxds_acct_t type, struct cmdopts opts,
     switch (flag) {
 	/* account with wrong args */
     case XACCT:
-	fprintf(stderr, "option not relevant for account TYPE\n");
+	fprintf(stderr, "option [-%c %s] not relevant for account TYPE\n",
+                        opts.letter, label);
 	usage(0, opts.binary, type, XBOTH);
 	break;
 	/* only one of user, group, or sudoer */
@@ -602,6 +603,10 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		    i--;
 		    break;
 		}
+                optmask("<group>", atype, opts, c);
+                mdata->group = strdup(argv[i]);
+                i--;
+                break;
 	    case 'A':
 		i++;
 		if (atype != SUDOER) {
@@ -956,7 +961,8 @@ int sanitize_add_ops(uxds_data_t * mdata, uxds_acct_t atype,
 	if ((mdata->firstname == NULL) || (mdata->lastname == NULL) ||
 	    (mdata->group == NULL)) {
 	    fprintf(stderr,
-		    "%s %s: [-G <group>],[-f <first name>],[-l <last name>] all REQUIRED for USER ADD\n",
+		    "%s: %s [-G <group>],[-f <first name>],[-l <last name>] all " \
+                    "REQUIRED for USER ADD\n",
 		    binary, mdata->group);
 	    return 1;
 	}
