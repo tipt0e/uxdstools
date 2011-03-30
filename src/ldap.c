@@ -15,6 +15,7 @@
 #include "uxds_log.h"
 #endif				/* TOOL_LOG */
 
+int i;
 int rc;
 char *cbuf = NULL;
 struct berval **vals;
@@ -154,12 +155,13 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 
     FILE *fp;
 
-    int i;
     int all = 0;
     char *dn = NULL;
     char *base = NULL;
     char *attr = NULL;
+#ifdef HAVE_LDAP_SASL
     char *fbuf = NULL;
+#endif		/* HAVE_LDAP_SASL */
     char *accttype = NULL;
     /* only pull these values */
     char *attr_mask[] = { "cn",
@@ -373,7 +375,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     static uxds_authz_t auth;
     struct posixid pxid;
 
-    int i;
     int a;
     char *attr = NULL;
     char **mems = NULL;
@@ -913,8 +914,9 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
     static uxds_authz_t auth;
 
-    int i;
+#ifdef HAVE_LDAP_SASL
     char *cbuf = NULL;
+#endif		/* HAVE_LDAP_SASL */
     char *dn = NULL;
     char *mod_dn = NULL;
     char *mygecos = NULL;
@@ -1294,7 +1296,6 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
 	fprintf(stderr, "deleting memberUid FAILED\n");
     }
 #ifdef PTS
-    int i;
     char *oldgroup = strdup(old_dn);
     oldgroup = strtok(oldgroup, ",");
     for (i = 0; i < strlen(oldgroup) - 1; i++) {
@@ -1429,7 +1430,7 @@ int uxds_user_expire(int type, char *dn, LDAP * ld)
 {
     enum { KRB5, PPLCY, SAMBA, AD };	/* pplcy/samba/ad future */
 
-    int i, e;
+    int e;
     char *expiry = NULL;
     char *xattr = NULL;
 
@@ -1509,7 +1510,6 @@ int uxds_user_expire(int type, char *dn, LDAP * ld)
 int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
 {
     pid_t pid;
-    int i;
     int status;
     va_list ap;
     uxds_acct_t pxtype;
@@ -1671,7 +1671,6 @@ char *return_idnum(LDAP * ld, LDAPMessage * entry, char *attr)
 char *build_gecos(uxds_data_t mdata, LDAPMessage * entry, int debug,
 		  LDAP * ld)
 {
-    int i;
     char *role = NULL;
     char *old_gecos = NULL;
 

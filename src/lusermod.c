@@ -32,7 +32,11 @@ int main(int argc, char *argv[])
     char *bin = argv[0];
     sflag = parse_args(argc, argv, USER, MOD, 6, &auth, &mdata, bin);
 
+#ifdef HAVE_LDAP_SASL_GSSAPI
     if ((auth.pkcert) && (argc < 8)) {
+#else
+    if (argc < 6) {
+#endif		/* HAVE_LDAP_SASL_GSSAPI */
 	if ((!mdata.exp) || (!mdata.cpw)) {
 	    fprintf(stderr,
 		    "At least ONE attribute must be selected to use lusermod.\n");

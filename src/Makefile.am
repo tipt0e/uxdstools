@@ -168,12 +168,16 @@ SRCS = uxds.h uxds_sasl.h uxds_krb5.h uxds_log.h uxds_strings.h strings.c sasl.c
 
 LDFLAGS = -lldap
 
+if SASL
+SASLOBJS = sasl.o
+endif
+
 if GSSAPI 
-OBJS = -lkrb5 args.o strings.o krb5.o sasl.o ldap.o
-SUOBJS = -lkrb5 sudoldap.o args.o strings.o krb5.o sasl.o ldap.o
+OBJS = -lkrb5 args.o strings.o krb5.o ldap.o
+SUOBJS = -lkrb5 sudoldap.o args.o strings.o krb5.o ldap.o
 else
-OBJS = args.o strings.o sasl.o ldap.o
-SUOBJS = sudoldap.o args.o strings.o sasl.o ldap.o
+OBJS = args.o strings.o ldap.o
+SUOBJS = sudoldap.o args.o strings.o ldap.o
 endif
 
 if PTS
@@ -195,29 +199,29 @@ endif
 
 all-debug: lacctparse_debug luseradd_debug
 
-lacctparse_debug: ${OBJS} ${LOGOBJS} lacctparse.o
-	${CC} ${DEBUG} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} lacctparse.o -o lacctparse
+lacctparse_debug: ${OBJS} ${LOGOBJS} ${SASLOBJS} lacctparse.o
+	${CC} ${DEBUG} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} ${SASLOBJS} lacctparse.o -o lacctparse
 
-lacctparse: ${OBJS} ${LOGOBJS} lacctparse.o
-	${CC} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} lacctparse.o -o lacctparse
+lacctparse: ${OBJS} ${LOGOBJS} ${SASLOBJS} lacctparse.o
+	${CC} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} ${SASLOBJS} lacctparse.o -o lacctparse
 
-luseradd: ${OBJS} ${LOGOBJS} luseradd.o
-	${CC} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} luseradd.o -o luseradd
+luseradd: ${OBJS} ${LOGOBJS} ${SASLOBJS} luseradd.o
+	${CC} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} ${SASLOBJS} luseradd.o -o luseradd
 
-lgroupadd: ${OBJS} ${LOGOBJS} lgroupadd.o
-	${CC} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} lgroupadd.o -o lgroupadd
+lgroupadd: ${OBJS} ${LOGOBJS} ${SASLOBJS} lgroupadd.o
+	${CC} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} ${SASLOBJS} lgroupadd.o -o lgroupadd
 
-luserdel: ${OBJS} ${LOGOBJS} luserdel.o
-	${CC} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} luserdel.o -o luserdel
+luserdel: ${OBJS} ${LOGOBJS} ${SASLOBJS} luserdel.o
+	${CC} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} ${SASLOBJS} luserdel.o -o luserdel
 
-lgroupdel: ${OBJS} ${LOGOBJS} lgroupdel.o
-	${CC} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} lgroupdel.o -o lgroupdel
+lgroupdel: ${OBJS} ${LOGOBJS} ${SASLOBJS} lgroupdel.o
+	${CC} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} ${SASLOBJS} lgroupdel.o -o lgroupdel
 
-lusermod: ${OBJS} ${LOGOBJS} lusermod.o
-	${CC} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} lusermod.o -o lusermod
+lusermod: ${OBJS} ${LOGOBJS} ${SASLOBJS} lusermod.o
+	${CC} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} ${SASLOBJS} lusermod.o -o lusermod
 
-lgroupmod: ${OBJS} ${LOGOBJS} lgroupmod.o
-	${CC} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} lgroupmod.o -o lgroupmod
+lgroupmod: ${OBJS} ${LOGOBJS} ${SASLOBJS} lgroupmod.o
+	${CC} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} ${SASLOBJS} lgroupmod.o -o lgroupmod
 
 if SUDOON
 sudoldap.o: uxds.h  sudoldap.c
@@ -232,18 +236,18 @@ lsudodel.o:: uxds.h  lsudodel.c
 lsudomod.o: uxds.h  lsudomod.c
 	${CC} ${DEBUG} ${CFLAGS} lsudomod.c
 
-lsudoadd: ${SUOBJS} ${LOGOBJS} lsudoadd.o
-	${CC} ${LDFLAGS} ${AFSFLAG} ${SUOBJS} ${LOGOBJS} lsudoadd.o -o lsudoadd
+lsudoadd: ${SUOBJS} ${LOGOBJS} ${SASLOBJS} lsudoadd.o
+	${CC} ${LDFLAGS} ${AFSFLAG} ${SUOBJS} ${LOGOBJS} ${SASLOBJS} lsudoadd.o -o lsudoadd
 
-lsudodel: ${SUOBJS} ${LOGOBJS} lsudodel.o
-	${CC} ${LDFLAGS} ${AFSFLAG} ${SUOBJS} ${LOGOBJS} lsudodel.o -o lsudodel
+lsudodel: ${SUOBJS} ${LOGOBJS} ${SASLOBJS} lsudodel.o
+	${CC} ${LDFLAGS} ${AFSFLAG} ${SUOBJS} ${LOGOBJS} ${SASLOBJS} lsudodel.o -o lsudodel
 
-lsudomod: ${SUOBJS} ${LOGOBJS} lsudomod.o
-	${CC} ${LDFLAGS} ${AFSFLAG} ${SUOBJS} ${LOGOBJS} lsudomod.o -o lsudomod
+lsudomod: ${SUOBJS} ${LOGOBJS} ${SASLOBJS} lsudomod.o
+	${CC} ${LDFLAGS} ${AFSFLAG} ${SUOBJS} ${LOGOBJS} ${SASLOBJS} lsudomod.o -o lsudomod
 endif
 
-luseradd_debug: ${OBJS} ${LOGOBJS} luseradd.o
-	${CC} ${DEBUG} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} luseradd.o -o luseradd
+luseradd_debug: ${OBJS} ${LOGOBJS} ${SASLOBJS} luseradd.o
+	${CC} ${DEBUG} ${LDFLAGS} ${AFSFLAG} ${OBJS} ${LOGOBJS} ${SASLOBJS} luseradd.o -o luseradd
 
 strings.o: uxds.h uxds_strings.h strings.c
 	${CC} ${DEBUG} ${CFLAGS} strings.c
