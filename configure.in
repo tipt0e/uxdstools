@@ -1,7 +1,7 @@
 dnl                                               -*- Autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.61)
+AC_PREREQ(2.59)
 AC_INIT(uxdstools,0.7-git,mikal@mikro-net.com) 
 
 AC_CONFIG_SRCDIR([src/krb5.c])
@@ -105,6 +105,7 @@ AC_ARG_ENABLE(log,
 			  defaults to /tmp/uxds.log],
      
     [LOGPATH="$enableval"
+    LOGGER="yes"
     if test "$LOGPATH" = "yes"; then
         LOGPATH="/tmp/uxdslog"
     fi
@@ -121,6 +122,7 @@ AM_CONDITIONAL(SUDOON, [test x"$SUDOON" = x"yes"])
 AM_CONDITIONAL(SASL, [test x"$SASL" = x"yes"])
 AM_CONDITIONAL(GSSAPI, [test x"$GSSAPI" = x"yes"])
 AM_CONDITIONAL(PTS, [test x"$PTS" = x"yes"])
+AM_CONDITIONAL(LOGGER, [test x"$LOGGER" = x"yes"])
 
 dnl Checks for programs.
 
