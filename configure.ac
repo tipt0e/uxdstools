@@ -131,6 +131,7 @@ AC_CHECK_LIB(ldap, ldap_initialize)
 
 if test "$GSSAPI" = "yes"; then
     AC_CHECK_LIB(krb5, krb5_init_context)
+    AC_CHECK_LIB(crypto, BIO_new)
 fi
 
 dnl Checks for header files.
