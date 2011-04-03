@@ -734,7 +734,7 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 			c = XBOTH;
 		    //optmask("<sudoer>", atype, opts, c);
 		    auth->acct = SUDOER;
-		    if (argv[i] != NULL) {
+		    if ((argv[i] != NULL) && (argv[i][0] != '-')) {
 			auth->pxacct = strdup(argv[i]);
 		    }
 		    i--;
