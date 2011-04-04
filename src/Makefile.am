@@ -230,7 +230,7 @@ sudoldap.o: uxds.h  sudoldap.c
 lsudoadd.o: uxds.h  lsudoadd.c
 	${CC} ${DEBUG} ${CFLAGS} lsudoadd.c
 
-lsudodel.o:: uxds.h  lsudodel.c
+lsudodel.o: uxds.h  lsudodel.c
 	${CC} ${DEBUG} ${CFLAGS} lsudodel.c
 
 lsudomod.o: uxds.h  lsudomod.c
