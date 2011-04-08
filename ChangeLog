@@ -1,144 +1,1278 @@
-uxdstools 0.5.3
----------------
+commit 26522de9c3898107b28cf4171768a574a9dda801
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Apr 3 19:48:14 2011 -0700
 
-2008-07-30	Michael Brown <mikal@mikro-net.com>
+    correct double colon typo
 
-	* resolv.sh: added logic to detect machine type through `uname -m`
-		as the strlen references channged in 0.5.2 are only applicable
-		to x86_64 arch
+commit bb44b4b3be70b7ff41c6c3998ed1ecbcc8ea556f
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Apr 3 11:22:13 2011 -0700
 
+    fix lacctparse output when no argument is selected for -S (sudoer listing)
 
-uxdstools 0.5.2
----------------
+commit e17ff1dc0666e459b7e221a9ebbb71ee914af180
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Apr 3 10:32:06 2011 -0700
 
-2008-07-24	Michael Brown <mikal@mikro-net.com>
+    Fix autotools generated build system to include libcrypto checks
 
-	* ldap.c, sudoldap.c: changed format to unsigned long for sizeof and
-			and strlen() references to silence compiler warnings
-			for gcc > 4.3.0
+commit a222018d6f791671271abb618e74808807669c63
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed Mar 30 13:28:57 2011 -0700
 
+    rename configure.in to configure.ac to follow present autoconf convention
 
-uxdstools 0.5.1
----------------
+commit 525092c778884411abec8c4190c71498e8070271
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed Mar 30 13:19:33 2011 -0700
 
-2008-03-08	Michael Brown <mikal@mikro-net.com>
+    fix SASL enable compile-time option
+    
+    if SASL is not enabled at compile time, sasl.o will still
+    attempt to be included in the build, because of Makefile.am - these
+    changes fix this
 
-	* krb5.c, args.c, ldap.c, sudoldap.c: removed unused LDAPMod structs
-	        and other variables to fix gcc warnings
-			
-	* ltools.h: added missing header includes ctype.h, err.h and
-	            parse_time.h
+commit 63fe25940bc4f3c1fcebb1ee58ae5028d3e2cbe1
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Mar 29 17:17:40 2011 -0700
 
-	* Makefile.am:  added -Wall and -DLDAP_DEPRECATED=1 to gcc arguments
-	
+    reconfigure how binaries are built
+    
+    the configure options now correctly include/exclude files based on
+    options chosen at compile time - also downgraded autoconf version
+    to 2.59 (most RHEL/Centos have this by default)
 
-uxdstools 0.5
----------------
+commit b92949af178ed19af7961ca44d1e7e5b2c58e8d7
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Feb 6 15:41:21 2011 -0800
 
-2008-02-20	Michael Brown <mikal@mikro-net.com>
+    fix bug in parsing primary group argument for luseradd
 
-	* krb5.c: added setpwd() for -y switch with gssapi - sets pass from 
-	          argument to krb5Key attribute - used with randstr() for now
-	          changed get_tkts() to use auth.password with
-		  krb5_get_init_creds_opt_set_pa_password()
-		  changed get_krbname() for parse arg to switch return char
-		  with either principal short name or creds cache location for
-		  putenv() calls
+commit 3823afed23474cf90a152c3c9fd4419463535507
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Feb 3 20:36:36 2011 -0800
 
-	* configure.in: added logic for sudoers enable (--enable-sudoers)
-	   		added logic for logging enable (--enable-log)
-			added logic for Qmail attrs enable (--enable-qmail)
-			added logic for ssh-lpk attrs enable (--enable-sshlpk)
+    cosmetic changes to header
 
-	* Makefile.am: added logic for sudoers enable
+commit a54f4ae99674dd2eaa4fbeb2a60525eb59668a45
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Jan 28 14:58:37 2011 -0800
 
-	* log.c: added logging function log_event() and curdate()
+    remove useless commented code
 
-	* strings.c: fixed passget() to put everything on one line and handle
-	             backspace character correctly, and strdup() on return
-		     for better string handle
-		     added randstr() for 8 character random password gen
-		     added base64() for krb5Key attribute LDIF export
+commit 1b5eeffcdcddcd9657b47948776e0fb709586699
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Jan 13 15:46:29 2011 -0800
 
-	* lsudomod.c: created - calls uxds_sudo_mod()
+    remove useless commented code
 
-	* lsudodel.c: created - calls uxds_sudo_del()
+commit beb15df6927167ecf22a55a0df0c21c722d02118
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Jan 13 15:42:26 2011 -0800
 
-	* lsudoadd.c: created - calls uxds_sudo_add()
+    eliminate commented code
 
-	* sudoldap.c: created - functions for lsudoadd, lsudodel, lsudomod -
-	              uxds_sudo_add(), uxds_sudo_del(), uxds_sudo_mod()
-		      added ifdefs for logging enable
+commit 3ea71a739abe2c44058e286deac78fac5dc143b5
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Jan 4 10:51:40 2011 -0800
 
-	* args.c: removed huge bug in parse_argvs() - arg binary[] wtf??
-	          added -y for password set with gssapi
-	          changed _optmask() from ugly if statements to switch for 
-	          flag determination
-		  added sudoers arguments
-		  added baseDN argument for base DN choice
-		  added -V or SASL output INTERACTIVE may move to debug
-		  added get_tkts() call for -y switch to grab kadmin/changepw
-		  added -e for account expiry
-		  principal: sets mdata.cpw to 1
-		  added -L for LDIF export in lacctparse
+    cleaned up modrdn option and eliminated goto
 
+commit 2ed0f2fe83e0fda511af48e673ff8560845d417f
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Jan 4 10:34:24 2011 -0800
 
-	* ltools.h: changed prototype for parse_argvs()
-	            added #include sys/errno.h for codes for logging
-		    and ENOMEM
-	            added basedn to authzdata for choice [-b] switch
-		    added cpw to mod_data structure for change pw flag
-		    added ldif to authzdata structure for LDIF path
+    eliminated goto
 
-	* ldap.c: removed some for loops that used ldap_get_attributes(),
-	          went straight to ldap_get_values() for what was needed
-		  instead in uxds_acct_add() and uxds_acct_mod()
-	          - much needed cleanup of the LDAPMod structure
-	          handling, doing this eliminated ~50 lines of code -
-		  - this affected uxds_acct_add(), uxds_acct_mod(), and
-		  uxds_grp_mem()
-		  added ifdefs for logging enable, qmail & sshlpk attrs
-		  added logic for multiple members add with lgroupadd and
-		  add/delete with lgroupmod
-		  added setpwd() calls in uxds_acct_add() & uxds_acct_mod() for
-		  the user add/mod operations
-		  added listing all selected accounts in directory in
-		  uxds_acct_parse() if no account argument was input
-		  added uxds_user_expire() for account expiry using either
-		  krb5PasswordEnd or pwdReset - with logic for Samba & AD
-		  for future use
-		  added base64() call for uxds_acct_parse() when GSSAPI
-		  enabled - base64's the krb5Key attribute when LDIF export is
-		  chosen
+commit c40020c9ea3405fa3b6bd6e85b79573ecb175183
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Jan 4 10:22:34 2011 -0800
 
-uxdstools 0.4
--------------
+    added PK-INIT information to README
 
-	* lacctparse.c: eliminated the argument parsing out of main() and
-	                moved into the fold using args.c
+commit 122b58c5568d3f165466979fd0a48582904a4a57
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Jan 3 17:47:42 2011 -0800
 
-	* args.c: cleaned up parse_argvs() and _optmask() for lacctparse.c
-		  acceptance, added putenv() call for kerb ccache location
-		  choice
+    extended copyright notice to 2011
 
-	* ldap.c: calculate new gidNumber from chosen group and modify
-	          gidNumber attr to reflect change in user modrdn portion of
-		  uxds_acct_mod(),
-	          - fixed uxds_acct_parse() for lacctparse to use args.c
-	          functions and the new vars in authzdata
-		  - added uxds_grp_mem() to handle memberUid adds/deletes
-		  from group accounts
+commit 468a955d91b1d4cc68b232824ba9e58d0520c308
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Jan 3 17:46:26 2011 -0800
 
-	* ltools.h: eliminated parsedata, cleaned up prototypes
+    extended copyright notice to 2011
 
-	* strings.c: added realmtodn() for future use
+commit 5be04798f0f55c6708c07e091aed146adc38a61e
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Jan 1 14:28:49 2011 -0800
 
-	* lacctparse.1, luseradd.1, lusermod.1, luserdel.1,
-	  lgroupadd.1, lgroupmod.1, lgroupdel.1: all created manpages
+    parse_args() should return a uxds_bind_t type
 
+commit 65a66c0fedeb784198453956ca86b9362d97ca51
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Jan 1 14:09:26 2011 -0800
 
-uxdstools 0.3
--------------
-Initial release (what happened to 0.1 and 0.2????)
-Really wan't completely finished I realized to my dismay.
-But hey, this is alpha stuff.
+    expanded uxds_bind_t type to include KINIT - now used globally
+    
+    This was done to eliminate the magic numbers used in sflag for
+    processing the authentication type used in LDAP binds.
+
+commit 0932aa5270c96ad44c1d61f19e190d4c96860d37
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Jan 1 13:13:49 2011 -0800
+
+    refactoring of args module - fix and cleanup code
+    
+    In parse_args() the tail-end processing was split out into three functions:
+    sanitize_sudo_ops(), sanitize_add_ops()m and finalize_auth().
+    Useless code that counted the number of entries was eliminated.
+
+commit 5a5915570d3bffe57791ac3ca42c52a3204e049a
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Dec 31 14:18:04 2010 -0800
+
+    fixed fatal error in lacctparse.c
+
+commit f93f7fa3a3a18bc8f28e872dc85fdff15a3a8f0f
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed Dec 29 20:03:58 2010 -0800
+
+    starting to change style
+
+commit 73d4db2bbdafd9e383d3c693f783805ccc3ae712
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed Dec 29 13:00:15 2010 -0800
+
+    replaced exit() with return in *ldap modules
+
+commit 0cbd7e964a0707993f6e3bb08f38a9c88db655e5
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Dec 23 13:35:01 2010 -0800
+
+    changed return type to krb5_error_code
+
+commit a724d291bd4a59eb627494afe18db4110c6be6fd
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Dec 20 18:47:15 2010 -0800
+
+    fixed macro definition part 2 '\'
+
+commit ac648bef77a690a64696141c587d8508973b98a2
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Dec 20 18:39:47 2010 -0800
+
+    fixed macro definition
+
+commit 05a3a0f474cbc5811f8cee39e9d6ab1f2c1ba20d
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Dec 17 14:20:38 2010 -0800
+
+    fixed memory leak in uxds_acct_parse() by calling ldap_msgfree()
+
+commit f284cdcdcc72221bbc24b05a232a4d31ee470be5
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Dec 17 13:41:18 2010 -0800
+
+    make sure binaries are stripped upon install
+
+commit 9d919f7584869efeb4a36fb191e4ca966c4c3300
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Dec 16 17:00:28 2010 -0800
+
+    eliminated unnecessary parentheses
+
+commit c037fe4f8754245b86d16816d085e6fdfc95af48
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Dec 16 16:58:03 2010 -0800
+
+    stupid bug: replaced fsync() with fflush()
+
+commit 7ab84666809a484ccba3d305c32682ad3336a926
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Dec 10 17:35:27 2010 -0800
+
+    corrected typo on fp
+
+commit 5b0ce584a5ecfd986eea51af39ceba90477ad86f
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Dec 10 17:27:19 2010 -0800
+
+    fsync() was needed to make sure the bytes are written
+
+commit 8002b330ede5bcbfa4201aea2369181290c4f836
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Nov 30 11:58:46 2010 -0800
+
+    missing an error message if KRB5_LIBOS_PWDINTR was returned from
+    krb5_get_init_creds_password() in get_tkts()
+
+commit 512f7cde2c7b296fd71ff167418a76940bbf062b
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed Nov 24 13:41:39 2010 -0800
+
+    reorganized password change/expiry code in uxds_acct_add()
+
+commit 8aa3823a33d85b5a9550a8a94d5c437d5671aca2
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed Nov 24 13:00:20 2010 -0800
+
+    reorganized code to fixed broken password change/expire operations
+    
+    It was formerly not possible to perform a krb5 password change or
+    expiry and modify user attributes simultaneously. This was fixed
+    by eliminating the skipmod goto and reorganizing the code in a more
+    sane fashion.  The password changes happen first, and if there are
+    no modifications to be done, uxds_acct_mod returns.  If there are,
+    the code continues normally to perform the mods.
+
+commit 74be64f1dbe10d902d94d86d1e38adae6f620ca2
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Nov 22 14:42:00 2010 -0800
+
+    added macro ERRNOMEM() to check all memory allocations for NULL values
+
+commit 012530dc396f006198d14706e1d68503debb5f03
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Nov 19 18:49:13 2010 -0800
+
+    removed redundant symbol
+
+commit d70a81dbb27c7082e31a4c0158d3196a8e1ca9c5
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Nov 16 08:15:09 2010 -0800
+
+    defined macro for better readability
+
+commit d50bb9a04e872586d8023383c5a74a7e51335595
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Nov 13 14:41:35 2010 -0800
+
+    fixed stupid typo
+
+commit a214d4c66f060b956df1cd828fc0daeb87767359
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Nov 13 14:24:12 2010 -0800
+
+    removed useless symbols
+
+commit 76f5f5a0948f08d7febc65d087d2b8899875bef5
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Nov 13 14:20:33 2010 -0800
+
+    eliminated goto by splitting out new function build_gecos() from uxds_acct_mod()
+
+commit 0f88426967a0a8a50405f5df60f0f6eaf6546e6a
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Nov 13 12:01:38 2010 -0800
+
+    removed magic number for search filter memory allocation
+
+commit 3ced0113d66050530be1029fb1a342a2a75770e1
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Nov 13 11:51:33 2010 -0800
+
+    removed magic number for adding users to groups
+
+commit d262cb98e2c1f13e0ffd0441c350a618f0d9b0b7
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Nov 13 09:52:54 2010 -0800
+
+    free() was executed too early
+
+commit 08675b14fe50a84e90aab7e9ccb99c91e72ed061
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Nov 13 09:50:21 2010 -0800
+
+    free() was executed too early
+
+commit 7826449e50829847a5c3062edf53a367692600bd
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Nov 13 09:38:30 2010 -0800
+
+    gecos field was not being updated properly in uxds_acct_modrdn()
+
+commit 4f941e1f1600afb571c88c69846014c0771c9b35
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Nov 13 08:15:49 2010 -0800
+
+    don't need to allocate memory for interact->defresult
+
+commit 2335904aad65b2462b3a86ad0a7d60b7fa31108d
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Nov 11 16:56:56 2010 -0800
+
+    plug memory leaks: ldap_msgfree() all LDAPMessage types used in ldap_search_ext_s()
+
+commit 7bffe4b5ab26af8f977f9065b35fa043a0062aa2
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Nov 11 08:50:43 2010 -0800
+
+    split out uxds_acct_modrdn() from uxds_acct_mod() for changing user's primary group
+
+commit 6d42e3eab82282cb7e0d45587fba47efc98cf786
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Nov 9 23:18:41 2010 -0800
+
+    eliminate useless code
+
+commit cf26f91aa805b682076bd7e9c4e725c2dadf12e7
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Nov 9 23:11:02 2010 -0800
+
+    lacctparse was not returning correct 'ldapwhoami' info with simple binds
+
+commit fad8d0053de7a098e334beb35bc20662d5ef9f26
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Nov 9 18:03:14 2010 -0800
+
+    removed Makefiles from git tree - they should be generated by autogen.sh
+
+commit 65ff9fd9699af3f096b4ef2e9a07b931df8da396
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Nov 9 17:55:45 2010 -0800
+
+    forgot to commit resolv.sh change
+
+commit 8c6e8aaab86827ed3b4c3c84a5884b3fc17fbd43
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Nov 9 17:52:06 2010 -0800
+
+    it is more sensible to check realm information from krb5.conf instead of resolv.conf
+    
+    also fixed some typos
+
+commit e10604139c934b67886090469256aa88354e0191
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Nov 9 17:22:25 2010 -0800
+
+    license should be GPL v2 not v3
+
+commit 56ec14f72838d5e6d928e8a9ff2def1b82da7b17
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Nov 9 17:01:34 2010 -0800
+
+    free() oldgroup
+
+commit 198bc1a86cda38e12d4b6667b44261c5f3693555
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Nov 8 10:13:55 2010 -0800
+
+    get_krbname(): eliminated codepath that will never be followed
+
+commit edc1ff54e9c6a9cf80ad8f7ff3b93c16b5af4397
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Nov 7 20:57:39 2010 -0800
+
+    krb5_get_init_creds_opt_set_pa_password() was called twice
+
+commit aec08d47c2ceab1a59d707a69cc63b0b997a5d62
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Nov 7 20:56:05 2010 -0800
+
+    Revert "krb_5_get_init_creds_opt_set_pa_password() was called twice"
+    
+    This reverts commit 962c719db7762322cbee1b1bf065720cd7f18025.
+
+commit 962c719db7762322cbee1b1bf065720cd7f18025
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Nov 7 20:54:17 2010 -0800
+
+    krb_5_get_init_creds_opt_set_pa_password() was called twice
+
+commit 438aef9833e7da0fc78a328e1d585e851567994b
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Nov 7 14:10:14 2010 -0800
+
+    fixed pts functionality and enabled adding/removing pts users from pts groups
+
+commit d5ce86c853c70f08d410805bf9d246a83c0f6bc1
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Nov 7 10:34:46 2010 -0800
+
+    OpenAFS pts added functionality
+    
+    If pts bits are enabled at compile time - when creating a POSIX group,
+    a corresponding pts group is added.  Also when a user is created, if
+    the pts group exists with the same name as the POSIX group, the pts
+    user is added to that pts group after creation.
+
+commit f9f8b14865c83ad27438a290d37da4e2665d2633
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Nov 5 22:07:28 2010 -0700
+
+    double message
+
+commit 2f95bb6fefd73c45af4e6280382157bd87431ef5
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Nov 5 21:50:12 2010 -0700
+
+    __really__ fixed segfault when [-N] argument to lusermod was NULL
+
+commit 18f6638ec040630ccb59deb7d40c4d7e61d31c34
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Nov 5 21:47:20 2010 -0700
+
+    fixed segfault when [-N] argument to lusermod was NULL
+
+commit d62e8cd7aa8ab88ac927da266e96caa4ff67c7c4
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Nov 4 17:00:46 2010 -0700
+
+    removed unnecessary symbols
+
+commit c0e23a8e7eba3c8a0e5b4342a5005502356b551a
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Nov 2 15:00:56 2010 -0700
+
+    added needed memory checks
+
+commit 3bab39de883bc97b4d615ec1362d40e1c934655b
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Nov 1 08:58:43 2010 -0700
+
+    memberUid attributes were not being added when desired
+
+commit d0255317718f1a1e186124d566532a6352c7d3be
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Oct 31 14:53:06 2010 -0700
+
+    various fixes
+
+commit 93db516f341173f8f28cd40ed5d9faa13c075152
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Oct 31 12:40:27 2010 -0700
+
+    loginShell in uxds_acct_add() was hardcoded to default value
+
+commit 57ea0b2bb9b4924148b12ec504392249c4419b02
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Oct 31 12:35:34 2010 -0700
+
+    homeDirectory attribute in uxds_acct_add() was set to a debug value
+
+commit 9d9fe6f574d40a9b2de26de557df70906355de3e
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Oct 31 08:48:36 2010 -0700
+
+    replaced recursive center() with snprintf()
+
+commit c435ddb51b5e4e663da9e86616d8db28d5a8c794
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 30 23:43:59 2010 -0700
+
+    hack to fix handling struct vs. char *arrays
+
+commit 62e47a3c16454b79caae696c6a1caf0867c9f449
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 30 15:18:59 2010 -0700
+
+    should check for both cmds and opts arrays when filling LDAPMod array
+
+commit 5102aeec08ec80796ba454d6fb7581e1ec2dfb36
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 30 13:50:38 2010 -0700
+
+    added enough space for NULL struct
+
+commit 6cca9c0e67fbdbf5113ad426de5301e4818e11ae
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 30 13:45:05 2010 -0700
+
+    _finally_ removed useless logic
+
+commit f81381586b05589a62f4c5570f324e7abc2f2a81
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 30 13:17:02 2010 -0700
+
+    really deleted useless logic
+
+commit 7632943dfeb616618f438ad0de7dbf0175dc4bb2
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 30 13:04:54 2010 -0700
+
+    removed useless logic and re-added objectClass shadowAccount
+    
+    According to Howard Chu, shadowAccount is deprecated, however
+    when it is not used, the userPassword attribute is exposed to
+    the underlying nss libraries - for example, doing a 'getent passwd'
+    will show the userPassword attributes in the second (passwd) field.
+    This behavior is not desired.
+
+commit f30388817d2057f913475e311ccfe2f4b267dfcf
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 30 11:27:33 2010 -0700
+
+    indent -kr [sudo]ldap.c
+
+commit cf6495496f16229001d3a154a5e4f7c92f5e9dec
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 30 11:20:19 2010 -0700
+
+    use array of uxds_attr_t types to fill in gidmod LDAPMod structs when doing modrdn operation
+
+commit 9959c6b7e86a83b03c1a34ff4f626e8353f61e87
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 30 10:56:47 2010 -0700
+
+    refactor uxds_sudo_add() to use array of uxds_attr_t types to fill in LDAPMod array
+
+commit de01560b27683e6e313a7ba318fb791e69c7a369
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 30 10:49:58 2010 -0700
+
+    added uxds_ldap_unbind()
+
+commit bd11474cc9a4812cd3feb08ae9ba3f8f08fbdf44
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 30 10:44:59 2010 -0700
+
+    removed sasl_client_init() and sasl_done() function checks
+
+commit 8e4af30fbbafdea5dedca3e84a9df5e021903e67
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 30 09:28:24 2010 -0700
+
+    refactor uxds_acct_mod() to use array of uxds_attr_t types instead of char*[]'s
+
+commit b453384f1531ea24b75a71d77079e14548baa649
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Oct 29 09:38:23 2010 -0700
+
+    set last struct of useradd array to NULL
+
+commit 2adf77b69530ebea609b93de2ee275761a948d49
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Oct 29 08:50:22 2010 -0700
+
+    free() mems and groupadd arrays
+
+commit 54d863a57ca7c7a4271c4f221a9091325c5a692f
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Oct 29 08:37:50 2010 -0700
+
+    forgot to free() mygecos when adding a user
+
+commit f9adc66032dde8e8084788c562ef5ba11a58c9c2
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Oct 29 08:20:33 2010 -0700
+
+    major refactor of uxds_acct_add()
+    
+    Changed how the LDAPMod arrays of structs are filled in. Instead of
+    using char*[]'s and swapping values back and forth, they are now
+    filled in by an array of uxds_attr_t structs, which is more efficient.
+    This is the first phase of a major refactor that will extend to
+    uxds_acct_mod() and uxds_sudo_(add|mod)() functions next.
+
+commit a119402a9dbb423d45a11795ddb291b2148ce36c
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Oct 28 20:48:09 2010 -0700
+
+    sasl deinit stuff is unnecessary and leaks memory
+
+commit 44d24ab6d63d1859acdaa295c24d9e1ffe913586
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Oct 25 10:48:47 2010 -0700
+
+    replaced center() with snprintf() when center() was calling itself to concatenate strings
+
+commit 93b5abc04d4dea9a3a19dbed25b38df8deae8447
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Oct 22 12:39:41 2010 -0700
+
+    added check_idnum() to remove duplication of code in get_next_pxid()
+
+commit 69f8e26ba893cfdd215a006f7af8e2844c770f04
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Oct 21 18:36:47 2010 -0700
+
+    moved search for uid/gid inside get_next_pxid()
+
+commit b67c78a8bffca8f9e36ce83a819c4f4e81c1a70e
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Oct 21 15:36:31 2010 -0700
+
+    added get_next_pxid() for obtaining the next avaliable uid/gid
+
+commit 06c1800fa9d5aa2e4dd0cec18b231eee345e28c3
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Oct 18 08:55:48 2010 -0700
+
+    changed debug and verbose bit logic to use boolean
+
+commit eaeb1d928d3608aac529d3af9973ff1221048f0a
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Oct 15 10:40:18 2010 -0700
+
+    missed all instances of symbol opt_s -> opt: fixed
+
+commit f9c9d1fa9be058f7defec075f76c89f6b394bc78
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Oct 14 17:58:30 2010 -0700
+
+    forgot to rename symbol opt_s to opt
+
+commit 7b8ab84b46c94e8067aa4b0ec05d7da55a75dbff
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed Oct 13 18:01:47 2010 -0700
+
+    indent -kr *.c *.h / changed (cmd|opt)_s symbols to cmd|opt
+
+commit 7a2733c5275b7587c4066de4ef16d652bbb65ed4
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Oct 11 22:58:41 2010 -0700
+
+    cosmetic changes in help output
+
+commit 837225b5e6bc93376998c4687dfed959b06b83f5
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Oct 11 18:08:40 2010 -0700
+
+    added free()s for LDAPMod structs sudoadd/sudomod
+
+commit 8351c3483d250f61fe8caf89e8b355a57a884e62
+Merge: e69e6e9 c7a0a5c
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Oct 11 17:30:27 2010 -0700
+
+    Merge branch 'devel' of ssh://192.168.13.9/repos/uxdstools into devel
+    
+    Conflicts:
+    	src/ldap_c_32bit.diff
+    	src/sudoldap_c_32bit.diff
+
+commit e69e6e9b011b019fbf9169af661f792665d7f66a
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Oct 11 16:57:57 2010 -0700
+
+    forgot free() in uxds_user_expire()
+
+commit c7a0a5c6b8e08807df41dd7ad7e0fb5337fcb729
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Oct 11 16:57:57 2010 -0700
+
+    forgot free() in ucds_user_expire()
+
+commit 9d58c12ab738c38c5e2d63e37b02797410435ee8
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Oct 11 15:33:12 2010 -0700
+
+    added check for krb5_get_init_creds_opt_set_pkinit()
+
+commit 995643ca1bc2ee608a96beb65fff4e48071bd799
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Oct 10 14:49:13 2010 -0700
+
+    added TODO
+
+commit e22dee396767239ba2e1134151d4b98b3b97d1fe
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Oct 10 12:08:31 2010 -0700
+
+    removed debug stuff
+
+commit 9628baff6eab1d75b1188bd59f4f9c8efa0a5306
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Oct 10 12:01:42 2010 -0700
+
+    version 0.7-git makes more sense
+
+commit 1865083a4ce9d35e3f407381e6f004e6f2b8462e
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Oct 10 11:33:05 2010 -0700
+
+    free() gidmod and more sensibly ordered LDAPMod free()s
+
+commit 90139e6edb300154434ae76acaf2d2c932ee2924
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Oct 10 11:30:37 2010 -0700
+
+    lusermod group change was not working properly
+
+commit 90e18c581547c1059668a35cfa15d5c21c52a2c0
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 9 13:37:04 2010 -0700
+
+    forgot to change header for optmask() reformation
+
+commit 205ecb926a941d63cea6f753c73c546a5f698486
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 9 13:31:23 2010 -0700
+
+    changed magic numbers for readability
+
+commit 6045f22c5ac0948c507d815762f508a8fa1a7234
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 9 13:08:19 2010 -0700
+
+    fixed context of how to use PK-INIT for authentication
+
+commit 63a5c169e7ab9d8af7b09cbf0b908bdf23b7836a
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 9 12:38:36 2010 -0700
+
+    cosmetic change to lacctparse -v|--version
+
+commit e8500b144d20d0317431e7eb45b818eeae413649
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 9 09:51:29 2010 -0700
+
+    forgot to free() check in last commit
+
+commit c58164fa571cd421c17782cd034e27203deb1603
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Oct 9 09:46:52 2010 -0700
+
+    fixed segfault when PK-INIT is used but no certificate name follows 'FILE:'
+
+commit 280fe6f1ba2b2f5d4e0ed727f4e1e6781731b735
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Oct 8 16:16:32 2010 -0700
+
+    changed uxds_acct_parse() - added enum type uxds_bind_t
+
+commit 0faf0e223f657af1f5e10668dae4b51b555bab0d
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Oct 8 15:42:16 2010 -0700
+
+    bumped up version to 0.7-dev
+
+commit 17a7ff668da728c910a42c9e749e8f97bba2c61b
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Oct 8 14:32:43 2010 -0700
+
+    fixed 32-bit patch so it will again apply cleanly
+
+commit fcc0d060a9fd895056bfe0cfe4fb082186ae62b1
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Oct 8 13:44:21 2010 -0700
+
+    added free()'s for all LDAPMod structs - fixed free() of filter that was too early
+
+commit 841766418865192b42a9383e6ecfb30b6515aad1
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Oct 8 11:18:42 2010 -0700
+
+    free() useradd/groupadd LDAPMod structs
+
+commit 932f46f2b81470026d228d214b077165f04c19a1
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Oct 8 10:55:58 2010 -0700
+
+    added a needed free()
+
+commit 932de2673efbcb3f045f041186d68d6cff1b8389
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Oct 7 08:55:58 2010 -0700
+
+    fixed snprintf()s to add insurance for null byte
+
+commit f63155e3bc01396b97ea3adcdf5b938b19c96978
+Merge: d1addd5 33aeb1e
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed Oct 6 17:04:18 2010 -0700
+
+    clarified use of -y argument in obtaining service tickets
+
+commit d1addd5c9e21faf58c948d9c80d06d74af9402fd
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed Oct 6 16:38:11 2010 -0700
+
+    clarified use of -y argument in obtaining kadmin/changepw service ticket
+
+commit 33aeb1ed72e7bc81188fb9c7d27c05d235353be2
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed Oct 6 16:38:11 2010 -0700
+
+    clarified use of -u argument in obtaining service tickets
+
+commit de36b6d6f999c7b588bef8a92ba05dbf53de2b9c
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed Oct 6 16:30:05 2010 -0700
+
+    better explanation of [-K] argument
+
+commit 8c8d7a4d1c3b5fcfeb6d8613cbfa8ca51a9bf9e5
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed Oct 6 15:46:26 2010 -0700
+
+    changed default loginShell to /bin/sh
+
+commit aad761fc6ebbe82b108f3686758b49abf0f36763
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed Oct 6 13:45:03 2010 -0700
+
+    renamed authzdata type to type uxds_authz_t
+    renamed struct mod_data to type uxds_data_t
+    renamed struct sudoers to type uxds_sudo_t
+
+commit c5aab6e90434b24100a2ec08f05e7d79f7d0f41c
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Oct 4 16:09:56 2010 -0700
+
+    fixed typo: s/->/./
+
+commit f44873841f54029b5647a0e5c7cfdcee2dd80e6b
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Oct 4 13:13:52 2010 -0700
+
+    fixed typo s/{/\/{/
+
+commit 32563b008a0424e068abd8e6e3e3c8c8c59648fe
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Oct 4 13:00:22 2010 -0700
+
+    fixed segfault issues related to search filters
+
+commit 30d88da0fbf9cba33faefe844cc8826a0f77986a
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Oct 4 12:27:16 2010 -0700
+
+    resolv.sh wasn't properly updated, and was moved to the wrong directory
+
+commit 36edd5012c2d4d431f3342521d1db0dd56cc1105
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Oct 4 12:23:15 2010 -0700
+
+    make sure created realm.h ends up in src/ directory
+
+commit ef8bd06865dac23e4e1058f42a354daa05bb3541
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Oct 4 12:18:54 2010 -0700
+
+    getting away from center() - changed how GECOS is derived now using GC_LEN macro as template
+
+commit 137650969ebffd09a7174d35fc1bcc1ab876689d
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Oct 4 08:14:31 2010 -0700
+
+    fixed SU_LEN macro and put it in the uxds_sudo_*() functions
+
+commit f5dedfc4752163f08b4e84335e4394a2e2995fd2
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Oct 3 22:18:53 2010 -0700
+
+    cleaning up free()'s
+
+commit 3a2254b35933f0785cdb1d32cd0b89593bc3dc87
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Oct 3 21:57:41 2010 -0700
+
+    changed *_LEN defines for search filters
+
+commit 9a6d6c360ae2a83eea765170187760da41e1c7f3
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Oct 3 21:55:18 2010 -0700
+
+    fixed a stupid messup in the tree
+
+commit 058c540d7af77996334ace730228b370c11545f3
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Oct 3 21:51:20 2010 -0700
+
+    changed snprintf strlen()'s to macros - phase 4 of center() removal
+
+commit 87ce7d8afd86ccff34bf23e8d563ea275ec9198e
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Oct 3 21:17:38 2010 -0700
+
+    phase 3 of the remove center() project ;)
+
+commit 1eb7b50d6c8a82dcc6e83d3a02cc0b969b5fd959
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Oct 3 21:11:11 2010 -0700
+
+    moving away from broken center() - pahse 2 - sudoldap.c
+
+commit 75e07dd8bccbe09445fc4dd243922abe96c2fa59
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Oct 3 20:50:18 2010 -0700
+
+    moving away from broken center() function - stage 1
+
+commit bb9ba118808c998c5a0685996220aea40a3e3de7
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Oct 1 13:34:42 2010 -0700
+
+    fixed detection of i386
+
+commit 4c7cbdb47ddc9f4a81fc66dd1d0ac0c5e8865afd
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Oct 1 13:15:36 2010 -0700
+
+    fixed problem free()'s
+
+commit 150eb26a50a3ecb438edab0dd8de6fce6a59ebbf
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Oct 1 12:42:58 2010 -0700
+
+    fixed bug in optmask(), symbol should be 'uxds_flag_t flag'
+
+commit a6267d8ee5ded8fae71dfc8ad955144b3b66eb85
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 30 18:25:31 2010 -0700
+
+    reverted last change - pwdPolicy objectclass is not needed or wanted for ppolicy
+
+commit 118739c4eaaa7a10e0232534d6edd25f75a334a9
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 30 15:34:38 2010 -0700
+
+    fixed adding pwdPolicy objectclass in uxds_acct_add() for PPOLICY define
+
+commit 2b7525e34cfae315c20ea6a9bb8bbb24ab74097d
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 30 14:51:44 2010 -0700
+
+    fixed PTS defines and added -lkafs to Makefile.am for OpenAFS integration
+
+commit 144912f381a970f171b4703611952b0222e472a3
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 30 13:58:35 2010 -0700
+
+    shadowAccount is deprecated according to Howard Chu - OpenLDAP ITS#6550
+
+commit 0487d4cf63926f94899a208135258b695051c59b
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Sep 28 17:36:51 2010 -0700
+
+    Forced prepending 'FILE:' to the x509 certificate path when using PK-INIT (option [-K])
+
+commit c2768bcb73f2a879f7949624c58cd8da18ea7313
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Sep 27 18:16:25 2010 -0700
+
+    changed symbol in authzdata from s_mech to saslmech for better readability
+
+commit d38a54f4e4fd7ad6f6c4ee558f8bcc9919ef480f
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Sep 27 17:11:05 2010 -0700
+
+    fixed parse_argvs() in the condition thar luseradd is not passed [-U] argument
+
+commit 369cae075cd0e386ce2145da24084ce28d7ca8b4
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Sep 27 16:01:48 2010 -0700
+
+    symbol useout changed for better readability
+
+commit 2e3350d6cc8a23c97ee55ddcaafa74fa4988003a
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Sep 27 15:19:30 2010 -0700
+
+    changed symbol useout constant names for better readability
+
+commit 296ad20d251af4674ddf1e7f0f5deeb2e8e02089
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Sep 27 15:07:31 2010 -0700
+
+    changed symbol names for better readability
+
+commit 36149625ce1e608300c8cfd49113e79e756785f0
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Sep 27 10:57:12 2010 -0700
+
+    free pts_str array in pts_wrap()
+    change name of header in uxds.h
+
+commit 895be936d9f299f6364867ae0f1135d5f20b78c9
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Sep 27 10:42:21 2010 -0700
+
+    Fixed memory allocation in pts_wrap()
+
+commit 1a771dc3e46b15c190d5b3cc8e36b3c4ce1d605e
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Sep 27 10:31:13 2010 -0700
+
+    changed symbol name toolop to uxds_tool_t
+
+commit d33a6db4694adfee8f971ba94c9797036a87d13e
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Sep 27 10:28:07 2010 -0700
+
+    changed symbol name usrt to uxds_acct_t
+
+commit e6a20fe0c5816f402d55afcc6f8e82bfc1e759b3
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Sep 27 10:10:56 2010 -0700
+
+    copy [sudo]ldap.c to [sudo]ldap64.c to keep the 64-bit files on build
+
+commit 7716093baeb167659c904162b697f857b897db50
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 23 21:11:42 2010 -0700
+
+    forgot missing for autogen.sh
+
+commit 2cfa0055aa1f87caea26635aa017081832d98566
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 23 20:43:06 2010 -0700
+
+    removed crap
+
+commit 749307d1189d8798aca404efb04241c90d043d75
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 23 20:34:22 2010 -0700
+
+    reworked logic
+
+commit 0ce1295bbff9dfe5a889b46fffd99033fd5b14b1
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed Sep 22 13:13:26 2010 -0700
+
+    Fixed conflicts when using SASL/GSSAPI vs SIMPLE binds for authentication
+    Fixed conflicts introduced when PK-INIT support was added
+
+commit d4276548ecdb732c3fc14725d8769aaeb4d84569
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Sep 18 15:22:17 2010 -0700
+
+    removed crap that shouldn't be here
+
+commit 4277cb6c9dc252da5b27fce35eb732b4a8b9cbe4
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 17 23:08:12 2010 -0700
+
+    ldif export base64() choked on arcfour 128 bit keys - skipped them for now
+
+commit 65eee4eb4ad4795bd90968ccc4c01fc689f7124e
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 17 22:57:30 2010 -0700
+
+    started cleanup of varibles - beginning with PK-INIT
+
+commit 7a5d2965d1f8b6800357ee395dc46404c02536a7
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 17 22:04:01 2010 -0700
+
+    changed logic to a more sane format - check for 'i386' instead of 'x86_64'
+
+commit 695014d952a54a0220ffd1c851bd421ee66e01f7
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 17 16:57:24 2010 -0700
+
+    indent -kr args.c
+
+commit a5a46ae639e5bc3e81685115c1fc513be55272a0
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 17 16:43:38 2010 -0700
+
+    added -K PK-INIT option to man pages
+
+commit bc1ba879007c01f823e0978775471bb1e170d384
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 17 15:33:04 2010 -0700
+
+    deleted crap
+
+commit 932fb1f58c2c3d37eb4eaa667e52b43310264f0d
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 17 15:28:55 2010 -0700
+
+    added PK-INIT support without passphrases (for now)
+
+commit 1792009397a1d58ca2641b6ac04a17a16e170a3e
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 9 11:21:47 2010 -0700
+
+    fixed segfault in code that accepts password to authenticate to ldap server
+
+commit 423572bfb5662c1e42ec1355d4b0d30c6e384728
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed Sep 8 15:18:41 2010 -0700
+
+    added sudo.schema to schema directory
+
+commit edc3a961107b02e25aaea3747cf692e38d49f638
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed Sep 8 15:12:09 2010 -0700
+
+    lacctparse somehow got deleted from the Makefile, put it back
+
+commit 239746b4e1b1a4c4b9ff0ffe7420a6f5ef1b1620
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Sep 5 13:49:08 2010 -0700
+
+    Added optional schemas and links to their respective projects
+
+commit 925317e6604f34b44a465311e68cf8158d2acdd8
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Sep 4 15:48:02 2010 -0700
+
+    moving into src and man directories is completed
+
+commit 9435cda189c3fe8ec84036926a18f9a05437b54e
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Sep 4 13:18:17 2010 -0700
+
+    added sanity check for calloc call in pts_wrap()
+
+commit e5a8c499af9329c888b38ef094b3abf5982fa347
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sat Sep 4 00:06:29 2010 -0700
+
+    Heimdal needs its license advertised,, becuase we have to link against it if
+    this file is built.
+
+commit e28ee5b32e6400291d03e5ea00aa828b7cee6c75
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 3 23:44:34 2010 -0700
+
+    deleted files that should be created upon build
+
+commit 25eaf93077a2d201b2e221635e8ebadb4e90b44e
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 3 23:09:20 2010 -0700
+
+    more stuff in the wrong place
+
+commit e55f4e3531ae02d50ed3176bb95246da4f2de499
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 3 23:05:33 2010 -0700
+
+    Deleting crap that should have never been there
+
+commit bdb3e2a0eaa78d859b462da8f015449b9648cb78
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 3 23:01:32 2010 -0700
+
+    Yet Another Reorg
+
+commit 675b0eeaa14007196e4cac0b438cf22ca1e7af91
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 3 22:49:42 2010 -0700
+
+    Moved everything into src and man directories, and changed the autotools
+    files accordingly.
+
+commit 6bb9628522119486cb1f3790a5763266fb102a67
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 3 19:30:44 2010 -0700
+
+    not sure how those files polluted my repo, but whatever they're gone
+
+commit b1f8df89917a90dcb595dd5cf96413809065c6e1
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 3 19:26:23 2010 -0700
+
+    minor variable scope changes
+
+commit 3075e44fc2878f34681e40f0f56d660258127fde
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 3 18:25:39 2010 -0700
+
+    renamed authz_sasl_interact to uxds_sasl_interact to keep things uniform
+
+commit 580d4fbe93073c33ccb15cb1b125244a314d056d
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 3 18:04:31 2010 -0700
+
+    removed enum and put simple boolean defines
+
+commit 3611974523f16cc1182f4ea342d2c2749accff89
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Sep 3 17:59:23 2010 -0700
+
+    Added enum for better readability of get_krbname() last arg
+
+commit 8071ee6be1cf7de696c2190a175f83fab3a6fdc5
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 2 20:07:12 2010 -0700
+
+    Fix it
+
+commit 87ad934bd1fc61c33fae24a41082dec00a3f6d35
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 2 19:41:16 2010 -0700
+
+    Verbage
+
+commit 53719cf0998f580a4494cf484eeb005f67e048ad
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 2 10:32:54 2010 -0700
+
+    YMMV for n00b software notice
+
+commit 2aa9c8102238a5c9ac6b86e7eec3b3e5232abf21
+Merge: 0ceb046 9960386
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 2 10:18:24 2010 -0700
+
+    Merge branch 'devel' of ssh://192.168.13.9/home/mikal/uxdstools into devel
+    
+    Conflicts:
+    	ldap_c_32bit.diff
+    	sudoldap_c_32bit.diff
+
+commit 9960386ae8de6a22a6305742059c38f2f8968df7
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 2 18:18:15 2010 -0700
+
+    Added run autogen script verbage - this is devel
+
+commit 0ceb046bee1b62edec9a14567e6d050f41e65d1e
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 2 10:04:41 2010 -0700
+
+    Added files and made proper paths in diff files
+
+commit 0717bd8df0a9a7aa4fc69fdcdae930b9acbd7cc3
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 2 04:50:31 2010 -0700
+
+    first commit
+
+commit 4df1e5842b7865f289e1d4e25d979471a86c3da5
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 2 02:24:34 2010 -0700
+
+    Fixed 32-bit patches for i386 platforms and added attic
+
+commit 84cdff339cadb264de3eb9e31cdf485e01c20cb2
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 2 02:10:16 2010 -0700
+
+    git remove afs.h krb5.h log.h sasl.h strings.h
+
+commit cbdd90f40ed5737396d739e8fbd3c7b6a3b25c39
+Author: root <root@gold.mikro-net.com>
+Date:   Thu Sep 2 02:07:38 2010 -0700
+
+    Extended copyright notices to 2010
+
+commit 36f78a93541b0ee74363fa7178a0032458195585
+Author: root <root@gold.mikro-net.com>
+Date:   Thu Sep 2 01:41:45 2010 -0700
+
+    Ran autogen script to set for compilation
+
+commit d95a1cf4431df7f78032fdfd49afbf4198c1f25c
+Author: root <root@gold.mikro-net.com>
+Date:   Thu Sep 2 01:40:36 2010 -0700
+
+    changed headers files to have 'uxds_' prefix to eliminate confusion
+
+commit 5d306632abf8617add9b1a21a1775880bfc129d9
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 2 09:30:10 2010 -0700
+
+    eliminated commented redundant code that referenced file_chkerr()
+
+commit 738ceff5ca4f03836dcd36646e69cebe9ad9dcce
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 2 09:28:07 2010 -0700
+
+    Fixed file descriptor designations in log.c and ldap.c
+
+commit 549a21c59194caff543c28511015fa1a718b5853
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Thu Sep 2 09:03:35 2010 -0700
+
+    Changed fp to UXDS_LOG in format strings for file_chkerr()
+
+commit 0193691800448c5ca3d5f733088289227103b284
+Author: Michael J. Brown <mbrown@iron.mikro-net.com>
+Date:   Thu Sep 2 01:06:13 2010 -0700
+
+    uxdstools-0.5-master
