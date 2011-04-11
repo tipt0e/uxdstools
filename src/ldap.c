@@ -668,6 +668,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 	if (useradd) {
 	    for (i = 0; useradd[i] != NULL; i++) {
+		free(useradd[i]->mod_values);
 		free(useradd[i]);
 	    }
 	    free(useradd);
@@ -1648,9 +1649,11 @@ struct posixid get_next_pxid(LDAP * ld, LDAPMessage * msg,
 		pxid.gidnum = return_idnum(ld, entry, attr);
 	    }
 	    ldap_memfree(attr);
+	    ldap_memfree(entry);
 	}
     }
     ldap_msgfree(msg);
+
     return pxid;
 }
 
@@ -1658,12 +1661,14 @@ struct posixid get_next_pxid(LDAP * ld, LDAPMessage * msg,
 char *return_idnum(LDAP * ld, LDAPMessage * entry, char *attr)
 {
     int a = 0;
+    int len = 0;
     char *idnum = NULL;
 
     vals = ldap_get_values_len(ld, entry, attr);
     idnum = strdup(vals[0]->bv_val);
+    len = strlen(idnum) + 1;
     a = atoi(idnum) + 1;
-    snprintf(idnum, 6, "%d", a);
+    snprintf(idnum, len, "%d", a);
     ldap_value_free_len(vals);
 
     return idnum;
@@ -1714,6 +1719,7 @@ char *build_gecos(uxds_data_t mdata, LDAPMessage * entry, int debug,
     if (!snprintf
         (mygecos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
         return NULL;
+    free(role);
 
     return mygecos;
 }
