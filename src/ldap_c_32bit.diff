@@ -1,5 +1,5 @@
---- /vicepa/git/uxdstools.git/src/ldap.c	2011-03-30 13:21:29.310468847 -0700
-+++ /vicepa/git/uxdstools.git/src/ldap32.c	2011-04-08 10:51:38.827183821 -0700
+--- /vicepa/git/uxdstools.git/src/ldap.c	2011-04-10 21:58:18.326130286 -0700
++++ /vicepa/git/uxdstools.git/src/ldap32.c	2011-04-10 21:58:42.697564467 -0700
 @@ -221,7 +221,7 @@ int uxds_acct_parse(uxds_bind_t bind, ux
  	    kuser = get_krbname(auth, FALSE);
  	    if (auth.debug)
@@ -72,7 +72,7 @@
  		    strlen(mod_dn));
  #ifdef TOOL_LOG
  	    log_event(mod_dn, USER, MOD, "FAILED");
-@@ -1678,7 +1678,7 @@ char *build_gecos(uxds_data_t mdata, LDA
+@@ -1679,7 +1679,7 @@ char *build_gecos(uxds_data_t mdata, LDA
          vals = ldap_get_values_len(ld, entry, "givenName");
          if (vals[0]->bv_val != NULL) {
              if (debug)
@@ -81,7 +81,7 @@
                          vals[0]->bv_val, strlen(vals[0]->bv_val));
              mdata.firstname = strdup(vals[0]->bv_val);
              ldap_value_free_len(vals);
-@@ -1688,7 +1688,7 @@ char *build_gecos(uxds_data_t mdata, LDA
+@@ -1689,7 +1689,7 @@ char *build_gecos(uxds_data_t mdata, LDA
          vals = ldap_get_values_len(ld, entry, "sn");
          if (vals[0]->bv_val != NULL) {
              if (debug)
@@ -90,7 +90,7 @@
                          strlen(vals[0]->bv_val));
              mdata.lastname = strdup(vals[0]->bv_val);
              ldap_value_free_len(vals);
-@@ -1697,7 +1697,7 @@ char *build_gecos(uxds_data_t mdata, LDA
+@@ -1698,7 +1698,7 @@ char *build_gecos(uxds_data_t mdata, LDA
      vals = ldap_get_values_len(ld, entry, "gecos");
      if (vals[0]->bv_val != NULL) {
          if (debug)

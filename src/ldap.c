@@ -1631,6 +1631,7 @@ struct posixid get_next_pxid(LDAP * ld, LDAPMessage * msg,
     /* get next available uid or gid */
     for (entry = ldap_first_entry(ld, msg);
 	 entry != NULL; entry = ldap_next_entry(ld, entry)) {
+	/* XXX ldap_sort_entries is DEPRECATED */
 	if (ldap_sort_entries(ld, &entry, type, strcmp)) {
 	    ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
 	}
