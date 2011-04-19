@@ -166,7 +166,7 @@ lsudomod_SOURCES =
 
 SRCS = uxds.h uxds_sasl.h uxds_krb5.h uxds_log.h uxds_strings.h strings.c sasl.c krb5.c ldap.c sudoldap.c 
 
-LDFLAGS = -lldap
+LDFLAGS = -lldap -llber
 
 if SASL
 SASLOBJS = sasl.o
