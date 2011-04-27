@@ -1386,7 +1386,7 @@ int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
 	oper = "DELETE";
 	break;
     default:
-	fprintf(stdout, "REPLACE not implemented\n");
+	fprintf(stdout, "Supports ADD or DELETE ONLY\n");
 	return 1;
 	break;
     }
