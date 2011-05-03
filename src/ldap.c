@@ -82,7 +82,10 @@ int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
 		    center(cbuf, "KRB5CCNAME=", auth.credcache);
 		if (auth.debug)
 		    fprintf(stderr, "'%s' exported\n", auth.credcache);
-		putenv(auth.credcache);
+		if (putenv(auth.credcache)) {
+		    fprintf(stderr, "putenv() call failed\n");
+		    return 1;
+		}
 	    }
 	}
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
@@ -652,7 +655,10 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef HAVE_LDAP_SASL_GSSAPI
 	if ((mdata.cpw == 1) || (mdata.setpass)) {
 	    char *name = get_krbname(auth, FALSE);
-	    putenv(center(cbuf, "KRB5CCNAME=/tmp/kacache_", name));
+	    if (putenv(center(cbuf, "KRB5CCNAME=/tmp/kacache_", name))) {
+		fprintf(stderr, "putenv() call failed\n");
+		return 1;
+	    }
 	    if (mdata.cpw == 1) 
 		mdata.setpass = randstr();
 	    if (setpwd(mdata.user, mdata.setpass) != 0)
@@ -1075,7 +1081,10 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	}
 	if ((mdata.cpw == 1) || (mdata.setpass)) {
 	    char *name = get_krbname(auth, FALSE);
-	    putenv(center(cbuf, "KRB5CCNAME=/tmp/kacache_", name));
+	    if (putenv(center(cbuf, "KRB5CCNAME=/tmp/kacache_", name))) {
+		fprintf(stderr, "putenv() call failed\n");
+		return 1;
+	    }
 	    if (mdata.cpw == 1)
 		mdata.setpass = randstr();
 	    if (setpwd(mdata.user, mdata.setpass) != 0)

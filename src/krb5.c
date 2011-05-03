@@ -258,7 +258,8 @@ krb5_error_code get_tkts(char *user, char *service, uxds_authz_t auth)
     if ((mdata.cpw == 1) || (mdata.setpass != NULL)) {
 	memset(&opt, 0, sizeof(opt));
 	memset(&cred, 0, sizeof(cred));
-	putenv("KRB5CCNAME=/tmp/kadmin_cache");
+	if (putenv("KRB5CCNAME=/tmp/kadmin_cache"))
+	    fprintf(stderr, "putenv() call failed\n");
 
 	error =
 	    krb5_make_principal(context, &kadmin, NULL, "kadmin", "admin",

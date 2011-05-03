@@ -446,8 +446,10 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		optmask("<ccache>", atype, opts, c);
 		auth->credcache = strdup(argv[i]);
 		if (sflag == KINIT) {
-		    putenv(center(cbuf, "KRB5CCNAME=", auth->credcache));
-		    printf("%s is var\n", getenv("KRB5CCNAME"));
+		    if (putenv(center(cbuf, "KRB5CCNAME=", auth->credcache)))
+			fprintf(stderr, "putenv(KRB5CCNAME=%s) failed\n",
+				auth->credcache);
+		    fprintf(stdout, "%s is var\n", getenv("KRB5CCNAME"));
 		}
 		i--;
 		break;
@@ -1078,9 +1080,10 @@ uxds_bind_t finalize_auth(uxds_bind_t sflag, uxds_acct_t atype,
 		    if ((mdata->cpw == 1) || (mdata->setpass != NULL)) {
 			char *ccname = get_krbname(*auth, 1);
 			char *ccbuf = NULL;
-			putenv(center
+			if (putenv(center
 			       (ccbuf, "KRB5CCNAME=/tmp/kacache_",
-				auth->username));
+				auth->username)))
+			    fprintf(stderr, "putenv() call failed\n");
 			center_free(ccbuf);
 			if (get_tkts
 			    (auth->username, "kadmin/changepw",
@@ -1088,7 +1091,8 @@ uxds_bind_t finalize_auth(uxds_bind_t sflag, uxds_acct_t atype,
 			    fprintf(stderr,
 				    "error in obtaining changepw ticket\n");
 			}
-			putenv(center(ccbuf, "KRB5CCNAME=", ccname));
+			if (putenv(center(ccbuf, "KRB5CCNAME=", ccname)))
+			    fprintf(stderr, "putenv() call failed\n");
 			center_free(ccbuf);
 		    }
 		}
