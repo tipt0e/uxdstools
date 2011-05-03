@@ -219,6 +219,7 @@ krb5_error_code get_tkts(char *user, char *service, uxds_authz_t auth)
 	break;
     default:
 	krb5_err(context, 1, error, "krb5_get_init_creds");
+	break;
     }
     /* just checking the lifetime of the tkt */
     if (auth.debug) {
