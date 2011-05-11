@@ -638,14 +638,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    fprintf(stderr, "ERROR: User %s not added to group %s\n",
 		    mdata.user, mdata.group);
 	}
-#if 0
-	if (strcmp(mdata.group, "sysops") == 0) {
-	    char *ptsgrp = "system:administrators";
-	    if (pts_wrap(PTSGRP, mdata.user, MY_CELL, ptsgrp) != 0) {
-		fprintf(stderr, "ERROR: User %s not added to pts admins",
-			mdata.user);
-	    }
-	}
 #endif
 #endif
 	if ((uxds_grp_mem(auth.debug, ADD, mdata.user, group_dn, ld))
