@@ -665,7 +665,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 	if (useradd) {
 	    for (i = 0; useradd[i] != NULL; i++) {
-		free(useradd[i]->mod_values);
 		free(useradd[i]);
 	    }
 	    free(useradd);
@@ -1649,7 +1648,6 @@ struct posixid get_next_pxid(LDAP * ld, LDAPMessage * msg,
 		pxid.gidnum = return_idnum(ld, entry, attr);
 	    }
 	    ldap_memfree(attr);
-	    ldap_memfree(entry);
 	}
     }
     ldap_msgfree(msg);
