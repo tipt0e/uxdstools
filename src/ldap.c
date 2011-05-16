@@ -639,7 +639,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		    mdata.user, mdata.group);
 	}
 #endif
-#endif
 	if ((uxds_grp_mem(auth.debug, ADD, mdata.user, group_dn, ld))
 	    != 0) {
 	    fprintf(stderr, "adding memberUid FAILED\n");
