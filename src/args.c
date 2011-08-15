@@ -557,6 +557,12 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		i--;
 		break;
 	    case 'G':
+                if (atype == USER) {
+                    fprintf(stderr,
+                            "%s: [-G] not an option for POSIX USER DELETE\n",
+                            binary);
+                    exit(EXIT_FAILURE);
+		}
 		i++;
 		int g = 7;
 		if (auth->debug)
