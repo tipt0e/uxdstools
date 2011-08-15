@@ -647,7 +647,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		return 1;
 	    }
 	    if (mdata.cpw == 1) 
-		mdata.setpass = randstr();
+		mdata.setpass = randstr(PASSLEN);
 	    if (setpwd(mdata.user, mdata.setpass) != 0)
 		fprintf(stderr, "Password NOT set for %s\n", mdata.user);
 	}
@@ -1072,7 +1072,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		return 1;
 	    }
 	    if (mdata.cpw == 1)
-		mdata.setpass = randstr();
+		mdata.setpass = randstr(PASSLEN);
 	    if (setpwd(mdata.user, mdata.setpass) != 0)
 			fprintf(stderr, "Password not set for %s\n", mdata.user);
 	}

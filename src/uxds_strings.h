@@ -9,6 +9,9 @@ do { \
     } \
 } while (0)
 
+/* password length for randstr() */
+#define PASSLEN	8
+
 /* shadow password input terminal handler */
 int inpwd(void);
 
@@ -28,7 +31,7 @@ char *realmtodn(char *realm, char *buf);
 char *curdate(void);
 
 /* create 8 character rnd string */
-char *randstr(void);
+char *randstr(int sz);
 
 /* isdigit() replacement ASCII only */
 int isnum(int c);
