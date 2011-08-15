@@ -140,57 +140,61 @@ char *curdate(void)
     return tdate;
 }
 
-/* return random 8 char string for 
+/* return random char string for 
  * password - not much entropy
+ * ldap functions set it to 8 characters
  */
-char *randstr(void)
+char *randstr(int sz)
 {
-    int scope = 1024;		/* this should be enough */
+    int scope = 1024;           /* this should be enough */
     int len = 0;
-    char grabchr[8] = "";
+    char *grabchr = calloc(1, sz + 1 * sizeof(char *));
+    ERRNOMEM(grabchr);
     char *random = NULL;
     int i, j, k, l;
     int ch;
-    (void) srand((int) time((time_t *) NULL));	/* seed for rand */
+    int multi = (sz / 8);
+    if (!multi)
+        multi = 1;
+    (void) srand((int) time((time_t *) NULL));  /* seed for rand */
     j = 0;
     k = 0;
     l = 0;
     for (i = 0; i < scope; i++) {
-	if (len == 8) 
-	    break;
-	/* ha ha i know it's kludgy and sux but
-	 * this is my first random string function 
-	 */
-	ch = 33 + (int) (75.0 * rand() / (RAND_MAX));
-	while (ch > 32 && ch < 123) {
-	    /* chars we don't want */
-	    if (ch > 90 && ch < 97) 
-		break;
-	    /* we only want one at most of these */
-	    if ((ch > 32 && ch < 48) || (ch > 57 && ch < 65)) {
-		if (j == 1)
-		    break;
-		j++;
-	    }
-	    /* 3 at most of these */
-	    if (ch > 65 && ch < 91) {
-		if (k == 3)
-		    break;
-		k++;
-	    }
-	    /* four at most of these */
-	    if (ch > 96 && ch < 123) {
-		if (l == 4)
-		    break;
-		l++;
-	    }
-	    grabchr[len] = ch;
-	    len++;
-	    break;
-	}
+        if (len == sz) {
+            break;
+        }
+        ch = 33 + (int) (75.0 * rand() / (RAND_MAX));
+        while (ch > 32 && ch < 123) {
+            /* chars we don't want */
+            if ((ch > 90 && ch < 97) || (ch == 34) || (ch == 39)) {
+                break;
+            }
+            /* we only want one at most of these */
+            if ((ch > 32 && ch < 48) || (ch > 57 && ch < 65)) {
+                if (j == (1 * multi))
+                    break;
+                j++;
+            }
+            /* 3 at most of these */
+            if (ch > 65 && ch < 91) {
+                if (k == (3 * multi))
+                    break;
+                k++;
+            }
+            /* four at most of these */
+            if (ch > 96 && ch < 123) {
+                if (l == (4 * multi))
+                    break;
+                l++;
+            }
+            grabchr[len] = ch;
+            len++;
+            break;
+        }
     }
     grabchr[len] = '\0';
-    random = strdup(grabchr);
+    random = (char *) strdup(grabchr);
     return random;
 }
 
