@@ -160,7 +160,6 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 
     int all = 0;
     char *dn = NULL;
-    char *base = NULL;
     char *attr = NULL;
 #ifdef HAVE_LDAP_SASL
     char *fbuf = NULL;
@@ -198,7 +197,6 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *kuser = NULL;
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
-    base = NULL;
     if (auth.debug)
 	fprintf(stderr, "account type vars: account = %i\n", auth.acct);
     if (strchr(auth.pxacct, '*') != NULL)
@@ -378,7 +376,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     static uxds_authz_t auth;
     struct posixid pxid;
 
-    int a;
     char *attr = NULL;
     char **mems = NULL;
     char *dn = NULL;
@@ -424,7 +421,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
     filter = realloc(filter, (PG_LEN + 1));
 
-    a = 0;
     /* XXX GROUP conditional jump */
     if (pxtype == GROUP) {
 	goto groupstart;
