@@ -189,7 +189,7 @@ LOGOBJS = log.o
 endif
 
 CFLAGS = -I/usr/local/include -Wall -g -c
-DEBUG = -O2
+DEBUG =
 
 if SUDOON
 all: lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod lsudoadd lsudodel lsudomod
