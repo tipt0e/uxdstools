@@ -1713,7 +1713,6 @@ char *build_gecos(uxds_data_t mdata, LDAPMessage * entry, int debug,
     if (!snprintf
         (mygecos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
         return NULL;
-    free(role);
 
     return mygecos;
 }
