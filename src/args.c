@@ -319,6 +319,7 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
     auth->password->bv_val = NULL;
     auth->password->bv_len = 0;
     if ((atype != SELF) && (atype != SUDOER)) {
+	mdata->modrdn = 0;
 	mdata->exp = 0;
 	mdata->cpw = 0;
 	mdata->membit = 0;
@@ -558,13 +559,14 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		i--;
 		break;
 	    case 'G':
-                if (atype == USER) {
+		i++;
+                if ((atype == USER) && (op == DEL)) {
                     fprintf(stderr,
                             "%s: [-G] not an option for POSIX USER DELETE\n",
                             binary);
                     exit(EXIT_FAILURE);
-		}
-		i++;
+                }
+		/* XXX */
 		int g = 7;
 		if (auth->debug)
 		    g++;
@@ -594,10 +596,12 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 			i--;
 			break;
 		    }
+#if 0
 		    fprintf(stderr,
 			    "%s: [-G] not an option for existing POSIX USER DELETE\n",
 			    binary);
 		    exit(EXIT_FAILURE);
+#endif
 		}
 		if (atype == SUDOER) {
 		    if (op != ADD) {
