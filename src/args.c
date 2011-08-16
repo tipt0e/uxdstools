@@ -596,12 +596,6 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 			i--;
 			break;
 		    }
-#if 0
-		    fprintf(stderr,
-			    "%s: [-G] not an option for existing POSIX USER DELETE\n",
-			    binary);
-		    exit(EXIT_FAILURE);
-#endif
 		}
 		if (atype == SUDOER) {
 		    if (op != ADD) {
