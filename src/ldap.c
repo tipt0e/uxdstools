@@ -546,6 +546,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef HDB_LDAP
 	{USER, "userPassword", "{K5KEY}"},
 #else
+        /* hell0 */
 	{USER, "userPassword", "{SSHA}4Qrx0mxc"},
 #endif				/* HDB_LDAP */
 	{USER, "carLicense", "XxXxXxXxXxXxXxXxX"},
