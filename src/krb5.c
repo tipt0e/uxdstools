@@ -110,8 +110,6 @@ krb5_error_code get_tkts(char *user, char *service, uxds_authz_t auth)
     krb5_ccache ccache;
     krb5_deltat start_time = 0;	/* start now */
     krb5_deltat ticket_life = 1860;	/* 31 minutes */
-    /* krb5_deltat renew = 0;  future use */
-    /* krb5_enctype *enctype = NULL; future use */
     krb5_principal target;
     char *buf = NULL;
 
