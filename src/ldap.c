@@ -547,7 +547,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	{USER, "userPassword", "{K5KEY}"},
 #else
         /* hell0 */
-	{USER, "userPassword", "{SSHA}4Qrx0mxc"},
+	{USER, "userPassword", "{SSHA}/nG2BsKmVlI0khfzr7jHKFX2tCFALEVj"},
 #endif				/* HDB_LDAP */
 	{USER, "carLicense", "XxXxXxXxXxXxXxXxX"},
 #ifdef QMAIL
