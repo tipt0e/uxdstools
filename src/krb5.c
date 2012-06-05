@@ -104,7 +104,6 @@ krb5_error_code get_tkts(char *user, char *service, uxds_authz_t auth)
 {
     krb5_context context;
     krb5_error_code error;
-    /* krb5_prompt prompt; not using krb5_posix_prompter() */
     krb5_get_init_creds_opt *opt;
     krb5_creds cred;
     krb5_ccache ccache;
