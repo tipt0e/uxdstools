@@ -40,7 +40,6 @@ char *getpwd(char *user)
 	   && ch != '\n' && ch != '\r' && j < sizeof(passget) - 1) {
 	/* handle backspace char */
 	if (ch == 0x7f && j > 0) {
-	    //fprintf(stdout,"\b \b");
 	    putchar(0);
 	    fflush(stdout);
 	    j--;
