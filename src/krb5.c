@@ -120,12 +120,6 @@ krb5_error_code get_tkts(char *user, char *service, uxds_authz_t auth)
     }
 #endif				/* PTS */
 #endif
-    /* needed for krb5_posix_prompter */
-    /*prompt.prompt = "Enter Kerberos Password:";
-     *prompt.hidden = 1;
-     *prompt.type = KRB5_PROMPT_TYPE_PREAUTH;
-     */
-
     /* initialize context from krb5.conf */
     if (krb5_init_context(&context) != 0) 
 	errx(1, "krb5_context");
