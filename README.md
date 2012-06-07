@@ -348,7 +348,7 @@ User and Group structure:
 Without '--enable-realm' upon configure, 'luseradd' will add a user
 that looks like this if you were using an ldif:
 
-# luser, slakaz, unix, mikro-net.com
+\# luser, slakaz, unix, mikro-net.com
 dn: uid=luser,cn=slakaz,ou=unix,dc=mikro-net,dc=com
 objectClass: top
 objectClass: person
@@ -373,7 +373,7 @@ userPassword:: RFVNTVk=
 With '--enable-realm' the hdb-ldap pieces are introduced, and the user
 looks like this:
 
-# luser, slakaz, unix, mikro-net.com
+\# luser, slakaz, unix, mikro-net.com
 dn: uid=luser,cn=slakaz,ou=unix,dc=mikro-net,dc=com
 objectClass: top
 objectClass: person
@@ -409,7 +409,7 @@ binds with kerberos passwords. I leave that as a To Do.
 
 Group structure looks like this:
 
-# slakaz, unix, mikro-net.com
+\# slakaz, unix, mikro-net.com
 dn: cn=slakaz,ou=unix,dc=mikro-net,dc=com
 cn: slakaz
 description: SLAKAZ System Group
