@@ -532,7 +532,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
      * from user_attr[1] when we fill up the LDAPMod struct
      */
     uxds_attr_t user_attr[] = {
-	{USER, "dummy", "dummy"},	/* dummy values */
+	{USER, "dummy", "dummy"},	/* dummy values how many time can you say 'dummy'*/
 	{USER, "cn", mdata.user},
 	{USER, "givenName", mdata.firstname},
 	{USER, "sn", mdata.lastname},
