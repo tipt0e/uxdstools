@@ -89,6 +89,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     opts = tokenize_options(su->opt);
     hosts = tokenize_options(su->host);    
     if (hosts == NULL) {
+       hosts = calloc(2, sizeof(char *)); 
        hosts[0] = "ALL";
        hosts[1] = NULL;
     }
