@@ -149,6 +149,7 @@ typedef struct uxds_sudo_t {
     uxds_tool_t tool;		/* operation performed */
     char *ou;			/* OU for SUDOers */
     char *sudoer;		/* sudoer name (sudoUser) */
+    char *host;                 /* allowed hosts (sudoHost) */
     char *cmd;		/* sudoCommand */
     char *opt;		/* sudoOption */
     uxds_acct_t type;		/* USER = 1 or GROUP = 2 */
@@ -253,6 +254,8 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld);
 int uxds_sudo_del(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld);
 
 int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld);
+
+char **tokenize_options(char *option);
 
 /* sanitize/finalize for parse_args() */
 int sanitize_add_ops(uxds_data_t * mdata, uxds_acct_t atype, uxds_tool_t op,

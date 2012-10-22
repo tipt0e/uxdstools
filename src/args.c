@@ -117,11 +117,11 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 	    switch (op) {
 	    case ADD:
 		fprintf(stdout,
-			"             [-U <user> | -G <group>] [-C <cmd>,...] [-O <option>,...]\n");
+			"             [-U <user> | -G <group>] [-B <host>,... ] [-C <cmd>,...] [-O <option>,...]\n");
 		break;
 	    case MOD:
 		fprintf(stdout,
-			"             [-A <sudoUser>] [-C <cmd>,...] [-O <option>,...] [-R]\n");
+			"             [-A <sudoUser>] [-B <host>,...] [-C <cmd>,...] [-O <option>,...] [-R]\n");
 		break;
 	    case DEL:
 		fprintf(stdout, "             [-A <sudoUser>]\n");
@@ -255,6 +255,8 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 			"              for below if multiple arguments then\n");
 		fprintf(stdout,
 			"              separate with commas and single quotes\n");
+                fprintf(stdout,
+                        "   -B host    sudoHost(s) to add <hostname> - defaults to \"ALL\"\n");
 		fprintf(stdout,
 			"   -C cmd     sudoCommand(s) to add <cmdpath>\n");
 		fprintf(stdout,
@@ -783,6 +785,16 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		break;
 #endif				/* QMAIL */
 		/* sudoer options */
+            case 'B':
+                i++;
+                if (atype != SUDOER) {
+                    optmask("<sudoHost>", atype, opts, XACCT);
+                    break;
+                }
+                optmask("<sudoHost>", atype, opts, c);
+                mdata->su->host = strdup(argv[i]);
+                i--;
+                break;
 	    case 'C':
 		i++;
 		if (atype != SUDOER) {
@@ -1032,9 +1044,10 @@ int sanitize_sudo_ops(uxds_authz_t * auth, uxds_sudo_t * su,
 			"%s: At least ONE [-C] <cmd> argument MUST be supplied for SUDOER ADD\n",
 			binary);
 		return 1;
-	    } else if (su->opt == NULL) {
+	    } else if ((su->opt == NULL) && (su->host == NULL)) {
 		fprintf(stderr,
-			"%s: At least ONE [-C] <cmd> or [-O] <opt> MUST be supplied for SUDOER MODIFY\n",
+			"%s: At least ONE [-B] <host>, [-C] <cmd> or [-O] <opt> MUST " \
+                        "be supplied for SUDOER MODIFY\n",
 			binary);
 		return 1;
 	    }

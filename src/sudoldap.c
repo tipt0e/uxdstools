@@ -23,6 +23,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     char *cbuf = NULL;
     char **cmds;
     char **opts = NULL;
+    char **hosts = NULL;
     char *su_dn;
     char *filter = (char *) calloc(1, (SU_LEN + 1));
     ERRNOMEM(filter);
@@ -84,19 +85,13 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	i++;
     }
     cmds[i++] = NULL;
-    if (su->opt != NULL) {
-	a++;
-	opts = calloc(1, strlen(su->opt) + 1);
-	ERRNOMEM(opts);
-	i = 0;
-	opts[i] = strtok(su->opt, ",");
-	i++;
-	while ((opts[i] = strtok(NULL, ",")) != NULL) {
-	    i++;
-	}
-	opts[i++] = NULL;
+    a++;
+    opts = tokenize_options(su->opt);
+    hosts = tokenize_options(su->host);    
+    if (hosts == NULL) {
+       hosts[0] = "ALL";
+       hosts[1] = NULL;
     }
-
     /*
      * XXX dummy values are used here until uxds_acct_t
      * is changed to contain a union
@@ -105,7 +100,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	{SUDOER, "objectClass", "dummy"},
 	{SUDOER, "cn", su->sudoer},
 	{SUDOER, "sudoUser", su->sudoer},
-	{SUDOER, "sudoHost", "ALL"},
+	{SUDOER, "sudoHost", "dummy"},
 	{SUDOER, "sudoCommand", "dummy"},
 	{SUDOER, "sudoOption", "dummy"},
 	{0, NULL, NULL}
@@ -127,6 +122,9 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	/* XXX */
 	if (!strcmp(sudoadd[i]->mod_type, "objectClass")) {
 	    sudoadd[i]->mod_values = sudo_oc;
+        } else if (!strcmp(sudoadd[i]->mod_type, "sudoHost")
+            && (hosts)) {
+            sudoadd[i]->mod_values = hosts;
 	} else if (!strcmp(sudoadd[i]->mod_type, "sudoCommand")
             && (cmds)) {
 	    sudoadd[i]->mod_values = cmds;
@@ -248,6 +246,7 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 
     int c;
     char *su_dn;
+    char **hosts = NULL;
     char **cmds = NULL;
     char **opts = NULL;
     char *filter = (char *) calloc(1, (SU_LEN + 1));
@@ -282,32 +281,16 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	fprintf(stderr, "SUDOer matched DN: %s\n", dn);
     }
     a = 1;
-    i = 0;
-    if (su->cmd != NULL) {
-	cmds = calloc(1, strlen(su->cmd) + 1);
-	ERRNOMEM(cmds);
-	cmds[i] = strtok(su->cmd, ",");
-	i++;
-	while ((cmds[i] = strtok(NULL, ",")) != NULL) {
-	    i++;
-	}
-	cmds[i++] = NULL;
-	a++;
-    }
-    i = 0;
-    if (su->opt != NULL) {
-	a++;
-	opts = calloc(1, strlen(su->opt) + 1);
-	ERRNOMEM(opts);
-	opts[i] = strtok(su->opt, ",");
-	i++;
-	while ((opts[i] = strtok(NULL, ",")) != NULL) {
-	    i++;
-	}
-	opts[i++] = NULL;
-	a++;
-    }
-    a = a + 2;
+    hosts = tokenize_options(su->host);
+    if (hosts)
+        a++;
+    cmds = tokenize_options(su->cmd);
+    if (cmds)
+        a++;
+    opts = tokenize_options(su->opt);
+    if (opts)
+        a++;
+    a = a + 3;
 
     LDAPMod **sudomod;
     sudomod = (LDAPMod **) calloc(a, sizeof(LDAPMod *));
@@ -323,6 +306,11 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     }
 
     c = 0;
+    if (su->host != NULL) {
+        sudomod[c]->mod_type = "sudoHost";
+        sudomod[c]->mod_values = hosts;
+        c++;
+    }
     if (su->cmd != NULL) {
 	sudomod[c]->mod_type = "sudoCommand";
 	sudomod[c]->mod_values = cmds;
@@ -370,4 +358,23 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	ldap_msgfree(msg);
 
     return 0;
+}
+
+char **tokenize_options(char *option)
+{
+    int i;
+    char **tokens;
+
+    i = 0;
+    if (option != NULL) {
+        tokens = calloc(1, strlen(option) + 1);
+        ERRNOMEM(tokens);
+        tokens[i] = strtok(option, ",");
+        i++;
+        while ((tokens[i] = strtok(NULL, ",")) != NULL) {
+            i++;
+        }
+        tokens[i++] = NULL;
+    }
+    return tokens;
 }
