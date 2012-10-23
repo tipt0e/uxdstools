@@ -44,7 +44,7 @@ GSSAPI support, as well as krb5.h and libkrb5 from Heimdal.
 
 To build:
 
-Run ./autogen.sh in the top directory.
+If obtaining from a git repository, run ./autogen.sh in the top directory.
 
 Run the included configure script. './configure --help' will show the specific options.
 
