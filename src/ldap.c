@@ -40,11 +40,10 @@ int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
     if ((sflag > SIMPLE) || (auth.pkcert)) {
 	authmethod = LDAP_AUTH_SASL;
 	sasl_mech = auth.saslmech;
-	if (auth.verb == 1) {
+	if (auth.verb == 1) 
 	    sasl_flags = LDAP_SASL_INTERACTIVE;	/* [-V] some mechs need? */
-	} else {
+	else 
 	    sasl_flags = LDAP_SASL_QUIET;	/* default */
-	}
 #ifdef HAVE_LDAP_SASL_GSSAPI
 	if (sflag == GSSAPI) {
 	    if (auth.debug)
@@ -287,9 +286,8 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	fprintf(stderr, "The number of entries returned was %d\n",
 		ldap_count_entries(ld, msg));
     }
-    if (accttype == NULL) {
+    if (accttype == NULL) 
 	accttype = "Your";
-    }
     if (all == 1) {
 	fprintf(stdout, "------- %s Account Listing -------\n", accttype);
 	for (entry = ldap_first_entry(ld, msg);
@@ -359,9 +357,8 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	}
 	ldap_memfree(attr);
     }
-    if (ber != NULL) {
+    if (ber != NULL) 
 	ber_free(ber, 0);
-    }
     ldap_msgfree(msg);
 
     return 0;
