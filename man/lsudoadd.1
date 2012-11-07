@@ -1,4 +1,4 @@
-.TH lsudoadd 1 "February 1, 2008" uxdstools uxdstools
+.TH lsudoadd 1 "November 6, 2012" uxdstools uxdstools
 
 .SH NAME
 lsudoadd \- Add SUDOer accounts in LDAP stores
@@ -86,6 +86,15 @@ Name (uid attribute) of the POSIX user you wish to create a SUDOer account for.
 group 
 
 Name (cn attribute) of the POSIX group you wish to create a SUDOer account for.  If selected, the arbitrary '%' is automatically prepended to the sudoRole and cn attributes of the SUDOer account, e.g. "group" becomes "%group", as sudo expects.
+.TP
+\-B
+.ul
+sudoHost(s)
+
+Hostname, IP address, IP network, or host netgroup (prefixed with a '+') on which the SUDOer is allowed to run commands.  Not required, 'ALL' populates this attribute by default if not selected.  If multiple entities are desired, then separate them with commas: e.g. -B host1,host2 (can also enclose the whole string in
+.ul
+single
+quotes: e.g. -B 'host1,host2'). 
 .TP
 \-C
 .ul  

@@ -1,4 +1,4 @@
-.TH lsudomod 1 "February 1, 2008" uxdstools uxdstools
+.TH lsudomod 1 "November 6, 2012" uxdstools uxdstools
 
 .SH NAME
 lsudomod \- Modify SUDOer accounts in LDAP stores
@@ -81,6 +81,15 @@ user
 
 Name (sudoUser attribute) of the SUDOer acocunt you wish to modify.
 .TP
+\-B
+.ul
+sudoHost(s)
+
+Hostname, IP address, IP network, or host netgroup (prefixed with a '+') on which the SUDOer is allowed to run commands.  Not required, 'ALL' populates this attribute by default if not selected.  If multiple entities are desired, then separate them with commas: e.g. -B host1,host2 (can also enclose the whole string in
+.ul
+single
+quotes: e.g. -B 'host1,host2').
+.TP
 \-C
 .ul  
 sudoCommand(s)
@@ -100,7 +109,7 @@ single
 quotes): e.g. -C '!authenticate,env_reset'
 .TP
 \-R
-This option is used in conjunction with *either* -C or -O to affect removal of the command(s) or options(s) selected from the SUDOer account.  
+This option is used in conjunction with *either* -B, -C or -O to affect removal of the host(s), command(s) or options(s) selected from the SUDOer account.  
 .TP
 \-v|\-\-version 
 
