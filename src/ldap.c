@@ -397,22 +397,20 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    pxid =
 		get_next_pxid(ld, msg, entry, attr, pxtype, ber,
 			      auth.debug);
-	    if (pxid.fail) {
+	    if (pxid.fail)
 		return 1;
-	    } else {
+	    else
 		mdata.uidnum = pxid.uidnum;
-	    }
 	}
     } else if (pxtype == GROUP) {
 	if (mdata.gidnum == NULL) {
 	    pxid =
 		get_next_pxid(ld, msg, entry, attr, pxtype, ber,
 			      auth.debug);
-	    if (pxid.fail) {
+	    if (pxid.fail)
 		return 1;
-	    } else {
+	    else 
 		mdata.gidnum = pxid.gidnum;
-	    }
 	}
     }
 
@@ -498,27 +496,23 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	NULL
     };
 
-    if (mdata.homes == NULL) {
+    if (mdata.homes == NULL)
 	mdata.homes = strdup(center(cbuf, "/home/", mdata.user));
-    }
-    if (mdata.shell == NULL) {
+    if (mdata.shell == NULL)
 	mdata.shell = strdup("/bin/sh");
-    }
     mygecos = realloc(mygecos, (GC_LEN + 3));
     if (!snprintf
 	(mygecos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
 	return 1;
 #ifdef QMAIL
-    if (mdata.mhost != NULL) {
+    if (mdata.mhost != NULL)
 	host = strdup(mdata.mhost);
-    } else {
+    else
 	host = "mailhost.com";
-    }
-    if (mdata.altaddr != NULL) {
+    if (mdata.altaddr != NULL)
 	addr = strdup(mdata.altaddr);
-    } else {
+    else
 	addr = strdup(mbx);
-    }
 #endif				/* QMAIL */
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *principal = center(cbuf, mdata.user, AT_REALM);
@@ -623,20 +617,17 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #endif				/* TOOL_LOG */
 #ifdef PTS
 	if (pts_wrap(PTSCRT, mdata.user, MY_CELL, mdata.uidnum, USER)
-	    != 0) {
+	    != 0)
 	    fprintf(stderr, "ERROR: User %s not created in pts database\n",
 		    mdata.user);
-	}
 	if (pts_wrap(PTSGRP, mdata.user, MY_CELL, mdata.group, ADD)
-	    != 0) {
+	    != 0)
 	    fprintf(stderr, "ERROR: User %s not added to group %s\n",
 		    mdata.user, mdata.group);
-	}
 #endif
 	if ((uxds_grp_mem(auth.debug, ADD, mdata.user, group_dn, ld))
-	    != 0) {
+	    != 0)
 	    fprintf(stderr, "adding memberUid FAILED\n");
-	}
 #ifdef HAVE_LDAP_SASL_GSSAPI
 	if ((mdata.cpw == 1) || (mdata.setpass)) {
 	    char *name = get_krbname(auth, FALSE);
@@ -732,9 +723,8 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	}
 	groupadd[i] = NULL;
 
-	if (auth.basedn == NULL) {
+	if (auth.basedn == NULL)
 	    auth.basedn = UXDS_POSIX_OU;
-	}
 	group_dn =
 	    realloc(group_dn,
 		    strlen(mdata.group) + strlen(auth.basedn) + 5);
@@ -765,11 +755,10 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #endif				/* TOOL_LOG */
 #ifdef PTS
 	if (pts_wrap(PTSCRT, mdata.group, MY_CELL, mdata.gidnum, GROUP)
-	    != 0) {
+	    != 0)
 	    fprintf(stderr,
 		    "ERROR: Group %s not created in pts database\n",
 		    mdata.group);
-	}
 #endif				/* PTS */
 	if (groupadd) {
 	    for (i = 0; groupadd[i] != NULL; i++) {
