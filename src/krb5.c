@@ -175,16 +175,15 @@ krb5_error_code get_tkts(char *user, char *service, uxds_authz_t auth)
      * circumventing krb5_prompter_posix() with getpwd()
      * or do pkinit if selected as an option
      */
-    if (!auth.pkcert) {
+    if (!auth.pkcert) 
 	krb5_get_init_creds_opt_set_pa_password(context, opt,
 						auth.password->bv_val,
 						NULL);
-    } else {
+    else 
 	krb5_get_init_creds_opt_set_pkinit(context, opt, target,
 					   auth.pkcert, NULL, NULL, NULL,
 					   0, 0, NULL,
 					   auth.password->bv_val);
-    }
 
     /* set up auth */
     error = krb5_get_init_creds_password(context, &cred, target, NULL, NULL,	/* <- krb5_prompter_posix, */
