@@ -1013,9 +1013,8 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	i = 0;
 	int n = 0;
 	for (i = 0; moduser_attr[i].attrib != NULL; i++) {
-	    if (moduser_attr[i].value != NULL) {
+	    if (moduser_attr[i].value != NULL) 
 		n++;
-	    }
 	}
 	n++;
 
@@ -1122,9 +1121,8 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	};
 
 	for (i = 0; modgroup_attr[i].attrib != NULL; i++) {
-	    if (modgroup_attr[i].value != NULL) {
+	    if (modgroup_attr[i].value != NULL) 
 		num++;
-	    }
 	}
 	num = num + 1;
 
