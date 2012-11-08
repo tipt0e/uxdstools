@@ -1553,9 +1553,8 @@ int pts_wrap(ptsflag flag, char *ptsname, char *cellname, ...)
 	    break;
 	}
 	/* do it */
-	if (execv(PTS_BIN, pts_str) != 0) {
+	if (execv(PTS_BIN, pts_str) != 0)
 	    return 1;
-	}
     } else {
 	while (wait(&status) != pid);
     }
