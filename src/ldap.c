@@ -836,10 +836,9 @@ int uxds_acct_del(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 			acct_type, mdata.user);
 	    }
 	} else if (pxtype == GROUP) {
-	    if (mdata.group != NULL) {
+	    if (mdata.group != NULL)
 		fprintf(stderr, "Deleting %s account - %s....\n",
 			acct_type, mdata.group);
-	    }
 	}
     }
     if (ldap_delete_ext_s(ld, dn, NULL, NULL) != LDAP_SUCCESS) {
@@ -862,22 +861,19 @@ int uxds_acct_del(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     if (pxtype == USER) {
 	mdata.member = strstr(mdata.member, "cn=");
 	if ((uxds_grp_mem(auth.debug, DEL, mdata.user, mdata.member, ld))
-	    != 0) {
+	    != 0)
 	    fprintf(stderr, "deleting memberUid FAILED\n");
-	}
 #ifdef PTS
-	if (pts_wrap(PTSDEL, mdata.user, MY_CELL) != 0) {
+	if (pts_wrap(PTSDEL, mdata.user, MY_CELL) != 0)
 	    fprintf(stderr,
 		    "ERROR: User %s not deleted from pts database\n",
 		    mdata.user);
-	}
     }
     if (pxtype == GROUP) {
-	if (pts_wrap(PTSDEL, mdata.group, MY_CELL) != 0) {
+	if (pts_wrap(PTSDEL, mdata.group, MY_CELL) != 0)
 	    fprintf(stderr,
 		    "ERROR: Group %s not deleted from pts database\n",
 		    mdata.group);
-	}
 #endif				/* PTS */
     }
     fprintf(stderr, "POSIX Account DELETED.\n");
