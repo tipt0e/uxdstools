@@ -1286,14 +1286,12 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
     free(oldgroup);
 #endif				/* PTS */
     if ((uxds_grp_mem(debug, ADD, mdata.user, mod_dn, ld))
-	!= 0) {
+	!= 0)
 	fprintf(stderr, "adding memberUid FAILED\n");
-    }
 #ifdef PTS
-    if (pts_wrap(PTSGRP, mdata.user, MY_CELL, mdata.group, ADD) != 0) {
+    if (pts_wrap(PTSGRP, mdata.user, MY_CELL, mdata.group, ADD) != 0)
 	fprintf(stderr, "Failed to ADD %s to group %s\n",
 		mdata.user, mdata.group);
-    }
 #endif				/* PTS */
     /* change gidNumber & gecos for user */
     uxds_attr_t gidmod_attr[] = {
