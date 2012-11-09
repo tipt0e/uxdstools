@@ -116,21 +116,18 @@ char *curdate(void)
     now = time(NULL);
     tvals = localtime(&now);
 
-    if (tvals->tm_hour < 10) {
+    if (tvals->tm_hour < 10) 
 	snprintf(hour, 3, "0%i", tvals->tm_hour);
-    } else {
+    else 
 	snprintf(hour, 3, "%i", tvals->tm_hour);
-    }
-    if (tvals->tm_min < 10) {
+    if (tvals->tm_min < 10)
 	snprintf(min, 3, "0%i", tvals->tm_min);
-    } else {
+    else
 	snprintf(min, 3, "%i", tvals->tm_min);
-    }
-    if (tvals->tm_sec < 10) {
+    if (tvals->tm_sec < 10)
 	snprintf(sec, 3, "0%i", tvals->tm_sec);
-    } else {
+    else 
 	snprintf(sec, 3, "%i", tvals->tm_sec);
-    }
     snprintf(tbuf, 22, "%i-%i-%i %s:%s:%s",
 	     tvals->tm_mon + 1, tvals->tm_mday, tvals->tm_year + 1900,
 	     hour, min, sec);
