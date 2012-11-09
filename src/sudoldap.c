@@ -67,9 +67,8 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	fprintf(stderr, "SUDOer matched DN: %s\n", dn);
 	ldap_memfree(dn);
     }
-    if (su->type == GROUP) {
+    if (su->type == GROUP)
 	su->sudoer = center(cbuf, "%", su->sudoer);
-    }
     char *sudo_oc[] = {
 	"top",
 	"sudoRole",
@@ -218,9 +217,8 @@ int uxds_sudo_del(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 		su->sudoer);
 	return 1;
     }
-    if ((dn = ldap_get_dn(ld, entry)) != NULL) {
+    if ((dn = ldap_get_dn(ld, entry)) != NULL) 
 	fprintf(stderr, "SUDOer matched DN: %s\n", dn);
-    }
     if (ldap_delete_ext_s(ld, dn, NULL, NULL) != LDAP_SUCCESS) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
 	fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
