@@ -157,15 +157,13 @@ char *randstr(int sz)
     k = 0;
     l = 0;
     for (i = 0; i < scope; i++) {
-        if (len == sz) {
+        if (len == sz)
             break;
-        }
         ch = 33 + (int) (75.0 * rand() / (RAND_MAX));
         while (ch > 32 && ch < 123) {
             /* chars we don't want */
-            if ((ch > 90 && ch < 97) || (ch == 34) || (ch == 39)) {
+            if ((ch > 90 && ch < 97) || (ch == 34) || (ch == 39))
                 break;
-            }
             /* we only want one at most of these */
             if ((ch > 32 && ch < 48) || (ch > 57 && ch < 65)) {
                 if (j == (1 * multi))
