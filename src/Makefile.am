@@ -173,8 +173,8 @@ SASLOBJS = sasl.o
 endif
 
 if GSSAPI 
-OBJS = -lkrb5 -lcrypto -lroken args.o strings.o krb5.o ldap.o
-SUOBJS = -lkrb5 -lcrypto -lroken sudoldap.o args.o strings.o krb5.o ldap.o
+OBJS = -lkrb5 -lcrypto args.o strings.o krb5.o ldap.o
+SUOBJS = -lkrb5 -lcrypto sudoldap.o args.o strings.o krb5.o ldap.o
 else
 OBJS = args.o strings.o ldap.o
 SUOBJS = sudoldap.o args.o strings.o ldap.o
