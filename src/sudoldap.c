@@ -277,9 +277,8 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 		su->sudoer);
 	return 1;
     }
-    if ((dn = ldap_get_dn(ld, entry)) != NULL) {
+    if ((dn = ldap_get_dn(ld, entry)) != NULL) 
 	fprintf(stderr, "SUDOer matched DN: %s\n", dn);
-    }
     a = 1;
     hosts = tokenize_options(su->host);
     if (hosts)
@@ -324,9 +323,8 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     } else {
 	sudomod[c] = NULL;
     }
-    if (auth.basedn == NULL) {
+    if (auth.basedn == NULL)
 	auth.basedn = strdup(UXDS_POSIX_OU);
-    }
     su_dn = calloc(1, strlen(su->sudoer) + strlen(auth.basedn) + 16);
     ERRNOMEM(su_dn);
     if (!snprintf(su_dn, strlen(su->sudoer) + strlen(auth.basedn) + 16,
