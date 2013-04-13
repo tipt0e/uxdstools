@@ -1,6 +1,6 @@
 /*
  * UNIX Directory Service POSIX Group Account Modify
- * (c) 2008-2012 Michael Brown
+ * (c) 2008-2013 Michael Brown
  *
  *   Part of:
  *

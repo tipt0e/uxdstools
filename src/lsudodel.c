@@ -1,6 +1,6 @@
 /*
  * UNIX Directory Service SUDOer Account Delete 
- * (c) 2008-2012 Michael Brown
+ * (c) 2008-2013 Michael Brown
  *
  *   Part of:
  *
