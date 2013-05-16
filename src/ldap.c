@@ -295,8 +295,11 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	    if ((dn = ldap_get_dn(ld, entry)) != NULL) {
 		fprintf(stdout, "DN: %s\n", dn);
 		ldap_memfree(dn);
-	    }
-
+	    } else {
+                fprintf(stderr, "account %s not matched to any DN\n",
+                        auth.pxacct);
+                return 1;
+            }
 	}
 	ldap_msgfree(msg);
 	return 0;
@@ -328,6 +331,8 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 		return 0;
 	    }
 	} else {
+            fprintf(stderr, "account %s not matched to any DN\n",
+                    auth.pxacct);
             return 1;
         }
     }
