@@ -327,7 +327,9 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 
 		return 0;
 	    }
-	}
+	} else {
+            return 1;
+        }
     }
     /* loop through account attributes and print values */
     fprintf(stdout, "------- %s Report: %s -------\n", accttype,
