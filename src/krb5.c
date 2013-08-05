@@ -110,6 +110,7 @@ krb5_error_code get_tkts(char *user, char *service, uxds_authz_t auth)
     krb5_deltat start_time = 0;	/* start now */
     krb5_deltat ticket_life = 1860;	/* 31 minutes */
     krb5_principal target;
+    krb5_keytab keytab;
     char *buf = NULL;
 
 #if 0
@@ -173,24 +174,35 @@ krb5_error_code get_tkts(char *user, char *service, uxds_authz_t auth)
     krb5_get_init_creds_opt_set_tkt_life(opt, ticket_life);
     /*
      * circumventing krb5_prompter_posix() with getpwd()
-     * or do pkinit if selected as an option
+     * or do pkinit or use keytab if selected as an option
      */
-    if (!auth.pkcert) 
-	krb5_get_init_creds_opt_set_pa_password(context, opt,
-						auth.password->bv_val,
-						NULL);
-    else 
-	krb5_get_init_creds_opt_set_pkinit(context, opt, target,
-					   auth.pkcert, NULL, NULL, NULL,
-					   0, 0, NULL,
-					   auth.password->bv_val);
+    if (!auth.keytab) {
+        if (!auth.pkcert) {
+	    krb5_get_init_creds_opt_set_pa_password(context, opt,
+	     					    auth.password->bv_val,
+						    NULL);
+        } else {
+	    krb5_get_init_creds_opt_set_pkinit(context, opt, target,
+					       auth.pkcert, NULL, NULL, NULL,
+					       0, 0, NULL,
+					       auth.password->bv_val);
+        }   
+        error = krb5_get_init_creds_password(context, &cred, target, NULL, NULL,	/* <- krb5_prompter_posix, */
+					     NULL, start_time, service, opt);
+        if (error) 
+	    krb5_err(context, 1, error, "krb5_get_init_creds_password");
+    } else {
+        error = krb5_kt_resolve(context, auth.keytab, &keytab);
+        if (error)
+           krb5_err(context, 1, error, "krb5_kt_resolve");
 
-    /* set up auth */
-    error = krb5_get_init_creds_password(context, &cred, target, NULL, NULL,	/* <- krb5_prompter_posix, */
-					 NULL, start_time, service, opt);
-    if (error) 
-	krb5_err(context, 1, error, "krb5_get_init_creds_password");
-    
+        error = krb5_get_init_creds_keytab(context, &cred, target, keytab,
+                                           start_time, service, NULL);
+        if (error)
+            krb5_err(context, 1, error, "krb5_get_init_creds_keytab");
+        krb5_kt_close(context, keytab);
+    } 
+
     krb5_get_init_creds_opt_free(context, opt);
     /* is the password good ? */
     switch (error) {

@@ -151,6 +151,9 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 	fprintf(stdout,
 		"   -K cert    X.509 Certificate file to use for PK-INIT\n"
 		"              Requires -u <username|cn>\n");
+        fprintf(stdout,
+                "   -T keytab  Kerberos 5 keytab to use for authentication\n"
+                "              Requires -u <username>\n");
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 #ifdef HAVE_LDAP_SASL
 	fprintf(stdout,
@@ -302,6 +305,7 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *cbuf = NULL;
     auth->pkcert = NULL;
+    auth->keytab = NULL;
     auth->credcache = NULL;
     auth->saslmech = NULL;
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
@@ -463,7 +467,7 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		i++;
 #ifdef HAVE_LDAP_SASL_GSSAPI
 		if (((sflag != GSSAPI) && (auth->saslmech == NULL))
-		    || (auth->pkcert != NULL)) {
+		    || (auth->pkcert != NULL) || (auth->keytab != NULL)) {
 		    sflag = KINIT;
 		}
 #else
@@ -520,6 +524,36 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 			auth->pkcert);
 		i--;
 		break;
+            case 'T':           /* keytab authentication */
+                i++;
+                optmask("<filename>", atype, opts, c);
+                if (auth->username == NULL) {
+                    fprintf(stderr,
+                            "MUST HAVE [-u] option for [-T] option\n");
+                    usage(UXDS_USAGE, argv[0], atype, op);
+                }
+                if ((sflag < KINIT) || (auth->saslmech) || (auth->binddn)) {
+                    fprintf(stderr,
+                            "[-D|-P|-m] options CONFLICT with [-T] option\n");
+                    usage(UXDS_USAGE, argv[0], atype, op);
+                }
+                if (strncmp(argv[i], "FILE:", 5) != 0) {
+                    fprintf(stderr,
+                            "with [-T] 'FILE:' must prepend the path to the keytab\n\n");
+                    usage(UXDS_USAGE, argv[0], atype, op);
+                }
+                check = strdup(argv[i]);
+                strtok(check, ":");
+                if (strtok(NULL, ":") == NULL) {
+                    fprintf(stderr,
+                            "with [-T] there must be a keytab name after 'FILE:'\n\n");
+                    usage(UXDS_USAGE, argv[0], atype, op);
+                }
+                free(check);
+                auth->keytab = strdup(argv[i]);
+                if (atype == SELF)
+                    auth->acct = 0;
+                i--;
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 	    case 'U':		/* user account select */
 		i++;
@@ -1037,6 +1071,10 @@ int sanitize_sudo_ops(uxds_authz_t * auth, uxds_sudo_t * su,
 		auth->acct = SELF;
 	    }
 	}
+        if (auth->keytab) {
+            auth->acct = SELF;
+            auth->pxacct = "*";
+        }
     } else if (atype == SUDOER) {
 	if ((op != DEL) && (su->cmd == NULL)) {
 	    if (op == ADD) {
