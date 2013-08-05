@@ -123,6 +123,7 @@ typedef struct uxds_authz_t {
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *credcache;		/* Krb5 credentials cache */
     char *pkcert;		/* PK-INIT certificate */
+    char *keytab                /* Kerberos 5 keytab */
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 #endif				/* HAVE_LDAP_SASL */
     uxds_acct_t acct;		/* account type marker */
