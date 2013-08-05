@@ -40,6 +40,12 @@ FILE:/path/to/x509_certificate
 
 With GSSAPI enabled, this allows for rudimentary PK-INIT authentication using an x509 certificate.  At this time it does not accept passphrases for private keys.  It will gain a kadmin/changepw ticket for use in changing principal passwords. Requires -u <krb5Principal> argument.
 .TP
+\-T
+.ul
+FILE:/path/to/keytab
+
+With GSSAPI enabled, this allows for authentication using a Kerberos 5 keytab. It will gain a kadmin/changepw ticket for use in changing principal passwords. Requires -u <krb5Principal> argument.
+.TP
 \-H
 .ul
 host URI
