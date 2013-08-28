@@ -185,6 +185,12 @@ using an x509 certificate.  At this time it does not accept passphrases for
 private keys.  It will gain a kadmin/changepw ticket for use in changing 
 principal passwords. Requires '-u <krb5Principal>' argument.
 
+-T FILE:/path/to/keytab
+
+With GSSAPI enabled, this allows for kerberos authentication
+using a keytab. It will gain a kadmin/changepw ticket for use in changing
+principal passwords. Requires '-u <krb5Principal>' argument.
+
 -c ccache 
 With '-m GSSAPI', an alternate location for the Kerberos credentials
 cache can be defined. This can be a path, e.g. /tmp/krb5cc_100 or
