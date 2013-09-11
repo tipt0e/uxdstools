@@ -1,6 +1,6 @@
-----------------------
+    --    --    --    --    --    --    --    --    --    --    --
       uxdstools
-----------------------
+    --    --    --    --    --    --    --    --    --    --    --
 
 Generic command line tools to administrate POSIX user and group
 accounts located inside an LDAP Directory.
@@ -50,16 +50,22 @@ Run the included configure script. './configure --help' will show the specific o
 
 These options are unique to uxdstools: **
 
---enable-sasl=(yes|no) include Cyrus-SASL support for authentication
+    --enable-sasl=(yes|no) 
+
+include Cyrus-SASL support for authentication
 requires OpenLDAP libraries to be linked against
 the Cyrus-SASL distribution
 DEFAULT is "yes"
 
---enable-gssapi(yes|no) include GSSAPI support for authentication
+    --enable-gssapi(yes|no)\
+
+include GSSAPI support for authentication
 requires Heimdal Kerberos libraries
 DEFAULT is "yes"
 
---enable-realm=REALM.TLD enable HDB-LDAP attributes in user accounts, takes REALM.TLD
+    --enable-realm=REALM.TLD 
+
+enable HDB-LDAP attributes in user accounts, takes REALM.TLD
 as argument to choose your local krb5 realm
 if you do not define one, configure will try to figure it out
 from your local /etc/resolv.conf file
@@ -67,27 +73,35 @@ requires your directory to have the 'hdb.schema' schema from
 Heimdal loaded
 DEFAULT is NULL
 
---enable-maildomain=realm.tld choose mail domain for 'mail' user attribute
+    --enable-maildomain=realm.tld 
+
+choose mail domain for 'mail' user attribute
 if you do not define one, configure will try to figure it out from
 your local /etc/resolv.conf file
 DEFAULT is NULL
 
---enable-sudoers           enable SUDOers ldap attributes, requires sudo schema be loaded
+    --enable-sudoers
+
+enable SUDOers ldap attributes, requires sudo schema be loaded
 in your ldap server
 DEFAULT is no
 
---enable-qmail=realm.tld   enable QMail attributes, if your ldap server has the qmail schema 
+    --enable-qmail=realm.tld   enable QMail attributes, if your ldap server has the qmail schema 
+
 loaded
 DEFAULT is no
 
---enable-sshlpk            enable sshPublicKey stuff, if your ldap server has the lpk.schema
+    --enable-sshlpk            enable sshPublicKey stuff, if your ldap server has the lpk.schema
+
 loaded
 DEFAULT is no
 
---enable-log=path          enable logging to file path (default is ./tmp/uxds_t.log)
+    --enable-log=path          enable logging to file path (default is ./tmp/uxds_t.log)
+
 DEFAULT is no
 
---enable-pts               enable creation of user in OpenAFS PTS database, this requires
+    --enable-pts               enable creation of user in OpenAFS PTS database, this requires
+
 an OpenAFS setup using Krb5, checks for pts binary
 DEFAULT is no
 
@@ -96,7 +110,8 @@ AUTHENTICATION options:
 
 ** The below options do not require SASL: **
 
--D DN 
+    -D DN 
+
 Distinguished name to used to bind to LDAP directory. If SASL
 support is disabled, this always reverts to a simple bind operation
 (and in the case of lacctparse, an anonymous bind can be attempted
@@ -105,7 +120,8 @@ be used in conjunction with a mech (see -m below) as an identity with
 which to bind, depending on how your local directory service is
 configured.
 
--p|-P passwd 
+    -p|-P passwd 
+
 When -p is used, the password is taken as the argument to this
 switch on the command line. If there are any special characters
 you may enclose the argument in single quotes, e.g, 'p4$$w0rd!',
@@ -122,7 +138,8 @@ then use this ticket for any further operations performed against
 the LDAP tree, and further uxdstools can be called with "-m GSSAPI"
 (see below) without the password argument.
 
--H URI 
+    -H URI 
+
 The expectation here is an LDAP resource URI,
 e.g. ldap://server.example.com. If SSL/TLS support is
 linKed into your OpenLDAP libraries, this will automatically
@@ -135,7 +152,8 @@ example:
 
 ** The options below require SASL to be enabled: **
 
--m mech
+    -m mech
+
 This option requires the OpenLDAP libraries be linked against
 Cyrus-SASL, and the sasl.h header file be available.
 SASL mechanism, such as GSSAPI, DIGEST-MD5, CRAM-MD5, PLAIN,
@@ -153,11 +171,13 @@ to perform operations on your directory. If you don't have a
 ticket, and don't feel like using kinit, you may use the password
 options (-p, -P) above, along with a username (-u) identity.
 
--V
+    -V
+
 Enables SASL_INTERACTIVE mode, more descriptive (verbose), and
 apparently needed by some mechanisms.
 
--u user
+    -u user
+
 With non-GSSAPI binds, this argument is used as the SASL authentication
 identity, or "authcid" used to gain access to the directory service.
 Depending on the your SASL configuration, this may also require the
@@ -170,7 +190,8 @@ is initialized, and along with the password (-p, -P) arguments above
 a kerberos ticket is obtained. The mech is set to be GSSAPI by default,
 so no mech argument (-m) is necessary here.
 
--r realm 
+    -r realm 
+
 Realm for SASL identity, some callbacks need this.
 Not tested and totally optional at this point. With debugging enabled,
 (see -d, below) it is possible to see if this is needed by you, as the
@@ -178,20 +199,21 @@ callbacks are spelled out.
 
 ** The next options requires GSSAPI support to be enabled. **
 
--K FILE:/path/to/x509_certificate
+    -K FILE:/path/to/x509_certificate
 
 With GSSAPI enabled, this allows for rudimentary PK-INIT authentication 
 using an x509 certificate.  At this time it does not accept passphrases for 
 private keys.  It will gain a kadmin/changepw ticket for use in changing 
 principal passwords. Requires '-u <krb5Principal>' argument.
 
--T FILE:/path/to/keytab
+    -T FILE:/path/to/keytab
 
 With GSSAPI enabled, this allows for kerberos authentication
 using a keytab. It will gain a kadmin/changepw ticket for use in changing
 principal passwords. Requires '-u <krb5Principal>' argument.
 
--c ccache 
+    -c ccache 
+
 With '-m GSSAPI', an alternate location for the Kerberos credentials
 cache can be defined. This can be a path, e.g. /tmp/krb5cc_100 or
 preceded by 'METHOD:', as in FILE:/tmp/krb5cc_100 or KCM:100. This will
@@ -202,7 +224,8 @@ Options for target POSIX account manipulation:
 
 ** The below option only applies to the "luser" tools: **
 
--U user 
+    -U user 
+
 Username (uid attribute) of the user you wish to admin.
 
 With 'luseradd', this input is appended on the group
@@ -211,7 +234,7 @@ holds your unix users (which was defined at compile time).
 By default this is "ou=unix,dc=yourdomain,dc=org",
 depending on what domain was selected by the configure script.
 [TO DO: allow user to change this at configure ->
-with --enable-ou or --enable-oupath]
+with     --enable-ou or     --enable-oupath]
 So you if choose -U luser -G slakaz the dn on an add attempt
 would be: "uid=luser,cn=slakaz,ou=unix,dc=yourdomain,dc=org".
 Also, a memberUid attribute describing this username is added
@@ -229,7 +252,8 @@ whatever is chosen to be modified.
 
 ** The next options will apply to each tool as described: **
 
--G group 
+    -G group 
+
 Group name (cn attribute) of the group you wish to admin.
 
 With the 'lgroupadd' tool, this input is appended on the ou
@@ -252,8 +276,9 @@ $ lusermod -D DN -U luser -G newgroup -P
 The memberUid attribute describing the user will be deleted from
 the old primary and added to the new primary group account in LDAP.
 
--f name 
--l name 
+    -f name 
+    -l name 
+
 These are used to create the GECOS field, see below.
 They are required for adds to populate the givenName and
 sn attributes, but you can't make your own custom gecos without
@@ -270,7 +295,8 @@ This is just to provide some standardiztion. This will be changed
 in the next release to optional and any gecos could be created upon
 an add.
 
--I description
+    -I description
+
 This input is required by 'lgroupadd' and fills the posixGroup
 "description" attribute, basically a gecos for the group account.
 
@@ -279,36 +305,42 @@ The following are all used in luseradd, lusermod, lgroupadd
 & lgroupmod and are all optional upon an initial user import.
 They are all modifiable using the 'mod' tools:
 
--M memberUid
+    -M memberUid
+
 This input is used by 'lgroupadd' if a user is desired to be added to
 the group account as a 'memberUid' attribute.  For 'lgroupmod', it 
 will be added to the selected group, again as a memberUid attribute.
 If multiple users are desired, they must be separated with commas;
 e.g. -M grp1,grp2,grp3.
 
--R memberUid
+    -R memberUid
+
 This is used by 'lgroupmod' to remove the described user account's 
 memberUid attribute from the POSIX group account.
 If multiple users are desired, they must be separated with commas;
 e.g. -R grp1,grp2,grp3.
 
--N uidN|gidN 
+    -N uidN|gidN 
+
 gidN (u|g)idNumber attribute for the user or group account. This is
 attribute for the user or group account. The add tool will search all
 (u|g)idNumbers in the directory and use the next logical available number
 (highest (u|g)idNumber + 1).
 
--S shell
+    -S shell
+
 Sets the loginShell attribute for the user's default shell.
 If not set, defaults to "/bin/sh".
 If not set, defaults to "/home/[user chosen]".
 
--X path
+    -X path
+
 Sets the homeDirectory attribute for the user's default home
 directory. If not set, defaults to "/home/[user chosen]".
 ***
 
--y
+    -y
+
 This option is only visible with 'luseradd' and 'lusermod' when GSSAPI
 support is enabled.  It will set or reset the desired user's password 
 (krb5Key) attribute to a random 8-character string. In this process, it 
@@ -318,7 +350,8 @@ This ticket is valid for 5 minutes so it can be used with subsequent calls
 to lusermod or luseradd in a scripting situation to reset passwords or create
 users with passwords set.
 
--e
+    -e
+
 This option is only visible with 'luseradd' and 'lusermod' when GSSAPI
 support and or Ppolicy supoprt is enabled.  With GSSAPI, it will set the
 'krb5PasswordEnd' attribute to '19991231235959Z', effectively expiring the
@@ -328,24 +361,29 @@ before it can authenticate to the directory.
 
 *** for 'luseradd' & 'lusermod' if Qmail attributes are enabled:
 
--E email
+    -E email
+
 Sets mailAlternateAddress attribute for mail delivery.
 Defaults to whats in 'mail'.
 
--Q fqdn
+    -Q fqdn
+
 Sets mailHost attribute for mail delivery.  Defaults to
 'mailhost.com' if not selected.
 
 Miscellaneous options:
 
--d Sets the debug bit for verbose output.
+    -d Sets the debug bit for verbose output.
+
 There is some debugging output to be had if things do not work as
 expected, this switch takes no arguments.
 
--v|--version 
+    -v|--version 
+
 Shows the version info and exits.
 
--h|--help 
+    -h|--help 
+
 Shows verbose output of options and exits.
 
 
