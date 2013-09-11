@@ -11,7 +11,7 @@ If GSSAPI support is enabled, a kerberos ticket-granting-ticket
 will be obtained with a lifetime of 30 minutes when either of the
 password options (command line or input) are selected.
 
-This project is in alpha but most of the functionality is available:
+This project is in beta but most of the functionality is available:
 
 lacctparse - lookup user and group (add sudoer if available) attributes
 luseradd - add POSIX user to directory service
@@ -354,60 +354,60 @@ User and Group structure:
 Without '--enable-realm' upon configure, 'luseradd' will add a user
 that looks like this if you were using an ldif:
 
-\# luser, slakaz, unix, mikro-net.com
-dn: uid=luser,cn=slakaz,ou=unix,dc=mikro-net,dc=com
-objectClass: top
-objectClass: person
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: posixAccount
-objectClass: shadowAccount
-objectClass: simpleSecurityObject
-cn: luser
-sn: Added
-givenName: Luser
-uid: luser
-mail: luser@mikro-net.com
-uidNumber: 55555
-gidNumber: 1111
-gecos: Added,Luser;SLAKAZ System Group
-homeDirectory: /home/luser
-loginShell: /bin/sh
-carLicense: XxXxXxXxXxXxXxXxX
-userPassword:: RFVNTVk=
+    # luser, slakaz, unix, mikro-net.com
+    dn: uid=luser,cn=slakaz,ou=unix,dc=mikro-net,dc=com
+    objectClass: top
+    objectClass: person
+    objectClass: inetOrgPerson
+    objectClass: organizationalPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    objectClass: simpleSecurityObject
+    cn: luser
+    sn: Added
+    givenName: Luser
+    uid: luser
+    mail: luser@mikro-net.com
+    uidNumber: 55555
+    gidNumber: 1111
+    gecos: Added,Luser;SLAKAZ System Group
+    homeDirectory: /home/luser
+    loginShell: /bin/sh
+    carLicense: XxXxXxXxXxXxXxXxX
+    userPassword:: RFVNTVk=
 
 With '--enable-realm' the hdb-ldap pieces are introduced, and the user
 looks like this:
 
-\# luser, slakaz, unix, mikro-net.com
-dn: uid=luser,cn=slakaz,ou=unix,dc=mikro-net,dc=com
-objectClass: top
-objectClass: person
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: posixAccount
-objectClass: shadowAccount
-objectClass: krb5Principal
-objectClass: krb5KDCEntry
-objectClass: simpleSecurityObject
-cn: luser
-sn: Added
-givenName: Luser
-uid: luser
-mail: luser@mikro-net.com
-uidNumber: 55555
-gidNumber: 1111
-gecos: Added,Luser;SLAKAS System Group
-homeDirectory: /home/luser
-loginShell: /bin/sh
-carLicense: XxXxXxXxXxXxXxXxX
-userPassword: {K5KEY}luser@MIKRO-NET.COM
-krb5Key: 0
-krb5PrincipalName: luser@MIKRO-NET.COM
-krb5MaxLife: 86400
-krb5MaxRenew: 604800
-krb5KDCFlags: 126
-krb5PasswordEnd: 20071231235959Z
+    # luser, slakaz, unix, mikro-net.com
+    dn: uid=luser,cn=slakaz,ou=unix,dc=mikro-net,dc=com
+    objectClass: top
+    objectClass: person
+    objectClass: inetOrgPerson
+    objectClass: organizationalPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    objectClass: krb5Principal
+    objectClass: krb5KDCEntry
+    objectClass: simpleSecurityObject
+    cn: luser
+    sn: Added
+    givenName: Luser
+    uid: luser
+    mail: luser@mikro-net.com
+    uidNumber: 55555
+    gidNumber: 1111
+    gecos: Added,Luser;SLAKAS System Group
+    homeDirectory: /home/luser
+    loginShell: /bin/sh
+    carLicense: XxXxXxXxXxXxXxXxX
+    userPassword: {K5KEY}luser@MIKRO-NET.COM
+    krb5Key: 0
+    krb5PrincipalName: luser@MIKRO-NET.COM
+    krb5MaxLife: 86400
+    krb5MaxRenew: 604800
+    krb5KDCFlags: 126
+    krb5PasswordEnd: 20071231235959Z
 
 Probably need a switch to use {SASL} as an alternative to {K5KEY}
 for those that use saslauthd instead of smbk5pwd to handle simple
@@ -415,16 +415,16 @@ binds with kerberos passwords. I leave that as a To Do.
 
 Group structure looks like this:
 
-\# slakaz, unix, mikro-net.com
-dn: cn=slakaz,ou=unix,dc=mikro-net,dc=com
-cn: slakaz
-description: SLAKAZ System Group
-objectClass: top
-objectClass: posixGroup
-gidNumber: 1111
-memberUid: luser
+    # slakaz, unix, mikro-net.com
+    dn: cn=slakaz,ou=unix,dc=mikro-net,dc=com
+    cn: slakaz
+    description: SLAKAZ System Group
+    objectClass: top
+    objectClass: posixGroup
+    gidNumber: 1111
+    memberUid: luser
 
-This again, is __alpha__ software, tested only by me, and it comes with no
+This again, is beta software, tested only by me, and it comes with no
 guarantes or warranties. But I hope someone can find it useful.
 
 To Do:
