@@ -1071,10 +1071,12 @@ int sanitize_sudo_ops(uxds_authz_t * auth, uxds_sudo_t * su,
 		auth->acct = SELF;
 	    }
 	}
+#ifdef HAVE_LDAP_SASL_GSSAPI
         if (auth->keytab) {
             auth->acct = SELF;
             auth->pxacct = "*";
         }
+#endif				/* HAVE_LDAP_SASL_GSSAPI */
     } else if (atype == SUDOER) {
 	if ((op != DEL) && (su->cmd == NULL)) {
 	    if (op == ADD) {
