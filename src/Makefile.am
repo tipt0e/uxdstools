@@ -4,12 +4,12 @@
 OBJECTS = `find ./* -name '*.o'`
 
 if SUDOON
-bin_PROGRAMS = lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod lsudoadd lsudodel lsudomod
+bin_PROGRAMS = libuxds lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod lsudoadd lsudodel lsudomod
 else
-bin_PROGRAMS = lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod
+bin_PROGRAMS = libuxds lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod
 endif
 
-lacctparse_SOURCES = 
+libuxds_SOURCES =
 	config.h \
 	uxds.h \
 	uxds_sasl.h \
@@ -20,156 +20,62 @@ lacctparse_SOURCES =
 	args.c \
 	log.c \
 	ldap.c \
-        sasl.c \
-        krb5.c \
+	sudoldap.c \
+	sasl.c \
+	krb5.c
+
+lacctparse_SOURCES = 
+	uxds.h \
 	lacctparse.c 
 
 luseradd_SOURCES = 
-	config.h \
 	uxds.h \
-        uxds_sasl.h \
-        uxds_krb5.h \
-	uxds_log.h \
-	uxds_strings.h \
-	strings.c \
-	args.c \
-	log.c \
-	ldap.c \
-        sasl.c \
-        krb5.c \
 	luseradd.c
 
 lgroupadd_SOURCES =
-	config.h \
 	uxds.h \
-        uxds_sasl.h \
-        uxds_krb5.h \
-	uxds_log.h \
-        uxds_strings.h \
-	args.c \
-	strings.c \
-	log.c \
-	ldap.c \
-        sasl.c \
-        krb5.c \
-        sasl.c \
-	krb5.c \
 	lgroupadd.c
 
 luserdel_SOURCES =
-	config.h \
 	uxds.h \
-	uxds_sasl.h \
-        uxds_krb5.h \
-        uxds_log.h \
-        uxds_strings.h \
-	args.c \
-	strings.c \
-	log.c \
-	ldap.c \
-        sasl.c \
-        krb5.c \
 	lgroupdel.c
 
 lgroupdel_SOURCES =
-	config.h \
 	uxds.h \
-        uxds_sasl.h \
-        uxds_krb5.h \
-        uxds_log.h \
-        uxds_strings.h \
-	args.c \
-	strings.c \
-	log.c \
-	ldap.c \
-        sasl.c \
-        krb5.c \
 	lgroupdel.c
 
 lusermod_SOURCES =
-	config.h \
 	uxds.h \
-        uxds_sasl.h \
-        uxds_krb5.h \
-        uxds_log.h \
-        uxds_strings.h \
-	args.c \
-	log.c \
-	ldap.c \
-        sasl.c \
-        krb5.c \
-	strings.c \
 	lusermod.c
 
 lgroupmod_SOURCES =
-	config.h \
 	uxds.h \
-        uxds_sasl.h \
-        uxds_krb5.h \
-        uxds_log.h \
-        uxds_strings.h \
-	args.c \
-	log.c \
-	ldap.c \
-        sasl.c \
-        krb5.c \
-	strings.c \
 	lgroupmod.c
 
 lsudoadd_SOURCES =
-	config.h \
 	uxds.h \
-        uxds_sasl.h \
-        uxds_krb5.h \
-        uxds_log.h \
-        uxds_strings.h \
-	args.c \
-	log.c \
-	ldap.c \
-        sasl.c \
-        krb5.c \
-	sudoldap.c \
-	strings.c \
 	lsudoadd.c
 
 lsudodel_SOURCES =
-	config.h \
 	uxds.h \
-        uxds_sasl.h \
-        uxds_krb5.h \
-        uxds_log.h \
-        uxds_strings.h \
-	args.c \
-	log.c \
-	ldap.c \
-        sasl.c \
-        krb5.c \
-	sudoldap.c \
-	strings.c \
 	lsudodel.c
 
 lsudomod_SOURCES =
-	config.h \
 	uxds.h \
-        uxds_sasl.h \
-        uxds_krb5.h \
-        uxds_log.h \
-        uxds_strings.h \
-	args.c \
-	log.c \
-	ldap.c \
-        sasl.c \
-        krb5.c \
-	sudoldap.c \
-	strings.c \
 	lsudomod.c
 
 SRCS = uxds.h uxds_sasl.h uxds_krb5.h uxds_log.h uxds_strings.h strings.c sasl.c krb5.c ldap.c sudoldap.c 
-
-LDFLAGS = -lldap -llber
+CFLAGS = -I/usr/local/include -Wall -g -c
+SOFLAGS = -shared -Wl,-soname,libuxds.so.0
+LDFLAGS = -L/usr/local/lib -lldap -llber
+BINFLAGS = -I/usr/local/include -Wall -g
+DEBUG = -fPIC
+UXDSLIB = libuxds.so.0.7.0
 
 OBJS = args.o strings.o ldap.o
-SUOBJS = sudoldap.o args.o strings.o ldap.o
+if SUDOON
+SUOBJS = sudoldap.o
+endif 
 
 if SASL
 SASLOBJS = sasl.o
@@ -188,40 +94,37 @@ if LOGGER
 LOGOBJS = log.o
 endif
 
-CFLAGS = -I/usr/local/include -Wall -g -c
-DEBUG =
-
 if SUDOON
-all: lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod lsudoadd lsudodel lsudomod
+all: libuxds lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod lsudoadd lsudodel lsudomod
 else
-all: lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod
+all: libuxds lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod
 endif
 
-all-debug: lacctparse_debug luseradd_debug
+all-debug: lib lacctparse_debug luseradd_debug
 
-lacctparse_debug: ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lacctparse.o
-	${CC} ${DEBUG} ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lacctparse.o -o lacctparse ${LDFLAGS} ${AFSFLAG} ${GSS}
+libuxds: ${OBJS} ${SUOBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS}
+	${CC} ${SOFLAGS} ${OBJS} ${SUOBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} -o ${UXDSLIB} ${LDFLAGS} ${AFSFLAG} ${GSS}
 
-lacctparse: ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lacctparse.o
-	${CC} ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lacctparse.o -o lacctparse ${LDFLAGS} ${AFSFLAG} ${GSS}
+lacctparse: lacctparse.o
+	${CC} ${BINFLAGS} ${UXDSLIB} lacctparse.o -o lacctparse
 
-luseradd: ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} luseradd.o
-	${CC} ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} luseradd.o -o luseradd ${LDFLAGS} ${AFSFLAG} ${GSS}
+luseradd: luseradd.o
+	${CC} ${BINFLAGS} ${UXDSLIB} luseradd.o -o luseradd 
 
-lgroupadd: ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lgroupadd.o
-	${CC} ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lgroupadd.o -o lgroupadd ${LDFLAGS} ${AFSFLAG} ${GSS}
+lgroupadd: lgroupadd.o
+	${CC} ${BINFLAGS} ${UXDSLIB} lgroupadd.o -o lgroupadd 
 
-luserdel: ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} luserdel.o
-	${CC} ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} luserdel.o -o luserdel ${LDFLAGS} ${AFSFLAG} ${GSS}
+luserdel: luserdel.o
+	${CC} ${BINFLAGS} ${UXDSLIB} luserdel.o -o luserdel
 
-lgroupdel: ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lgroupdel.o
-	${CC} ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lgroupdel.o -o lgroupdel ${LDFLAGS} ${AFSFLAG} ${GSS}
+lgroupdel: lgroupdel.o
+	${CC} ${BINFLAGS} ${UXDSLIB} lgroupdel.o -o lgroupdel
 
-lusermod: ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lusermod.o
-	${CC} ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lusermod.o -o lusermod ${LDFLAGS} ${AFSFLAG} ${GSS}
+lusermod: lusermod.o
+	${CC} ${BINFLAGS} ${UXDSLIB} lusermod.o -o lusermod
 
-lgroupmod: ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lgroupmod.o
-	${CC} ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lgroupmod.o -o lgroupmod ${LDFLAGS} ${AFSFLAG} ${GSS}
+lgroupmod: lgroupmod.o
+	${CC} ${BINFLAGS} ${UXDSLIB} lgroupmod.o -o lgroupmod
 
 if SUDOON
 sudoldap.o: uxds.h  sudoldap.c
@@ -235,19 +138,7 @@ lsudodel.o: uxds.h  lsudodel.c
 
 lsudomod.o: uxds.h  lsudomod.c
 	${CC} ${DEBUG} ${CFLAGS} lsudomod.c
-
-lsudoadd: ${SUOBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lsudoadd.o
-	${CC} ${SUOBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lsudoadd.o -o lsudoadd ${LDFLAGS} ${AFSFLAG} ${GSS}
-
-lsudodel: ${SUOBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lsudodel.o
-	${CC} ${SUOBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lsudodel.o -o lsudodel ${LDFLAGS} ${AFSFLAG} ${GSS}
-
-lsudomod: ${SUOBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lsudomod.o
-	${CC} ${SUOBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} lsudomod.o -o lsudomod ${LDFLAGS} ${AFSFLAG} ${GSS}
 endif
-
-luseradd_debug: ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} luseradd.o
-	${CC} ${DEBUG} ${OBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} luseradd.o -o luseradd ${LDFLAGS} ${AFSFLAG} ${GSS}
 
 strings.o: uxds.h uxds_strings.h strings.c
 	${CC} ${DEBUG} ${CFLAGS} strings.c
@@ -255,13 +146,10 @@ strings.o: uxds.h uxds_strings.h strings.c
 log.o: uxds.h uxds_log.h log.c
 	${CC} ${DEBUG} ${CFLAGS} log.c
 
-base64.o: uxds.h uxds_strings.h base64.c
-	${CC} ${DEBUG} ${CFLAGS} base64.c
-
 sasl.o: uxds.h uxds_sasl.h sasl.c
 	${CC} ${DEBUG} ${CFLAGS} sasl.c
 
-krb5.o: uxds.h uxds_krb5.h krb5.c 
+krb5.o: uxds.h uxds_krb5.h krb5.c
 	${CC} ${DEBUG} ${CFLAGS} krb5.c
 
 ldap.o: uxds.h uxds_strings.h ldap.c
@@ -291,12 +179,31 @@ lusermod.o: uxds.h lusermod.c
 lgroupmod.o: uxds.h lgroupmod.c
 	${CC} ${DEBUG} ${CFLAGS} lgroupmod.c
 
+if SUDOON
+lsudoadd: lsudoadd.o
+	${CC} ${BINFLAGS} ${UXDSLIB} lsudoadd.o -o lsudoadd
+
+lsudodel: lsudodel.o
+	${CC} ${BINFLAGS} ${UXDSLIB} lsudodel.o -o lsudodel
+
+lsudomod: lsudomod.o
+	${CC} ${BINFLAGS} ${UXDSLIB} lsudomod.o -o lsudomod
+endif
+
+putlib:
+	strip -s ${UXDSLIB}
+	install ${UXDSLIB} ${prefix}/lib
+	ldconfig
+	rm -rf ${prefix}/include/uxds
+	mkdir ${prefix}/include/uxds
+	install uxds*.h ${prefix}/include/uxds 
+
 clean:
 if SUDOON
-	rm -rf *.o
+	rm -rf *.o *.so.*
 	test -z "lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod lsudoadd lsudodel lsudomod" || rm -f lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod lsudoadd lsudodel lsudomod
 else
-	rm -rf *.o
+	rm -rf *.o *.so.*
 	test -z "lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod" || rm -f lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod
 endif
 
@@ -307,4 +214,4 @@ else
 	test -z "lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod" || strip -s lacctparse luseradd lgroupadd luserdel lgroupdel lusermod lgroupmod
 endif
 
-install: strip install-am
+install: strip putlib install-am
