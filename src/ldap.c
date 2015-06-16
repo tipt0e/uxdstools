@@ -506,7 +506,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     if (mdata.homes == NULL)
 	mdata.homes = strdup(center(cbuf, "/home/", mdata.user));
     if (mdata.shell == NULL)
-	mdata.shell = strdup("/bin/sh");
+	mdata.shell = strdup("/bin/bash");
     mygecos = realloc(mygecos, (GC_LEN + 3));
     if (!snprintf
 	(mygecos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
