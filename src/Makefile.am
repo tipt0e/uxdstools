@@ -102,29 +102,29 @@ endif
 
 all-debug: lib lacctparse_debug luseradd_debug
 
-libuxds: ${OBJS} ${SUOBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS}
+libuxds$(EXEEXT): ${OBJS} ${SUOBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS}
 	${CC} ${SOFLAGS} ${OBJS} ${SUOBJS} ${K5OBJS} ${LOGOBJS} ${SASLOBJS} -o ${UXDSLIB} ${LDFLAGS} ${AFSFLAG} ${GSS}
 
-lacctparse: lacctparse.o
-	${CC} ${BINFLAGS} ${UXDSLIB} lacctparse.o -o lacctparse
+lacctparse$(EXEEXT): lacctparse.o
+	${CC} ${BINFLAGS} lacctparse.o -o lacctparse ${UXDSLIB} ${LDFLAGS} ${AFSFLAG} ${GSS}
 
-luseradd: luseradd.o
-	${CC} ${BINFLAGS} ${UXDSLIB} luseradd.o -o luseradd 
+luseradd$(EXEEXT): luseradd.o
+	${CC} ${BINFLAGS} luseradd.o -o luseradd ${UXDSLIB} ${LDFLAGS} ${AFSFLAG} ${GSS}
 
-lgroupadd: lgroupadd.o
-	${CC} ${BINFLAGS} ${UXDSLIB} lgroupadd.o -o lgroupadd 
+lgroupadd$(EXEEXT): lgroupadd.o
+	${CC} ${BINFLAGS} lgroupadd.o -o lgroupadd ${UXDSLIB} ${LDFLAGS} ${AFSFLAG} ${GSS}
 
-luserdel: luserdel.o
-	${CC} ${BINFLAGS} ${UXDSLIB} luserdel.o -o luserdel
+luserdel$(EXEEXT): luserdel.o
+	${CC} ${BINFLAGS} luserdel.o -o luserdel ${UXDSLIB} ${LDFLAGS} ${AFSFLAG} ${GSS}
 
-lgroupdel: lgroupdel.o
-	${CC} ${BINFLAGS} ${UXDSLIB} lgroupdel.o -o lgroupdel
+lgroupdel$(EXEEXT): lgroupdel.o
+	${CC} ${BINFLAGS} lgroupdel.o -o lgroupdel ${UXDSLIB} ${LDFLAGS} ${AFSFLAG} ${GSS}
 
-lusermod: lusermod.o
-	${CC} ${BINFLAGS} ${UXDSLIB} lusermod.o -o lusermod
+lusermod$(EXEEXT): lusermod.o
+	${CC} ${BINFLAGS} lusermod.o -o lusermod ${UXDSLIB} ${LDFLAGS} ${AFSFLAG} ${GSS}
 
-lgroupmod: lgroupmod.o
-	${CC} ${BINFLAGS} ${UXDSLIB} lgroupmod.o -o lgroupmod
+lgroupmod$(EXEEXT): lgroupmod.o
+	${CC} ${BINFLAGS} lgroupmod.o -o lgroupmod ${UXDSLIB} ${LDFLAGS} ${AFSFLAG} ${GSS}
 
 if SUDOON
 sudoldap.o: uxds.h  sudoldap.c
@@ -180,17 +180,17 @@ lgroupmod.o: uxds.h lgroupmod.c
 	${CC} ${DEBUG} ${CFLAGS} lgroupmod.c
 
 if SUDOON
-lsudoadd: lsudoadd.o
-	${CC} ${BINFLAGS} ${UXDSLIB} lsudoadd.o -o lsudoadd
+lsudoadd$(EXEEXT): lsudoadd.o
+	${CC} ${BINFLAGS} lsudoadd.o -o lsudoadd ${UXDSLIB} ${LDFLAGS} ${AFSFLAG} ${GSS}
 
-lsudodel: lsudodel.o
-	${CC} ${BINFLAGS} ${UXDSLIB} lsudodel.o -o lsudodel
+lsudodel$(EXEEXT): lsudodel.o
+	${CC} ${BINFLAGS} lsudodel.o -o lsudodel ${UXDSLIB} ${LDFLAGS} ${AFSFLAG} ${GSS}
 
-lsudomod: lsudomod.o
-	${CC} ${BINFLAGS} ${UXDSLIB} lsudomod.o -o lsudomod
+lsudomod$(EXEEXT): lsudomod.o
+	${CC} ${BINFLAGS} lsudomod.o -o lsudomod ${UXDSLIB} ${LDFLAGS} ${AFSFLAG} ${GSS}
 endif
 
-putlib:
+putlib$(EXEEXT):
 	strip -s ${UXDSLIB}
 	install ${UXDSLIB} ${prefix}/lib
 	ldconfig
