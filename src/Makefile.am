@@ -70,7 +70,7 @@ SOFLAGS = -shared -Wl,-soname,libuxds.so.0
 LDFLAGS = -L/usr/local/lib -lldap -llber
 BINFLAGS = -I/usr/local/include -Wall -g
 DEBUG = -fPIC
-UXDSLIB = libuxds.so.0.7.0
+UXDSLIB = libuxds.so.0.8.0
 
 OBJS = args.o strings.o ldap.o
 if SUDOON
