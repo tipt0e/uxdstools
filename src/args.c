@@ -926,11 +926,13 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
+#if 0
 		if (argv[i] != NULL) {
 		    fprintf(stderr,
 			    "option -P must be the LAST argument\n\n");
 		    usage(UXDS_USAGE, argv[0], atype, op);
 		}
+#endif
 		switch (sflag) {
 		case SIMPLE:
 		    fprintf(stdout, "SIMPLE Bind selected.\n");
@@ -984,6 +986,7 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 			argv[i][1]);
 		usage(UXDS_USAGE, argv[0], atype, op);
 		break;
+            i--;
 	    }
 	}
     }
