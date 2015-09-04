@@ -15,9 +15,9 @@ case $1 in
     *)
 	if [ -f /etc/krb5.conf ]
 	then
-	    DOMAIN=`grep -a1 realms /etc/krb5.conf | grep '=' | awk '{print $1}' | tr \[:upper:\] \[:lower:\]` 
+	    DOMAIN=$(grep -a1 realms /etc/krb5.conf | grep '=' | awk '{print $1}' | tr \[:upper:\] \[:lower:\])
 	else 
-	    DOMAIN=`hostname -f | awk -F\. '{if ($4 ~ /^$|0/) print $2 "." $3; else print $2 "." $3 "." $4;}'`
+	    DOMAIN=$(hostname -f | awk -F\. '{if ($4 ~ /^$|0/) print $2 "." $3; else print $2 "." $3 "." $4;}')
 	fi
 	;;
 esac
@@ -38,12 +38,12 @@ else
 fi
 
 echo "using $DOMAIN to calculate unix ou DN...."
-AT_MAIL=`echo "@${MAIL}" | tr "[:upper:]" "[:lower:]"`
-AT_REALM=`echo "@${DOM}" | tr "[:lower:]" "[:upper:]"`
-OU=`echo ${DOM} | awk -F\. '{if ($3 ~ /^$|0/) print "ou=unix,dc=" $1 ",dc=" $2; else print "ou=unix,dc=" $1 ",dc=" $2 ",dc=" $3;}'`
-echo ${OU}
-echo ${AT_MAIL}
-echo ${AT_REALM}
+AT_MAIL=$(echo "@${MAIL}" | tr "[:upper:]" "[:lower:]")
+AT_REALM=$(echo "@${DOM}" | tr "[:lower:]" "[:upper:]")
+OU=$(echo ${DOM} | awk -F\. '{if ($3 ~ /^$|0/) print "ou=unix,dc=" $1 ",dc=" $2; else print "ou=unix,dc=" $1 ",dc=" $2 ",dc=" $3;}')
+echo "${OU}"
+echo "${AT_MAIL}"
+echo "${AT_REALM}"
 echo "/*" > ./realm.h
 echo " *" >> ./realm.h
 echo " * realm.h" >> ./realm.h
@@ -63,7 +63,7 @@ echo "#define MY_GECOS  \"UXDSAcct;%s %s;%s"\" >> ./realm.h
 echo "" >> ./realm.h
 echo "/* end realm.h */" >> ./realm.h
 mv ./realm.h src
-MACHINE=`uname -m`
+MACHINE=$(uname -m)
 if [ "${MACHINE}" = "i386" ]; then
     cd src
     cp ldap.c ldap64.c
