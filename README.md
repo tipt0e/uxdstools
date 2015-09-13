@@ -439,7 +439,7 @@ looks like this:
     homeDirectory: /home/luser
     loginShell: /bin/sh
     carLicense: XxXxXxXxXxXxXxXxX
-    userPassword: {K5KEY}luser@MIKRO-NET.COM
+    userPassword: {K5KEY}
     krb5Key: 0
     krb5PrincipalName: luser@MIKRO-NET.COM
     krb5MaxLife: 86400
