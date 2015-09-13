@@ -1,3 +1,549 @@
+commit 474484f6030ec8f679b1e9c76b8a1f55d491fe49
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Sun Sep 13 19:54:38 2015 +0000
+
+    change (K5KEY) attribute description
+
+commit f204160d8e845dff06b65690af1fd36cf1bff7dd
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Sun Sep 13 19:49:21 2015 +0000
+
+    change format of README for github
+
+commit 9c7a3f0b8fedacba34026b2615a950f6cbea03e8
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Sun Sep 13 19:41:01 2015 +0000
+
+    fix email address
+
+commit d4ee89426587933d87e8697c6e5f652aae177907
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Fri Sep 4 22:42:45 2015 +0000
+
+    make resolv.sh more sane
+
+commit 05cb13abf415268c65229700404ae1931fe6bb97
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Fri Aug 28 00:53:38 2015 +0000
+
+    fix arguments order that forced -P to be last
+
+commit 2222f97bbbb2d2b8fe08ffb076d9ea054226319d
+Author: root <root@vzcld-util.demoenv.net>
+Date:   Fri Aug 21 23:34:57 2015 +0000
+
+    extend copyright for LICENSE
+
+commit 23243071d45cbf224e5571f0255944bf3ea872c7
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Tue Jun 16 13:49:44 2015 -0400
+
+    bump up copyright notices to (c) 2015
+
+commit 6522d7af33e7f3c60b274694f433cc6dc4e3bc1b
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Tue Jun 16 10:44:57 2015 -0400
+
+    add --add-missing argument to automake
+
+commit 9c7b485490807e70393fbc8285e2c87d6a3c674a
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Tue Jun 16 10:10:50 2015 -0400
+
+    bump up solib version to 0.8.0
+
+commit c4e4f08800270df6a1048ca53ca6590d96b0be9f
+Merge: d1b57de 2f8f9b5
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Jun 15 22:44:23 2015 -0400
+
+    Merge branch 'master' into devel
+
+commit 2f8f9b5d1abdf323b705afbb1be17e635d64ea4b
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Jun 15 22:28:15 2015 -0400
+
+    add AD integration TODO
+
+commit 61aac009d4c88c6ac21522cb6794db186c85ed56
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Jun 15 21:39:02 2015 -0400
+
+    add changes to master branch
+
+commit d1b57de060d8f3db8310fc656865f69a414ea05c
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Jun 15 21:27:42 2015 -0400
+
+    change order of operations in makefile
+
+commit f6eb65692e9c04562e1317e42d7a06429af54f77
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Jun 15 20:45:33 2015 -0400
+
+    change loginShell attribute to /bin/bash
+
+commit 7f188fc8f712af48f12133ba24e72032bac116b7
+Author: tipt0e <topo-2@charter.net>
+Date:   Thu Sep 12 14:38:59 2013 -0700
+
+    add ifdef HAVE_LDAP_SASL_GSSAPI to fix code path
+
+commit dac38d939f719d9ccc6ee5794c2a330582da3da8
+Author: tipt0e <topo-2@charter.net>
+Date:   Thu Sep 12 13:36:57 2013 -0700
+
+    fix resolv.sh so domains with 3 components are not truncated
+    and removed the dependency on krb5.conf
+
+commit 5ad373334a0ed8bcbe808cae21d1e104ff80c5bd
+Author: tipt0e <topo-2@charter.net>
+Date:   Thu Sep 12 11:12:30 2013 -0700
+
+    bump development version to 0.8-git
+
+commit 00d012880dde8457f99758719611168d7d3bd9d9
+Author: tipt0e <topo-2@charter.net>
+Date:   Thu Sep 12 11:02:15 2013 -0700
+
+    bump version to 0.7.0
+
+commit 008c28ff9e522327982b6091103710d7f944f6b1
+Author: tipt0e <topo-2@charter.net>
+Date:   Thu Sep 12 10:49:43 2013 -0700
+
+    change src/Makefifle.am to build shared library libuxds
+    This decreases the disk footprint significantly while also
+    having the benefit of leveraging libuxds to create other
+    programs.  The old Makefile.am was renamed Makefile.am.nosolib
+    to give a choice of not building the shared object.
+
+commit 0508e064446add23e3a490fa37250c2648705281
+Author: tipt0e <topo-2@charter.net>
+Date:   Wed Sep 11 11:03:29 2013 -0700
+
+    second attempt to fix README.md
+
+commit f1add0828590d3e094137740019f956f3a95113a
+Author: tipt0e <topo-2@charter.net>
+Date:   Wed Sep 11 10:56:08 2013 -0700
+
+    first attempt to fix README.md
+
+commit a5d129f0387398f8e79cd129c4a4b2b171a4fafd
+Author: tipt0e <topo-2@charter.net>
+Date:   Tue Aug 27 18:07:42 2013 -0700
+
+    add [-T] keytab authentication argument to README and README.md
+
+commit 17abd4da25cbc9fd7df1f1ba7b454f90111c63bd
+Author: Michael Brown <michael.j.brown1@one.verizon.com>
+Date:   Tue Aug 27 15:47:50 2013 -0700
+
+    fix src/Makefile.am to put gcc arguments in correct order
+    The objects and linkers args were in reverse for what is
+    correct.
+
+commit 2e109c11436acf8566bc0d19684da9dc54d2008d
+Author: Michael Brown <michael.j.brown1@one.verizon.com>
+Date:   Tue Aug 27 15:47:06 2013 -0700
+
+    add keytab function checks to configure.ac
+
+commit d44b22cd8519d4a29189e4695af9f47b8de7c47f
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Aug 5 12:02:35 2013 -0700
+
+    Add [-T] switch description for keytab authentication to manpages
+
+commit 9f96460f1583fc4b101f6e26024380b5b33b58a3
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Aug 4 19:08:56 2013 -0700
+
+    Fix typo - forgot semicolon :(
+
+commit a834b73fefc97a1a3028ade9edff13346b1b6d47
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Aug 4 17:15:35 2013 -0700
+
+    Add ability to authenticate with a Kerberos 5 keytab
+    Add keytab member to struct uxds_auth_t
+
+commit e0d4c5ed834b7bb887b02946d3177d993ec26fd1
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Aug 4 17:08:18 2013 -0700
+
+    Add ability to authenticate with a Kerberos 5 keytab
+    Add logic to use krb5_get_init_creds_keytab in authentication
+    conditionals in krb5.c and add logic in args.c
+
+commit c4c4356e4b2866ceabe258d6224f41eaec3f670a
+Author: Michael Brown <topo-2@charter.net>
+Date:   Sun Jun 2 10:13:09 2013 -0700
+
+    add newest version of SUDOers schema
+
+commit 9d5f4c672b360a6bf2537bbf6381f34b2b455834
+Author: Michael Brown <topo-2@charter.net>
+Date:   Thu May 16 00:28:37 2013 -0700
+
+    Fix uxds_acct_parse()
+    Add error messages if ldap_get_dn() returns NULL
+
+commit e8693c14a190b8dbe2683e49374273fa18897744
+Author: Michael Brown <topo-2@charter.net>
+Date:   Thu May 16 00:19:24 2013 -0700
+
+    Fix uxds_acct_parse()
+    When uxds_acct_parse() checks for a valid DN, it
+    does not properly error out if ldap_get_dn() returns
+    NULL.
+
+commit 7ff1de4ff64c5f97176c0876bcd6b28ca59f69d4
+Author: Michael Brown <topo-2@charter.net>
+Date:   Fri Apr 12 21:50:33 2013 -0700
+
+    Advance copyright to 2013 (c)
+
+commit 40f1f1529da1a545f36808148a1d1f36a947d86e
+Author: Michael Brown <topo-2@charter.net>
+Date:   Thu Nov 8 21:00:26 2012 -0800
+
+    remove -lroken as a dependency
+
+commit cf9089c078149648b819ddc9908b38761c97bbb6
+Author: Michael Brown <topo-2@charter.net>
+Date:   Thu Nov 8 17:13:50 2012 -0800
+
+    remove unnecessary parens from randstr()
+
+commit e532041aa562987b962a81de18f3d54b586161ff
+Author: Michael Brown <topo-2@charter.net>
+Date:   Thu Nov 8 17:10:06 2012 -0800
+
+    remove unnecessary parens from curdate()
+
+commit 00565293166a66f7c9c1721b25283bdf5ecab8b9
+Author: Michael Brown <topo-2@charter.net>
+Date:   Thu Nov 8 16:47:56 2012 -0800
+
+    remove unecessary parens from uxds_sudo_mod()
+
+commit 5eed34b5d3641517443bfb3fdf24e01e4994dee1
+Author: Michael Brown <topo-2@charter.net>
+Date:   Thu Nov 8 16:45:37 2012 -0800
+
+    remove unnecessary parens from uxds_sudo_del()
+
+commit 7b307b5dff569804cd4f0f5337ad1501322da40d
+Author: Michael Brown <topo-2@charter.net>
+Date:   Thu Nov 8 15:51:30 2012 -0800
+
+    remove unnecessary parens from get_tkts()
+
+commit 83eef61741c221c5ed0be445c94445f315894451
+Author: Michael Brown <topo-2@charter.net>
+Date:   Thu Nov 8 15:47:08 2012 -0800
+
+    remove unnecessary parens from pts_wrap()
+
+commit 57303b59e52daf318cb4cd6907ca31a9c0c34b56
+Author: Michael Brown <topo-2@charter.net>
+Date:   Wed Nov 7 18:32:32 2012 -0800
+
+    remove unnecessary parens from uxds_acct_modrdn()
+
+commit 1706c0287ef6ea18737b61dc4743eaf4058c0ae4
+Author: Michael Brown <topo-2@charter.net>
+Date:   Wed Nov 7 18:28:43 2012 -0800
+
+    remove unnecessary parens from uxds_acct_mod()
+
+commit 3b7ee05fc27e6ac6249411465c97befbb75b2206
+Author: Michael Brown <topo-2@charter.net>
+Date:   Wed Nov 7 18:14:15 2012 -0800
+
+    remove unnecessary parens from uxds_acct_del()
+
+commit 9939f180e809d9de0fbbe510b1e2307bdbdd07ca
+Author: Michael Brown <topo-2@charter.net>
+Date:   Tue Nov 6 18:50:41 2012 -0800
+
+    remove unnecessary parens from uxds_ldap_add()
+
+commit cf360fa832e18816b3b48c1eb073fbf4c02795f5
+Author: Michael Brown <topo-2@charter.net>
+Date:   Tue Nov 6 18:22:48 2012 -0800
+
+    remove unnecessary parentheses in uxds_user_authz()
+
+commit 45e7327d9e48d1a18f50497c5ae7b0e4c3e1876a
+Author: Michael Brown <topo-2@charter.net>
+Date:   Tue Nov 6 16:56:54 2012 -0800
+
+    extend copyright notice to 2012
+
+commit 72685592265b555583c5003b6f4871eee8be8cfe
+Author: Michael Brown <topo-2@charter.net>
+Date:   Tue Nov 6 16:52:21 2012 -0800
+
+    change date in 2008 to current date in 2012
+
+commit 314b90f3b9d8bcb2188a80e32b68072070ec6f09
+Author: Michael Brown <topo-2@charter.net>
+Date:   Tue Nov 6 16:51:21 2012 -0800
+
+    add -B option for sudoHost(s)
+
+commit 61bd3e1406f77778a89ca2355bda6570f552c0d8
+Author: Michael Brown <topo-2@charter.net>
+Date:   Tue Oct 23 18:13:38 2012 -0700
+
+    update TODO file
+
+commit 954ed287be43ef91c49d5a8f12dac5997b7f9b3e
+Author: Michael Brown <topo-2@charter.net>
+Date:   Mon Oct 22 18:28:35 2012 -0700
+
+    add clarification
+
+commit 2eb210497ceaf6d0d3d6c87518ffa069e2b96bdc
+Author: Michael Brown <topo-2@charter.net>
+Date:   Mon Oct 22 17:21:54 2012 -0700
+
+    check for ENOMEM condition
+
+commit 72c9a3843b43561454cd45ffdd6737ffe28a238a
+Author: Michael Brown <topo-2@charter.net>
+Date:   Mon Oct 22 16:17:38 2012 -0700
+
+    fix segfault by correctly allocating memory
+
+commit 052b2987d1777c060f62e49326f65b568f29c966
+Author: Michael Brown <topo-2@charter.net>
+Date:   Mon Oct 22 15:29:46 2012 -0700
+
+    Add -B <host> option for lsudoadd and lsudomod.  This exposes the ability
+    to set the sudoHost attribute to only allow the sudo account to issue commands
+    on one or more hosts specified by invoking the command.  Add tokensize_option()
+    to remove redundant code related to adding/modifying sudo accounts.
+
+commit 1035d18ac77fd8b2a003316ea1565f3caf6bde28
+Author: topo-2@charter.net <root@iridium.mikro-net.com>
+Date:   Sun Oct 14 10:10:01 2012 -0700
+
+    made comment more comedic
+
+commit 36329d4172d66687b44691a5310a5fb0ed1b6e1e
+Author: Michael Brown <topo-2@charter.net>
+Date:   Wed Jun 6 22:59:57 2012 -0700
+
+    fix README.md (I hope)
+
+commit 6ebe23851f53fb3626ba8c4404065ec71bc3dd15
+Author: Michael Brown <topo-2@charter.net>
+Date:   Wed Jun 6 22:55:43 2012 -0700
+
+    remove file
+
+commit f021c065089c3371af1de38866475b093f8d7fca
+Author: Michael Brown <topo-2@charter.net>
+Date:   Wed Jun 6 22:40:33 2012 -0700
+
+    extend copyright notice to 2012
+
+commit 4f7e932aaa30db216f85e9b066184e85bbd9881e
+Author: Michael Brown <topo-2@charter.net>
+Date:   Wed Jun 6 19:48:13 2012 -0700
+
+    extend copyright notice to 2012
+
+commit 7db9a9a59852e53c55e33f9333e6f4a7020a6468
+Author: Michael Brown <topo-2@charter.net>
+Date:   Wed Jun 6 19:47:56 2012 -0700
+
+    extend copyright notice to 2012
+
+commit c98186eb187c520e09cbeb2fb14da2ed07de31ff
+Author: Michael Brown <topo-2@charter.net>
+Date:   Wed Jun 6 19:46:57 2012 -0700
+
+    extend copyright notice to 2012
+
+commit c2909f10bc5e304c03d27043ad4a632d9f248474
+Author: Michael Brown <topo-2@charter.net>
+Date:   Wed Jun 6 19:43:15 2012 -0700
+
+    extend copyright notice to 2012
+
+commit 2f14db4aa927acc7e50aefc45eeb281961508d2d
+Author: Michael Brown <topo-2@charter.net>
+Date:   Mon Jun 4 19:15:09 2012 -0700
+
+    remove commented code - we are not using krb5_posix_prompter()
+
+commit 03ff59cecd0ed2bbcbf46f38721ac182b94b2f0f
+Author: Michael Brown <topo-2@charter.net>
+Date:   Mon Jun 4 19:13:35 2012 -0700
+
+    remove commented code - we are not using krb5_posix_promter()
+
+commit 2e88d743af4838a8c11c9272d9396f1aff2db28d
+Author: Michael Brown <topo-2@charter.net>
+Date:   Mon Jun 4 19:11:43 2012 -0700
+
+    remove commented code
+
+commit 9262eef7781e2bc77a4cb7713c26131557cd24e3
+Author: Michael Brown <topo-2@charter.net>
+Date:   Mon Jun 4 18:41:46 2012 -0700
+
+    change to correct password string
+
+commit 9b978c350914b51cec82b88a9406efb7281db28c
+Author: tipt0e <topo-2@charter.net>
+Date:   Sun Jun 3 14:18:29 2012 -0700
+
+    add comment to default passwd value
+
+commit f2e1b721050827178f7d8dbb8f912771000c5257
+Author: tipt0e <topo-2@charter.net>
+Date:   Sun Jun 3 14:02:12 2012 -0700
+
+    changed passwd of default install
+
+commit 358ee7404f744b8c754ccc4f66c810bfa045c08e
+Author: tipt0e <topo-2@charter.net>
+Date:   Sun Jun 3 13:39:27 2012 -0700
+
+    eliminate unnecessary comments
+
+commit 03585076d28209cefdfa56f1d775aad68aac2217
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Aug 16 11:33:26 2011 -0700
+
+    remove redundant code
+
+commit 7e1ea099ba943b4a6a423d60b7ac20c1e09ebaf8
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Aug 16 11:29:53 2011 -0700
+
+    fix invalid free() in build_gecos()
+
+commit 1c5143a1b686135eaf9a256e676fe360b2f9deef
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Aug 16 11:27:54 2011 -0700
+
+    initialize mdata->modrdn properly
+
+commit d8b775892760f9b65f546a64df849c9dbdfc1ffb
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Aug 16 10:38:50 2011 -0700
+
+    expose code that was hidden for debugging
+
+commit 64083988f4b4bb9edbd82b326c0f1db45bbaa427
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Aug 16 10:36:13 2011 -0700
+
+    initialize auth->acct properly
+
+commit 42f49e1c554e5f415ddcf23b1cf792323b018813
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Aug 16 10:34:37 2011 -0700
+
+    -O2 optimization was causing segfault when debug flag is set
+
+commit 86ac6a37ea7e8ef861dbfe000bedb0e750640c7f
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Aug 15 21:54:24 2011 -0700
+
+    fix example ldif
+
+commit 9f3e7e7b9d7d655ded4fb0a4606c3199ebde8297
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Aug 15 15:59:28 2011 -0700
+
+    fix bug when luserdel is called with -G argument
+
+commit 612936fc916866f96b381c4b99b7a1c97c638a16
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Aug 15 12:22:54 2011 -0700
+
+    fix prototype for randstr() and usage thereof
+
+commit ba85b8bbd96484739457fc0aa18670977fb5c71a
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Aug 15 12:06:50 2011 -0700
+
+    remove unnecessary comment
+
+commit 0a0818b50ef55dbcb54e45431396ac3129c0a9e1
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Aug 15 12:03:08 2011 -0700
+
+    remove unused variables
+
+commit ee3ba745eeae34fc1c2e0de43857a673307512ea
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon May 16 08:53:29 2011 -0700
+
+    fix free() of invalid pointer
+
+commit fd512458514c8e50181e2a931f54006c1d3f25a0
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon May 16 08:41:48 2011 -0700
+
+    remove dangling #endif
+
+commit df31efbe2f2342801760ca9e952c1efa40302862
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Wed May 11 10:31:45 2011 -0700
+
+    eliminate commented unused code path
+
+commit 946ad57d1307602652b18d2a8acb33dbd68f6b59
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue May 3 12:45:02 2011 -0700
+
+    add break in case statement
+
+commit d652295a1504e609aecb69ea9ead0d24a81aba9b
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue May 3 10:54:54 2011 -0700
+
+    check return value of putenv()
+
+commit 2cfe0ce0ebc3a45f761b976905a004624223ea28
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Tue Apr 26 21:54:00 2011 -0700
+
+    cosmetic change
+
+commit a02fbf9140cdbe14743f47d33b7715f037090d5a
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Apr 18 18:02:42 2011 -0700
+
+    add -llber
+
+commit 1bbdbbd5f6f78239838f2c7f86b1ba40fac113c2
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Mon Apr 11 09:52:26 2011 -0700
+
+    remove magic number and ldap_memfree() entry
+
+commit 47970b8a33d3c33b2586ce25bf29a9fceb67d53e
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Sun Apr 10 21:58:42 2011 -0700
+
+    comment on the fact that ldap_sort_entries() is DEPRECATED
+
+commit cbb09feea97db0cb461d2d8cac45fb1850ced9f8
+Author: Michael Brown <topo2@pacbell.net>
+Date:   Fri Apr 8 10:51:38 2011 -0700
+
+    update to current git log
+
 commit 26522de9c3898107b28cf4171768a574a9dda801
 Author: Michael Brown <topo2@pacbell.net>
 Date:   Sun Apr 3 19:48:14 2011 -0700
