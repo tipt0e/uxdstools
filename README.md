@@ -1,5 +1,5 @@
     --    --    --    --    --    --    --    --    --    --    --
-      uxdstools
+      			    uxdstools
     --    --    --    --    --    --    --    --    --    --    --
 
 Generic command line tools to administrate POSIX user and group
@@ -13,33 +13,33 @@ password options (command line or input) are selected.
 
 This project is in beta but most of the functionality is available:
 
-lacctparse - lookup user and group (add sudoer if available) attributes
-luseradd - add POSIX user to directory service
-luserdel - delete POSIX user from directory service
-lusermod - modify POSIX user attrs in directory service
-lgroupadd - add POSIX group to directory service
-lgroupdel- delete POSIX group from directory service
-lgroupmod - modify POSIX group attrs in directory service
-
-and if sudoers is enabled:
-
-lsudoadd - add SUDOer account to directory service
-lsudomod - modify SUDOer account in directory service
-lsudodel - delete SUDOer account from directory service
-
-All (except lacctparse) are named in reverence to command line tools used on
-UNIX (Linux, Solaris) systems to manage local accounts, with the 'l' prefix
-signifying LDAP.
-
-A specific host can be specified, otherwise the default uses the
-OpenLDAP libraries to look up specific host information through ldap.conf(5).
-
+lacctparse - lookup user and group (add sudoer if available) attributes<br>
+luseradd - add POSIX user to directory service<br>
+luserdel - delete POSIX user from directory service<br>
+lusermod - modify POSIX user attrs in directory service<br>
+lgroupadd - add POSIX group to directory service<br>
+lgroupdel- delete POSIX group from directory service<br>
+lgroupmod - modify POSIX group attrs in directory service<br>
+<br>
+and if sudoers is enabled:<br>
+<br>
+lsudoadd - add SUDOer account to directory service<br>
+lsudomod - modify SUDOer account in directory service<br>
+lsudodel - delete SUDOer account from directory service<br>
+<br>
+All (except lacctparse) are named in reverence to command line tools used on<br>
+UNIX (Linux, Solaris) systems to manage local accounts, with the 'l' prefix<br>
+signifying LDAP.<br>
+<br>
+A specific host can be specified, otherwise the default uses the<br>
+OpenLDAP libraries to look up specific host information through ldap.conf(5).<br>
+<br>
 SASL support requires <sasl.h> from the Cyrus-SASL distribution, and OpenLDAP
 libraries linked against Cyrus-SASL.
-
-Warning: only SASL/GSSAPI support was really tested, thats all have here on my home network.
-Should work with other mechanisms, though. YMMV.
-SASL-GSSAPI support requires OpenLDAP to be additionally linked to SASL with
+<br>
+Warning: only SASL/GSSAPI support was really tested, thats all have here on my home network.<br>
+Should work with other mechanisms, though. YMMV.<br>
+SASL-GSSAPI support requires OpenLDAP to be additionally linked to SASL with<br>
 GSSAPI support, as well as krb5.h and libkrb5 from Heimdal.
 
 To build:
