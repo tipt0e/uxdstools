@@ -44,7 +44,7 @@
 +	    fprintf(stderr, "Attempted DN: %s, len %i\n", user_dn,
  		    strlen(user_dn));
  	    ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
- 	    fprintf(stderr, "%s: %s\n", res, ldap_err2string(rc));
+ 	    fprintf(stderr, "%s: %s\n", RES, ldap_err2string(rc));
 @@ -818,7 +818,7 @@ int uxds_acct_del(uxds_acct_t pxtype, ux
  	break;
      }

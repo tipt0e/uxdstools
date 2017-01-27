@@ -103,7 +103,7 @@
 #define TRUE	1
 
 /* holds message for ldap_err2string() return */
-#define res	      "ldap_err2string returned"
+#define RES	      "ldap_err2string returned"
 
 /* account type */
 typedef enum { SELF, USER, GROUP, SUDOER } uxds_acct_t;
