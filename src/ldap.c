@@ -441,8 +441,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	return 1;
     }
 
-    free(filter);
-
     if (auth.debug) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
 	fprintf(stderr, "%s: %s\n", RES, ldap_err2string(rc));
@@ -462,7 +460,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		      "uid=%s,%s", mdata.user, dn))
 	    return 1;
 	group_dn = strdup(dn);
-	ldap_memfree(dn);
     }
     vals = ldap_get_values_len(ld, entry, "description");
     if (vals[0]->bv_val != NULL) {
@@ -655,11 +652,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
                     mdata.user);
 	}
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
-	if (useradd) {
-	    for (i = 0; useradd[i] != NULL; i++) {
-		free(useradd[i]);
-	    }
-	}
 	free(mygecos);
 
         if (msg)
