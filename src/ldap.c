@@ -659,9 +659,9 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    for (i = 0; useradd[i] != NULL; i++) {
 		free(useradd[i]);
 	    }
-	    free(useradd);
 	}
 	free(mygecos);
+
         if (msg)
 	    ldap_msgfree(msg);
 
