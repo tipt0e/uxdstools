@@ -40,9 +40,9 @@ int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
     if ((sflag > SIMPLE) || (auth.pkcert)) {
 	authmethod = LDAP_AUTH_SASL;
 	sasl_mech = auth.saslmech;
-	if (auth.verb == 1) 
+	if (auth.verb == 1)
 	    sasl_flags = LDAP_SASL_INTERACTIVE;	/* [-V] some mechs need? */
-	else 
+	else
 	    sasl_flags = LDAP_SASL_QUIET;	/* default */
 #ifdef HAVE_LDAP_SASL_GSSAPI
 	if (sflag == GSSAPI) {
@@ -162,7 +162,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
     char *attr = NULL;
 #ifdef HAVE_LDAP_SASL
     char *fbuf = NULL;
-#endif		/* HAVE_LDAP_SASL */
+#endif				/* HAVE_LDAP_SASL */
     char *accttype = NULL;
     /* only pull these values */
     char *attr_mask[] = { "cn",
@@ -191,7 +191,8 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	NULL
     };
 
-    char *filter = (char *) calloc(1, strlen(SUDOUSER) + strlen(auth.pxacct) + 1);
+    char *filter =
+	(char *) calloc(1, strlen(SUDOUSER) + strlen(auth.pxacct) + 1);
     ERRNOMEM(filter);
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *kuser = NULL;
@@ -286,7 +287,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	fprintf(stderr, "The number of entries returned was %d\n",
 		ldap_count_entries(ld, msg));
     }
-    if (accttype == NULL) 
+    if (accttype == NULL)
 	accttype = "Your";
     if (all == 1) {
 	fprintf(stdout, "------- %s Account Listing -------\n", accttype);
@@ -296,10 +297,10 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 		fprintf(stdout, "DN: %s\n", dn);
 		ldap_memfree(dn);
 	    } else {
-                fprintf(stderr, "account %s not matched to any DN\n",
-                        auth.pxacct);
-                return 1;
-            }
+		fprintf(stderr, "account %s not matched to any DN\n",
+			auth.pxacct);
+		return 1;
+	    }
 	}
 	ldap_msgfree(msg);
 	return 0;
@@ -331,10 +332,10 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 		return 0;
 	    }
 	} else {
-            fprintf(stderr, "account %s not matched to any DN\n",
-                    auth.pxacct);
-            return 1;
-        }
+	    fprintf(stderr, "account %s not matched to any DN\n",
+		    auth.pxacct);
+	    return 1;
+	}
     }
     /* loop through account attributes and print values */
     fprintf(stdout, "------- %s Report: %s -------\n", accttype,
@@ -364,7 +365,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	}
 	ldap_memfree(attr);
     }
-    if (ber != NULL) 
+    if (ber != NULL)
 	ber_free(ber, 0);
     ldap_msgfree(msg);
 
@@ -416,7 +417,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 			      auth.debug);
 	    if (pxid.fail)
 		return 1;
-	    else 
+	    else
 		mdata.gidnum = pxid.gidnum;
 	}
     }
@@ -527,7 +528,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
      * from user_attr[1] when we fill up the LDAPMod struct
      */
     uxds_attr_t user_attr[] = {
-	{USER, "dummy", "dummy"},	/* dummy values how many time can you say 'dummy'*/
+	{USER, "dummy", "dummy"},	/* dummy values how many time can you say 'dummy' */
 	{USER, "cn", mdata.user},
 	{USER, "givenName", mdata.firstname},
 	{USER, "sn", mdata.lastname},
@@ -541,7 +542,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef HDB_LDAP
 	{USER, "userPassword", "{K5KEY}"},
 #else
-        /* hell0 */
+	/* hell0 */
 	{USER, "userPassword", "{SSHA}/nG2BsKmVlI0khfzr7jHKFX2tCFALEVj"},
 #endif				/* HDB_LDAP */
 	{USER, "carLicense", "XxXxXxXxXxXxXxXxX"},
@@ -579,23 +580,9 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	n = i + 1;
 
 	LDAPMod **useradd;
-	useradd = (LDAPMod **) calloc(n, sizeof(LDAPMod *));
-	ERRNOMEM(useradd);
-	useradd[0] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
-	ERRNOMEM(useradd[0]);
-	useradd[0]->mod_op = LDAP_MOD_ADD;
-	useradd[0]->mod_type = "objectClass";
-	useradd[0]->mod_values = user_oc;
-	for (i = 1; user_attr[i].value != NULL; i++) {
-	    useradd[i] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
-	    ERRNOMEM(useradd[i]);
-	    useradd[i]->mod_op = LDAP_MOD_ADD;
-	    useradd[i]->mod_type = user_attr[i].attrib;
-	    useradd[i]->mod_values =
-		calloc(2, strlen(user_attr[i].value) + 1);
-	    ERRNOMEM(useradd[i]->mod_values);
-	    useradd[i]->mod_values[0] = user_attr[i].value;
-	}
+
+	useradd = encap_moddata(user_attr, user_oc, LDAP_MOD_ADD, n);
+
 	useradd[i + 1] = NULL;
 
 	if (auth.debug)
@@ -639,22 +626,22 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		fprintf(stderr, "putenv() call failed\n");
 		return 1;
 	    }
-	    if (mdata.cpw == 1) 
+	    if (mdata.cpw == 1)
 		mdata.setpass = randstr(PASSLEN);
 	    if (setpwd(mdata.user, mdata.setpass) != 0)
 		fprintf(stderr, "Password NOT set for %s\n", mdata.user);
 	}
-	if (mdata.exp == 1) { 
+	if (mdata.exp == 1) {
 	    if ((uxds_user_expire(0, user_dn, ld)) != 0)
 		fprintf(stderr, "Password not EXPIRED for %s\n",
 			mdata.user);
-            fprintf(stdout, "Password for %s EXPIRED to 12-31-1999\n",
-                    mdata.user);
+	    fprintf(stdout, "Password for %s EXPIRED to 12-31-1999\n",
+		    mdata.user);
 	}
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 	free(mygecos);
 
-        if (msg)
+	if (msg)
 	    ldap_msgfree(msg);
 
 	return 0;
@@ -877,7 +864,7 @@ int uxds_acct_del(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     }
     fprintf(stderr, "POSIX Account DELETED.\n");
     if (msg)
-        ldap_msgfree(msg);
+	ldap_msgfree(msg);
 
     return 0;
 }
@@ -891,13 +878,13 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
 #ifdef HAVE_LDAP_SASL
     char *cbuf = NULL;
-#endif		/* HAVE_LDAP_SASL */
+#endif				/* HAVE_LDAP_SASL */
     char *dn = NULL;
     char *mod_dn = NULL;
     char *mygecos = NULL;
     char *filter = NULL;
     char *acct_type = NULL;
-    
+
     int havemem = 0;
 
     if (mdata.modrdn == 1) {
@@ -961,7 +948,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    fprintf(stderr, "modrdn procedure FAILED...\n");
 	    return 1;
 	}
-        if (msg)
+	if (msg)
 	    ldap_msgfree(msg);
 
 	return 0;
@@ -970,9 +957,9 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     free(filter);
 
     if (pxtype == GROUP) {
-	if (mdata.member != NULL) 
+	if (mdata.member != NULL)
 	    havemem = 1;
-	goto groupstart; /* XXX */
+	goto groupstart;	/* XXX */
     }
     if ((mdata.firstname != NULL) || (mdata.lastname != NULL)) {
 	mygecos = build_gecos(mdata, entry, auth.debug, ld);
@@ -994,16 +981,25 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     }
 #endif
     uxds_attr_t moduser_attr[] = {
-	{USER, "homeDirectory", mdata.homes},
-	{USER, "gecos", mygecos},
-	{USER, "givenName", mdata.firstname},
-	{USER, "sn", mdata.lastname},
-	{USER, "loginShell", mdata.shell},
-	{USER, "uidNumber", mdata.uidnum},
-	{USER, "gidNumber", mdata.gidnum},
+	{USER, "homeDirectory", mdata.homes}
+	,
+	{USER, "gecos", mygecos}
+	,
+	{USER, "givenName", mdata.firstname}
+	,
+	{USER, "sn", mdata.lastname}
+	,
+	{USER, "loginShell", mdata.shell}
+	,
+	{USER, "uidNumber", mdata.uidnum}
+	,
+	{USER, "gidNumber", mdata.gidnum}
+	,
 #ifdef QMAIL
-	{USER, "mailHost", host},
-	{USER, "mailAlternateAddress", addr},
+	{USER, "mailHost", host}
+	,
+	{USER, "mailAlternateAddress", addr}
+	,
 #endif				/* QMAIL */
 	{0, NULL, NULL}
     };
@@ -1012,7 +1008,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	i = 0;
 	int n = 0;
 	for (i = 0; moduser_attr[i].attrib != NULL; i++) {
-	    if (moduser_attr[i].value != NULL) 
+	    if (moduser_attr[i].value != NULL)
 		n++;
 	}
 	n++;
@@ -1042,9 +1038,9 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	if ((!mdata.cpw) && (!mdata.exp) && (!mdata.setpass)) {
 	    if (!usermod[0]) {
 		fprintf(stderr,
-		        "FATAL ERROR.... no attributes came through for modification!\n");
+			"FATAL ERROR.... no attributes came through for modification!\n");
 		return 1;
-	    } 
+	    }
 	}
 	if ((mdata.cpw == 1) || (mdata.setpass)) {
 	    char *name = get_krbname(auth, FALSE);
@@ -1055,18 +1051,18 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    if (mdata.cpw == 1)
 		mdata.setpass = randstr(PASSLEN);
 	    if (setpwd(mdata.user, mdata.setpass) != 0)
-			fprintf(stderr, "Password not set for %s\n", mdata.user);
+		fprintf(stderr, "Password not set for %s\n", mdata.user);
 	}
 	if (mdata.exp == 1) {
-	    if ((uxds_user_expire(0, mod_dn, ld)) != 0) 
+	    if ((uxds_user_expire(0, mod_dn, ld)) != 0)
 		fprintf(stderr, "Password not EXPIRED for %s\n",
 			mdata.user);
 	    fprintf(stdout, "Password for %s EXPIRED to 12-31-1999\n",
 		    mdata.user);
-	} 
-	if (!usermod[0]) 
+	}
+	if (!usermod[0])
 	    return 0;
-	    
+
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 	if (ldap_modify_ext_s(ld, mod_dn, usermod, NULL, NULL) !=
 	    LDAP_SUCCESS) {
@@ -1114,13 +1110,15 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    num = num + 1;
 
 	uxds_attr_t modgroup_attr[] = {
-	    {GROUP, "gidNumber", mdata.gidnum},
-	    {GROUP, "description", mdata.comment},
+	    {GROUP, "gidNumber", mdata.gidnum}
+	    ,
+	    {GROUP, "description", mdata.comment}
+	    ,
 	    {0, NULL, NULL}
 	};
 
 	for (i = 0; modgroup_attr[i].attrib != NULL; i++) {
-	    if (modgroup_attr[i].value != NULL) 
+	    if (modgroup_attr[i].value != NULL)
 		num++;
 	}
 	num = num + 1;
@@ -1243,9 +1241,9 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
     gecos = calloc(1, MRDN_LEN);
     ERRNOMEM(gecos);
     if (!snprintf
-        (gecos, MRDN_LEN, MY_GECOS, fname[0]->bv_val, lname[0]->bv_val,
-         mdata.comment))
-        return 1;
+	(gecos, MRDN_LEN, MY_GECOS, fname[0]->bv_val, lname[0]->bv_val,
+	 mdata.comment))
+	return 1;
 
     ldap_value_free_len(fname);
     ldap_value_free_len(lname);
@@ -1294,8 +1292,10 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
 #endif				/* PTS */
     /* change gidNumber & gecos for user */
     uxds_attr_t gidmod_attr[] = {
-	{USER, "gidNumber", mdata.gidnum},
-	{USER, "gecos", gecos},
+	{USER, "gidNumber", mdata.gidnum}
+	,
+	{USER, "gecos", gecos}
+	,
 	{0, NULL, NULL}
     };
 
@@ -1342,6 +1342,29 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
     ldap_msgfree(msg);
 
     return 0;
+}
+
+LDAPMod **encap_moddata(uxds_attr_t * attrs, char *oc[], int modify,
+			int cells)
+{
+    LDAPMod **acctdata;
+    acctdata = (LDAPMod **) calloc(cells, sizeof(LDAPMod *));
+    ERRNOMEM(acctdata);
+    acctdata[0] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
+    ERRNOMEM(acctdata[0]);
+    acctdata[0]->mod_op = modify;
+    acctdata[0]->mod_type = "objectClass";
+    acctdata[0]->mod_values = oc;
+    for (i = 1; attrs[i].value != NULL; i++) {
+	acctdata[i] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
+	ERRNOMEM(acctdata[i]);
+	acctdata[i]->mod_op = modify;
+	acctdata[i]->mod_type = attrs[i].attrib;
+	acctdata[i]->mod_values = calloc(2, strlen(attrs[i].value) + 1);
+	ERRNOMEM(acctdata[i]->mod_values);
+	acctdata[i]->mod_values[0] = attrs[i].value;
+    }
+    return acctdata;
 }
 
 int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
@@ -1652,31 +1675,31 @@ char *build_gecos(uxds_data_t mdata, LDAPMessage * entry, int debug,
     char *old_gecos = NULL;
 
     if (mdata.firstname == NULL) {
-        vals = ldap_get_values_len(ld, entry, "givenName");
-        if (vals[0]->bv_val != NULL) {
-            if (debug)
-                fprintf(stderr, "%s : first name, len %lu\n",
-                        vals[0]->bv_val, strlen(vals[0]->bv_val));
-            mdata.firstname = strdup(vals[0]->bv_val);
-            ldap_value_free_len(vals);
-        }
+	vals = ldap_get_values_len(ld, entry, "givenName");
+	if (vals[0]->bv_val != NULL) {
+	    if (debug)
+		fprintf(stderr, "%s : first name, len %lu\n",
+			vals[0]->bv_val, strlen(vals[0]->bv_val));
+	    mdata.firstname = strdup(vals[0]->bv_val);
+	    ldap_value_free_len(vals);
+	}
     }
     if (mdata.lastname == NULL) {
-        vals = ldap_get_values_len(ld, entry, "sn");
-        if (vals[0]->bv_val != NULL) {
-            if (debug)
-                fprintf(stderr, "%s : sn, len %lu\n", vals[0]->bv_val,
-                        strlen(vals[0]->bv_val));
-            mdata.lastname = strdup(vals[0]->bv_val);
-            ldap_value_free_len(vals);
-        }
+	vals = ldap_get_values_len(ld, entry, "sn");
+	if (vals[0]->bv_val != NULL) {
+	    if (debug)
+		fprintf(stderr, "%s : sn, len %lu\n", vals[0]->bv_val,
+			strlen(vals[0]->bv_val));
+	    mdata.lastname = strdup(vals[0]->bv_val);
+	    ldap_value_free_len(vals);
+	}
     }
     vals = ldap_get_values_len(ld, entry, "gecos");
     if (vals[0]->bv_val != NULL) {
-        if (debug)
-            fprintf(stderr, "%s : gecos, len %lu\n", vals[0]->bv_val,
-                    strlen(vals[0]->bv_val));
-        old_gecos = strdup(vals[0]->bv_val);
+	if (debug)
+	    fprintf(stderr, "%s : gecos, len %lu\n", vals[0]->bv_val,
+		    strlen(vals[0]->bv_val));
+	old_gecos = strdup(vals[0]->bv_val);
     }
     ldap_value_free_len(vals);
     role = strdup(old_gecos);
@@ -1688,8 +1711,8 @@ char *build_gecos(uxds_data_t mdata, LDAPMessage * entry, int debug,
     char *mygecos = (char *) calloc(1, (GC_LEN + 3));
     ERRNOMEM(mygecos);
     if (!snprintf
-        (mygecos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
-        return NULL;
+	(mygecos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
+	return NULL;
 
     return mygecos;
 }
