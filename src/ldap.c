@@ -581,7 +581,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
 	LDAPMod **useradd;
 
-	useradd = encap_moddata(user_attr, NULL, user_oc, LDAP_MOD_ADD, n, n);
+	useradd = uxds_add_ldapmod(user_attr, NULL, user_oc, n, n);
 
 	if (auth.debug)
 	    fprintf(stderr, "user=%s, group=%s, uid=%s, gecos=%s\n",
@@ -673,7 +673,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
 	LDAPMod **groupadd;
 
-        groupadd = encap_moddata(group_attr, mdata.member, group_oc, LDAP_MOD_ADD, attrs, attrs);
+        groupadd = uxds_add_ldapmod(group_attr, mdata.member, group_oc, attrs, attrs);
 
 	if (auth.basedn == NULL)
 	    auth.basedn = UXDS_POSIX_OU;
@@ -1298,23 +1298,25 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
     return 0;
 }
 
-LDAPMod **encap_moddata(uxds_attr_t * attrs, char *mbrs, char *oc[],
-			int modify, int cells, int membit)
+LDAPMod **uxds_add_ldapmod(uxds_attr_t * attrs, char *mbrs, char *oc[],
+			int cells, int membit)
 {
     LDAPMod **acctdata;
     char **mems = NULL;
+    int i;
 
     acctdata = (LDAPMod **) calloc(cells, sizeof(LDAPMod *));
     ERRNOMEM(acctdata);
     acctdata[0] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
     ERRNOMEM(acctdata[0]);
-    acctdata[0]->mod_op = modify;
+    acctdata[0]->mod_op = LDAP_MOD_ADD;
     acctdata[0]->mod_type = "objectClass";
     acctdata[0]->mod_values = oc;
+
     for (i = 1; attrs[i].value != NULL; i++) {
 	acctdata[i] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
 	ERRNOMEM(acctdata[i]);
-	acctdata[i]->mod_op = modify;
+	acctdata[i]->mod_op = LDAP_MOD_ADD;
 	acctdata[i]->mod_type = attrs[i].attrib;
 	acctdata[i]->mod_values = calloc(2, strlen(attrs[i].value) + 1);
 	ERRNOMEM(acctdata[i]->mod_values);
@@ -1332,12 +1334,11 @@ LDAPMod **encap_moddata(uxds_attr_t * attrs, char *mbrs, char *oc[],
 	}
     	mems[i] = NULL;
 
-	if (membit == 0) 
+	if (membit == 0)
             acctdata[i]->mod_op = 0;
-	else if (membit == 1) 
+	else (membit == 1); 
             acctdata[i]->mod_op = 1;
-	else
-            acctdata[i]->mod_op = modify;
+	
 	acctdata[i]->mod_type = "memberUid";
 	acctdata[i]->mod_values = mems;
         i++;
