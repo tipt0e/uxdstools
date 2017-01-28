@@ -638,7 +638,12 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	}
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
 	free(mygecos);
-
+	if (useradd) {
+            for (i = 0; useradd[i] != NULL; i++) {
+                free(useradd[i]);
+	    }
+	    free(useradd);
+	}
 	if (msg)
 	    ldap_msgfree(msg);
 
@@ -716,12 +721,11 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    for (i = 0; groupadd[i] != NULL; i++) {
 		free(groupadd[i]);
 	    }
+	    free(groupadd);
 	}
 	if (mems) {
-	    free(groupadd);
 	    free(mems);
 	}
-
     }
 
     return 0;
