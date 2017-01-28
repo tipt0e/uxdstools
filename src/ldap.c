@@ -581,9 +581,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
 	LDAPMod **useradd;
 
-	useradd = encap_moddata(user_attr, user_oc, LDAP_MOD_ADD, n);
-
-	useradd[i + 1] = NULL;
+	useradd = encap_moddata(user_attr, NULL, user_oc, LDAP_MOD_ADD, n, n);
 
 	if (auth.debug)
 	    fprintf(stderr, "user=%s, group=%s, uid=%s, gecos=%s\n",
@@ -648,16 +646,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     }
     if (pxtype == GROUP) {
 	i = 0;
-	if (mdata.member) {
-	    mems = calloc(1, strlen(mdata.member) + 1);
-	    ERRNOMEM(mems);
-	    mems[i] = strtok(mdata.member, ",");
-	    i++;
-	    while ((mems[i] = strtok(NULL, ",")) != NULL) {
-		i++;
-	    }
-	    mems[i] = NULL;
-	}
+
 	char *group_oc[] = {
 	    "top",
 	    "posixGroup",
@@ -671,43 +660,20 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    {GROUP, "description", mdata.comment},
 	    {0, NULL, NULL}
 	};
+
 	int attrs;
 	/* (strlen("cn=") + 1) */
 #define CN_LEN	4
-	if (mems)
+	if (mdata.member)
 	    attrs = i + CN_LEN;
 	else
 	    attrs = CN_LEN;
 
-	attrs = attrs + 1;
+	attrs++;
 
 	LDAPMod **groupadd;
-	groupadd = (LDAPMod **) calloc(attrs, sizeof(LDAPMod *));
-	ERRNOMEM(groupadd);
-	for (i = 0; i < attrs; i++) {
-	    groupadd[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
-	    ERRNOMEM(groupadd[i]);
-	}
-	groupadd[0]->mod_op = LDAP_MOD_ADD;
-	groupadd[0]->mod_type = "objectClass";
-	groupadd[0]->mod_values = group_oc;
 
-	for (i = 1; group_attr[i].value != NULL; i++) {
-	    groupadd[i]->mod_op = LDAP_MOD_ADD;
-	    groupadd[i]->mod_type = group_attr[i].attrib;
-	    groupadd[i]->mod_values =
-		calloc(2, strlen(group_attr[i].value) + 1);
-	    ERRNOMEM(groupadd[i]->mod_values);
-	    groupadd[i]->mod_values[0] = group_attr[i].value;
-	}
-
-	if (mems) {
-	    groupadd[i]->mod_op = LDAP_MOD_ADD;
-	    groupadd[i]->mod_type = "memberUid";
-	    groupadd[i]->mod_values = mems;
-	    i++;
-	}
-	groupadd[i] = NULL;
+        groupadd = encap_moddata(group_attr, mdata.member, group_oc, LDAP_MOD_ADD, attrs, attrs);
 
 	if (auth.basedn == NULL)
 	    auth.basedn = UXDS_POSIX_OU;
@@ -981,25 +947,15 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     }
 #endif
     uxds_attr_t moduser_attr[] = {
-	{USER, "homeDirectory", mdata.homes}
-	,
-	{USER, "gecos", mygecos}
-	,
-	{USER, "givenName", mdata.firstname}
-	,
-	{USER, "sn", mdata.lastname}
-	,
-	{USER, "loginShell", mdata.shell}
-	,
-	{USER, "uidNumber", mdata.uidnum}
-	,
-	{USER, "gidNumber", mdata.gidnum}
-	,
+	{USER, "homeDirectory", mdata.homes},
+	{USER, "givenName", mdata.firstname},
+	{USER, "sn", mdata.lastname},
+	{USER, "loginShell", mdata.shell},
+	{USER, "uidNumber", mdata.uidnum},
+	{USER, "gidNumber", mdata.gidnum},
 #ifdef QMAIL
-	{USER, "mailHost", host}
-	,
-	{USER, "mailAlternateAddress", addr}
-	,
+	{USER, "mailHost", host},
+	{USER, "mailAlternateAddress", addr},
 #endif				/* QMAIL */
 	{0, NULL, NULL}
     };
@@ -1110,10 +1066,8 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    num = num + 1;
 
 	uxds_attr_t modgroup_attr[] = {
-	    {GROUP, "gidNumber", mdata.gidnum}
-	    ,
-	    {GROUP, "description", mdata.comment}
-	    ,
+	    {GROUP, "gidNumber", mdata.gidnum},
+	    {GROUP, "description", mdata.comment},
 	    {0, NULL, NULL}
 	};
 
@@ -1344,10 +1298,12 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
     return 0;
 }
 
-LDAPMod **encap_moddata(uxds_attr_t * attrs, char *oc[], int modify,
-			int cells)
+LDAPMod **encap_moddata(uxds_attr_t * attrs, char *mbrs, char *oc[],
+			int modify, int cells, int membit)
 {
     LDAPMod **acctdata;
+    char **mems = NULL;
+
     acctdata = (LDAPMod **) calloc(cells, sizeof(LDAPMod *));
     ERRNOMEM(acctdata);
     acctdata[0] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
@@ -1364,6 +1320,30 @@ LDAPMod **encap_moddata(uxds_attr_t * attrs, char *oc[], int modify,
 	ERRNOMEM(acctdata[i]->mod_values);
 	acctdata[i]->mod_values[0] = attrs[i].value;
     }
+
+    if (mbrs) {
+	i = 0;
+        mems = calloc(1, strlen(mbrs) + 1);
+  	ERRNOMEM(mems);
+   	mems[i] = strtok(mbrs, ",");
+   	i++;
+    	while ((mems[i] = strtok(NULL, ",")) != NULL) {
+            i++;
+	}
+    	mems[i] = NULL;
+
+	if (membit == 0) 
+            acctdata[i]->mod_op = 0;
+	else if (membit == 1) 
+            acctdata[i]->mod_op = 1;
+	else
+            acctdata[i]->mod_op = modify;
+	acctdata[i]->mod_type = "memberUid";
+	acctdata[i]->mod_values = mems;
+        i++;
+    }
+    acctdata[i] = NULL;
+
     return acctdata;
 }
 
