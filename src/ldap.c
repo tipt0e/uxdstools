@@ -581,7 +581,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
 	LDAPMod **useradd;
 
-	useradd = uxds_add_ldapmod(user_attr, NULL, user_oc, n, n);
+	useradd = uxds_add_ldapmod(user_attr, NULL, user_oc, LDAP_MOD_ADD, n, n);
 
 	if (auth.debug)
 	    fprintf(stderr, "user=%s, group=%s, uid=%s, gecos=%s\n",
@@ -678,7 +678,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
 	LDAPMod **groupadd;
 
-        groupadd = uxds_add_ldapmod(group_attr, mdata.member, group_oc, attrs, attrs);
+        groupadd = uxds_add_ldapmod(group_attr, mdata.member, group_oc, LDAP_MOD_ADD, attrs, attrs);
 
 	if (auth.basedn == NULL)
 	    auth.basedn = UXDS_POSIX_OU;
@@ -974,7 +974,8 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	n++;
 
 	LDAPMod **usermod;
-	usermod = (LDAPMod **) calloc(n, sizeof(LDAPMod *));
+	usermod = uxds_add_ldapmod(moduser_attr, NULL, NULL, LDAP_MOD_REPLACE, n, n);
+#if 0
 	ERRNOMEM(usermod);
 	for (i = 0; i < n; i++) {
 	    usermod[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
@@ -993,6 +994,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    }
 	}
 	usermod[n] = NULL;
+#endif
 
 #ifdef HAVE_LDAP_SASL_GSSAPI
 	if ((!mdata.cpw) && (!mdata.exp) && (!mdata.setpass)) {
@@ -1082,7 +1084,8 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	num = num + 1;
 
 	LDAPMod **groupmod;
-	groupmod = (LDAPMod **) calloc(num, sizeof(LDAPMod *));
+	groupmod = uxds_add_ldapmod(modgroup_attr, NULL, NULL, LDAP_MOD_REPLACE, num, num);
+#if 0
 	ERRNOMEM(groupmod);
 	for (i = 0; i < num; i++) {
 	    groupmod[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
@@ -1110,7 +1113,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    num++;
 	}
 	groupmod[num] = NULL;
-
+#endif
 	if (!groupmod[0]) {
 	    fprintf(stderr,
 		    "FATAL ERROR.... no attributes came through for modification!\n");
@@ -1303,30 +1306,63 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
 }
 
 LDAPMod **uxds_add_ldapmod(uxds_attr_t * attrs, char *mbrs, char *oc[],
-			int cells, int membit)
+			int modify, int cells, int membit)
 {
     LDAPMod **acctdata;
     char **mems = NULL;
     int i;
+    int n;
 
-    acctdata = (LDAPMod **) calloc(cells, sizeof(LDAPMod *));
-    ERRNOMEM(acctdata);
-    acctdata[0] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
-    ERRNOMEM(acctdata[0]);
-    acctdata[0]->mod_op = LDAP_MOD_ADD;
-    acctdata[0]->mod_type = "objectClass";
-    acctdata[0]->mod_values = oc;
-
-    for (i = 1; attrs[i].value != NULL; i++) {
-	acctdata[i] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
-	ERRNOMEM(acctdata[i]);
-	acctdata[i]->mod_op = LDAP_MOD_ADD;
-	acctdata[i]->mod_type = attrs[i].attrib;
-	acctdata[i]->mod_values = calloc(2, strlen(attrs[i].value) + 1);
-	ERRNOMEM(acctdata[i]->mod_values);
-	acctdata[i]->mod_values[0] = attrs[i].value;
+    for (i = 0; attrs[i].attrib != NULL; i++) {
+        if (attrs[i].value != NULL) {
+	    n++;
+	}
     }
+    n = n + 2;
 
+    if (modify == LDAP_MOD_ADD)
+        acctdata = (LDAPMod **) calloc(cells, sizeof(LDAPMod *));
+    if (modify == LDAP_MOD_REPLACE)
+        acctdata = (LDAPMod **) calloc(n, sizeof(LDAPMod *));
+    ERRNOMEM(acctdata);
+
+    if (modify == LDAP_MOD_ADD) {
+        acctdata[0] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
+        ERRNOMEM(acctdata[0]);
+        acctdata[0]->mod_op = LDAP_MOD_ADD;
+        acctdata[0]->mod_type = "objectClass";
+        acctdata[0]->mod_values = oc;
+
+        for (i = 1; attrs[i].value != NULL; i++) {
+	    acctdata[i] = (LDAPMod *) calloc(1, sizeof(LDAPMod));
+	    ERRNOMEM(acctdata[i]);
+	    acctdata[i]->mod_op = LDAP_MOD_ADD;
+	    acctdata[i]->mod_type = attrs[i].attrib;
+	    acctdata[i]->mod_values = calloc(2, strlen(attrs[i].value) + 1);
+	    ERRNOMEM(acctdata[i]->mod_values);
+	    acctdata[i]->mod_values[0] = attrs[i].value;
+        }
+     }
+
+     if (modify == LDAP_MOD_REPLACE) {
+	for (i = 0; i < n; i++) {
+	    acctdata[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
+	    ERRNOMEM(acctdata[i]);
+	}
+	n = 0;
+	for (i = 0; attrs[i].attrib != NULL; i++) {
+	    if (attrs[i].value != NULL) {
+		acctdata[n]->mod_op = LDAP_MOD_REPLACE;
+		acctdata[n]->mod_type = attrs[i].attrib;
+		acctdata[n]->mod_values =
+		    calloc(2, strlen(attrs[i].value) + 1);
+		ERRNOMEM(acctdata[n]->mod_values);
+		acctdata[n]->mod_values[0] = attrs[i].value;
+		n++;
+	    }
+	}
+	acctdata[n] = NULL;
+    }
     if (mbrs) {
 	i = 0;
         mems = calloc(1, strlen(mbrs) + 1);
