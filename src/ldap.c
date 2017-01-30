@@ -581,7 +581,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
 	LDAPMod **useradd;
 
-	useradd = uxds_add_ldapmod(user_attr, NULL, user_oc, LDAP_MOD_ADD, n, n);
+	useradd = uxds_add_ldapmod(user_attr, user_oc, LDAP_MOD_ADD, n);
 
 	if (auth.debug)
 	    fprintf(stderr, "user=%s, group=%s, uid=%s, gecos=%s\n",
@@ -678,7 +678,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
 	LDAPMod **groupadd;
 
-        groupadd = uxds_add_ldapmod(group_attr, mdata.member, group_oc, LDAP_MOD_ADD, attrs, attrs);
+        groupadd = uxds_add_ldapmod(group_attr, group_oc, LDAP_MOD_ADD, attrs);
 
 	if (auth.basedn == NULL)
 	    auth.basedn = UXDS_POSIX_OU;
@@ -972,7 +972,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	n++;
 
 	LDAPMod **usermod;
-	usermod = uxds_add_ldapmod(moduser_attr, mdata.member, NULL, LDAP_MOD_REPLACE, n, mdata.membit);
+	usermod = uxds_add_ldapmod(moduser_attr, NULL, LDAP_MOD_REPLACE, n);
 
 #ifdef HAVE_LDAP_SASL_GSSAPI
 	if ((!mdata.cpw) && (!mdata.exp) && (!mdata.setpass)) {
@@ -1037,8 +1037,14 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	int debug = 1;
 
         if (mdata.member) {
+	    int c = 1;
+	    char *p = mdata.member;
+	    while((p = strchr(p, ',')) != NULL) {
+                c++;
+		p++;
+	    }
 	    i = 0;
-            mems = calloc(4, sizeof(char *));
+            mems = calloc(c, strlen(mdata.member) + 1);
   	    ERRNOMEM(mems);
    	    mems[i] = strtok(mdata.member, ",");
    	    i++;
@@ -1063,6 +1069,9 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	            }
 		}
             }
+	    if (!mdata.comment || !mdata.gidnum) {
+                return 0;
+	    }
         }
 	uxds_attr_t modgroup_attr[] = {
 	    {GROUP, "gidNumber", mdata.gidnum},
@@ -1078,7 +1087,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	num = num + 1;
 
 	LDAPMod **groupmod;
-	groupmod = uxds_add_ldapmod(modgroup_attr, mdata.member, NULL, LDAP_MOD_REPLACE, num, mdata.membit);
+	groupmod = uxds_add_ldapmod(modgroup_attr, NULL, LDAP_MOD_REPLACE, num);
 
 	if (!groupmod[0]) {
 	    fprintf(stderr,
@@ -1223,7 +1232,7 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
     int x = 1;
     
     LDAPMod **gidmod;
-    gidmod = uxds_add_ldapmod(gidmod_attr, NULL, NULL, LDAP_MOD_REPLACE, x, x);
+    gidmod = uxds_add_ldapmod(gidmod_attr, NULL, LDAP_MOD_REPLACE, x);
 
     mod_dn = center(fbuf, center(fbuf, new_rdn, ","), mod_dn);
     if (debug)
@@ -1255,8 +1264,7 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
     return 0;
 }
 
-LDAPMod **uxds_add_ldapmod(uxds_attr_t * attrs, char *mbrs, char *oc[],
-			int modify, int cells, int membit)
+LDAPMod **uxds_add_ldapmod(uxds_attr_t * attrs, char *oc[], int modify, int cells)
 {
     LDAPMod **acctdata;
     int i;
