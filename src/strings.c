@@ -82,27 +82,6 @@ char *center(char *buf, char *left, char *right)
     return buf;
 }
 
-/* convert realm/domain name to ldap DN - future use */
-char *realmtodn(char *realm, char *buf)
-{
-    char *rbit;
-    char *dbit;
-    char *dn = calloc(1, sizeof(char *));
-    memset(dn, 0, sizeof(dn));
-    strncpy(dn, "dc=", 4);
-    dbit = dn + 3;
-    for (rbit = realm; *rbit; rbit++) {
-	if (*rbit == '.') {
-	    strncpy(dbit, ",dc=", 5);
-	    dbit += 4;
-	} else {
-	    *dbit++ = *rbit;
-	}
-    }
-    buf = strdup(dn);
-    return buf;
-}
-
 /* get current date for timestamps */
 char *curdate(void)
 {

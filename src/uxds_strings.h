@@ -24,9 +24,6 @@ char *center(char *buf, char *left, char *right);
 /* this is still being worked out */
 void center_free(char *buf);
 
-/* convert realm to dn */
-char *realmtodn(char *realm, char *buf);
-
 /* create timedate stamp format: mm-dd-yyyy hh:mm:ss */
 char *curdate(void);
 
