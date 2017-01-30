@@ -1212,20 +1212,10 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
 	{0, NULL, NULL}
     };
 
+    int x = 1;
+    
     LDAPMod **gidmod;
-    gidmod = (LDAPMod **) calloc(3, sizeof(LDAPMod *));
-    ERRNOMEM(gidmod);
-    for (i = 0; gidmod_attr[i].attrib != NULL; i++) {
-	gidmod[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
-	ERRNOMEM(gidmod[i]);
-	gidmod[i]->mod_op = LDAP_MOD_REPLACE;
-	gidmod[i]->mod_type = gidmod_attr[i].attrib;
-	gidmod[i]->mod_values =
-	    calloc(2, strlen(gidmod_attr[i].value) + 1);
-	ERRNOMEM(gidmod[i]->mod_values);
-	gidmod[i]->mod_values[0] = gidmod_attr[i].value;
-    }
-    gidmod[i] = NULL;
+    gidmod = uxds_add_ldapmod(gidmod_attr, NULL, NULL, LDAP_MOD_REPLACE, x, x);
 
     mod_dn = center(fbuf, center(fbuf, new_rdn, ","), mod_dn);
     if (debug)
