@@ -975,26 +975,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
 	LDAPMod **usermod;
 	usermod = uxds_add_ldapmod(moduser_attr, NULL, NULL, LDAP_MOD_REPLACE, n, n);
-#if 0
-	ERRNOMEM(usermod);
-	for (i = 0; i < n; i++) {
-	    usermod[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
-	    ERRNOMEM(usermod[i]);
-	}
-	n = 0;
-	for (i = 0; moduser_attr[i].attrib != NULL; i++) {
-	    if (moduser_attr[i].value != NULL) {
-		usermod[n]->mod_op = LDAP_MOD_REPLACE;
-		usermod[n]->mod_type = moduser_attr[i].attrib;
-		usermod[n]->mod_values =
-		    calloc(2, strlen(moduser_attr[i].value) + 1);
-		ERRNOMEM(usermod[n]->mod_values);
-		usermod[n]->mod_values[0] = moduser_attr[i].value;
-		n++;
-	    }
-	}
-	usermod[n] = NULL;
-#endif
 
 #ifdef HAVE_LDAP_SASL_GSSAPI
 	if ((!mdata.cpw) && (!mdata.exp) && (!mdata.setpass)) {
@@ -1085,35 +1065,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
 	LDAPMod **groupmod;
 	groupmod = uxds_add_ldapmod(modgroup_attr, NULL, NULL, LDAP_MOD_REPLACE, num, num);
-#if 0
-	ERRNOMEM(groupmod);
-	for (i = 0; i < num; i++) {
-	    groupmod[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
-	    ERRNOMEM(groupmod[i]);
-	}
-	num = 0;
-	for (i = 0; modgroup_attr[i].attrib != NULL; i++) {
-	    if (modgroup_attr[i].value != NULL) {
-		groupmod[num]->mod_op = LDAP_MOD_REPLACE;
-		groupmod[num]->mod_type = modgroup_attr[i].attrib;
-		groupmod[num]->mod_values =
-		    calloc(2, strlen(modgroup_attr[i].value) + 1);
-		ERRNOMEM(groupmod[num]->mod_values);
-		groupmod[num]->mod_values[0] = modgroup_attr[i].value;
-		num++;
-	    }
-	}
-	if (mems) {
-	    if (mdata.membit == 0)
-		groupmod[num]->mod_op = LDAP_MOD_ADD;
-	    else if (mdata.membit == 1)
-		groupmod[num]->mod_op = LDAP_MOD_DELETE;
-	    groupmod[num]->mod_type = "memberUid";
-	    groupmod[num]->mod_values = mems;
-	    num++;
-	}
-	groupmod[num] = NULL;
-#endif
+
 	if (!groupmod[0]) {
 	    fprintf(stderr,
 		    "FATAL ERROR.... no attributes came through for modification!\n");
