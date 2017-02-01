@@ -238,7 +238,7 @@ LDAPMod **uxds_add_ldapmod(uxds_attr_t * attrs, char *oc[], int modify, int cell
 
 /* memberUid attribute manipulation */
 int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
-		 int flag, LDAP * ld);
+		 int type, LDAP * ld);
 
 /* user primary group change - modrdn */
 int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter, 
