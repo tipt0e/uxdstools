@@ -234,12 +234,11 @@ int uxds_acct_del(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld);
 int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld);
 
 /* populate LDAPMod struct */
-LDAPMod **uxds_add_ldapmod(uxds_attr_t * attrs, char *mbrs, char *oc[], 
-		           int modify, int cells, int membit);
+LDAPMod **uxds_add_ldapmod(uxds_attr_t * attrs, char *oc[], int modify, int cells);
 
 /* memberUid attribute manipulation */
 int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
-		 LDAP * ld);
+		 int flag, LDAP * ld);
 
 /* user primary group change - modrdn */
 int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter, 
