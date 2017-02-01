@@ -470,4 +470,4 @@ Support MIT kerberos in addition to Heimdal
 Enable attributes for SAMBA accounts
 Enable attributes for Active Directory accounts
 
-Copyright (c) 2008-2015, Michael Brown <ronin.crip@gmail.com>
+Copyright (c) 2008-2017, Michael Brown <ronin.crip@gmail.com>
