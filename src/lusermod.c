@@ -64,11 +64,12 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "uxds_acct_mod USER MODIFY failed.\n");
 	exit(EXIT_FAILURE);
     }
-
-    /* unbind from ds */
+    /* unbind from ds - commented out due to weird bug between ldap_unbind_ext_s and openssl */
+#if 0
     if (uxds_ldap_unbind(ld) != 0) {
 	fprintf(stderr, "uxds_ldap_unbind failed.\n");
 	exit(EXIT_FAILURE);
     }
+#endif
     exit(EXIT_SUCCESS);
 }
