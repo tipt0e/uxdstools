@@ -382,7 +382,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     struct posixid pxid;
 
     char *attr = NULL;
-    char **mems = NULL;
     char *dn = NULL;
     char *role = NULL;
 #ifdef QMAIL
@@ -614,9 +613,13 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    fprintf(stderr, "ERROR: User %s not added to group %s\n",
 		    mdata.user, mdata.group);
 #endif
-	if ((uxds_grp_mem(auth.debug, ADD, mdata.user, group_dn, ld))
-	    != 0)
+	if ((uxds_grp_mem(auth.debug, ADD, mdata.user, group_dn, 0, ld))
+	    != 0) 
 	    fprintf(stderr, "adding memberUid FAILED\n");
+	
+	if ((uxds_grp_mem(auth.debug, ADD, user_dn, group_dn, 1, ld))
+            != 0)
+	    fprintf(stderr, "adding member FAILED\n");
 #ifdef HAVE_LDAP_SASL_GSSAPI
 	if ((mdata.cpw == 1) || (mdata.setpass)) {
 	    char *name = get_krbname(auth, FALSE);
@@ -650,11 +653,20 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	return 0;
     }
     if (pxtype == GROUP) {
+	if (!auth.basedn)
+	    auth.basedn = strdup(UXDS_POSIX_OU);
+
 	i = 0;
+	while (user_attr[i].attrib != NULL) {
+	    i++;
+	};
+	i = i + 10;
+        printf("\n");
 
 	char *group_oc[] = {
 	    "top",
 	    "posixGroup",
+	    "groupOfNames",
 	    NULL
 	};
 
@@ -663,32 +675,15 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    {GROUP, "cn", mdata.group},
 	    {GROUP, "gidNumber", mdata.gidnum},
 	    {GROUP, "description", mdata.comment},
+	    {GROUP, "member", "uid=dummy,cn=dummy,ou=unix,dc=bytepimps,dc=net"},
 	    {0, NULL, NULL}
 	};
-
-	int attrs;
-	/* (strlen("cn=") + 1) */
-#define CN_LEN	4
-	if (mdata.member)
-	    attrs = i + CN_LEN;
-	else
-	    attrs = CN_LEN;
-
-	attrs++;
-
 	LDAPMod **groupadd;
-
-        groupadd = uxds_add_ldapmod(group_attr, group_oc, LDAP_MOD_ADD, attrs);
-
-	if (auth.basedn == NULL)
-	    auth.basedn = UXDS_POSIX_OU;
-	group_dn =
-	    realloc(group_dn,
-		    strlen(mdata.group) + strlen(auth.basedn) + 5);
-	if (!snprintf
-	    (group_dn, strlen(mdata.group) + strlen(auth.basedn) + 5,
-	     "cn=%s,%s", mdata.group, auth.basedn))
-	    return 1;
+        groupadd = uxds_add_ldapmod(group_attr, group_oc, LDAP_MOD_ADD, i);
+        
+	char *group_dn = calloc(1, strlen(mdata.group + strlen(auth.basedn) + 16));
+        snprintf(group_dn, strlen(mdata.group) + strlen(auth.basedn) + 16,
+	  "cn=%s,%s", mdata.group, auth.basedn);
 	if (auth.debug)
 	    fprintf(stderr,
 		    "group=%s, gid=%s, descr=%s, memberuid(s)=%s\n",
@@ -721,10 +716,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    for (i = 0; groupadd[i] != NULL; i++) {
 		free(groupadd[i]);
 	    }
-	    free(groupadd);
-	}
-	if (mems) {
-	    free(mems);
 	}
     }
 
@@ -816,9 +807,13 @@ int uxds_acct_del(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #endif				/* TOOL_LOG */
     if (pxtype == USER) {
 	mdata.member = strstr(mdata.member, "cn=");
-	if ((uxds_grp_mem(auth.debug, DEL, mdata.user, mdata.member, ld))
+	if ((uxds_grp_mem(auth.debug, DEL, mdata.user, mdata.member, 0, ld))
 	    != 0)
 	    fprintf(stderr, "deleting memberUid FAILED\n");
+	if ((uxds_grp_mem(auth.debug, DEL, dn, mdata.member, 1, ld))
+            != 0)
+	    fprintf(stderr, "deleting member FAILED\n");
+            
 #ifdef PTS
 	if (pts_wrap(PTSDEL, mdata.user, MY_CELL) != 0)
 	    fprintf(stderr,
@@ -904,7 +899,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	fprintf(stderr, "%s matched DN: %s\n", acct_type, dn);
 	mod_dn = strdup(dn);
 	if (auth.debug)
-	ldap_memfree(dn);
+	    ldap_memfree(dn);
     }
     if (mdata.modrdn == 1) {
 	vals = ldap_get_values_len(ld, entry, "gidNumber");
@@ -923,8 +918,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
 	return 0;
     }
-
-    free(filter);
 
     if (pxtype == GROUP) {
 	goto groupstart;	/* XXX */
@@ -1041,9 +1034,12 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    char *p = mdata.member;
 	    while((p = strchr(p, ',')) != NULL) {
                 c++;
-		p++;
+                p++;
 	    }
+	    c++;
 	    i = 0;
+	    if(mems)
+		free(mems); 
             mems = calloc(c, strlen(mdata.member) + 1);
   	    ERRNOMEM(mems);
    	    mems[i] = strtok(mdata.member, ",");
@@ -1057,14 +1053,26 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    if (mdata.membit == 1)
 		op = DEL;
 	    for (i = 0; mems[i] != NULL; i++) {
-                if ((uxds_grp_mem(debug, op, mems[i], mod_dn, ld))
+                if ((uxds_grp_mem(debug, op, mems[i], mod_dn, 0, ld))
 	            != 0) {
 		    if (mdata.membit == 0) {
 	                fprintf(stderr, "adding memberUid FAILED\n");
-		        return 1;
 		    }
 		    if (mdata.membit == 1) {
 	                fprintf(stderr, "deleting memberUid FAILED\n");
+	            }
+		}
+                
+		char *userdn = calloc(1, strlen(mod_dn) + 16);
+		snprintf(userdn, strlen(mod_dn) + 16, "%s%s%s%s", "uid=", mems[0], ",", mod_dn);
+                if ((uxds_grp_mem(debug, op, userdn, mod_dn, 1, ld))
+	            != 0) {
+		    if (mdata.membit == 0) {
+	                fprintf(stderr, "adding member FAILED\n");
+		        return 1;
+		    }
+		    if (mdata.membit == 1) {
+	                fprintf(stderr, "deleting member FAILED\n");
 	                return 1;
 	            }
 		}
@@ -1197,10 +1205,12 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
     }
     /* delete memberUid from old posixGroup and add it to new */
     old_dn = strstr(old_dn, "cn=");
-    if ((uxds_grp_mem(debug, DEL, mdata.user, old_dn, ld))
-	!= 0) {
+    if ((uxds_grp_mem(debug, ADD, mdata.user, mod_dn, 0, ld))
+	!= 0)
+	fprintf(stderr, "adding memberUID FAILED\n");
+    if ((uxds_grp_mem(debug, DEL, mdata.user, old_dn, 0, ld))
+	!= 0) 
 	fprintf(stderr, "deleting memberUid FAILED\n");
-    }
 #ifdef PTS
     char *oldgroup = strdup(old_dn);
     oldgroup = strtok(oldgroup, ",");
@@ -1214,9 +1224,19 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
     }
     free(oldgroup);
 #endif				/* PTS */
-    if ((uxds_grp_mem(debug, ADD, mdata.user, mod_dn, ld))
-	!= 0)
-	fprintf(stderr, "adding memberUid FAILED\n");
+    char *new_dn = calloc(1, strlen(mdata.user) + strlen(mod_dn) + 16);
+    snprintf(new_dn, strlen(mdata.user) + strlen(mod_dn) + 16, "%s%s%s%s", "uid=", mdata.user, ",", mod_dn);
+    if ((uxds_grp_mem(debug, ADD, new_dn, mod_dn, 1, ld)) 
+	!= 0) {
+        fprintf(stderr, "adding member FAILED\n");
+    }
+
+    char *del_dn = calloc(1, strlen(mdata.user) + strlen(old_dn) + 16);
+    snprintf(del_dn, strlen(mdata.user) + strlen(old_dn) + 16, "%s%s%s%s", "uid=", mdata.user, ",", old_dn);
+    if ((uxds_grp_mem(debug, DEL, del_dn, old_dn, 1, ld))
+	!= 0) {
+	fprintf(stderr, "deleting memberUid FAILED\n");
+    }
 #ifdef PTS
     if (pts_wrap(PTSGRP, mdata.user, MY_CELL, mdata.group, ADD) != 0)
 	fprintf(stderr, "Failed to ADD %s to group %s\n",
@@ -1234,10 +1254,9 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
     LDAPMod **gidmod;
     gidmod = uxds_add_ldapmod(gidmod_attr, NULL, LDAP_MOD_REPLACE, x);
 
-    mod_dn = center(fbuf, center(fbuf, new_rdn, ","), mod_dn);
     if (debug)
-	fprintf(stderr, "%s -> new dn\n", mod_dn);
-    if (ldap_modify_ext_s(ld, mod_dn, gidmod, NULL, NULL) != LDAP_SUCCESS) {
+	fprintf(stderr, "%s -> new dn\n", new_dn);
+    if (ldap_modify_ext_s(ld, new_dn, gidmod, NULL, NULL) != LDAP_SUCCESS) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
 	fprintf(stderr, "%s: %s\n", RES, ldap_err2string(rc));
 	return 1;
@@ -1275,7 +1294,7 @@ LDAPMod **uxds_add_ldapmod(uxds_attr_t * attrs, char *oc[], int modify, int cell
 	    n++;
 	}
     }
-    n = n + 1;
+    n = n + 2;
 
     if (modify == LDAP_MOD_ADD)
         acctdata = (LDAPMod **) calloc(cells, sizeof(LDAPMod *));
@@ -1295,7 +1314,7 @@ LDAPMod **uxds_add_ldapmod(uxds_attr_t * attrs, char *oc[], int modify, int cell
 	    ERRNOMEM(acctdata[i]);
 	    acctdata[i]->mod_op = LDAP_MOD_ADD;
 	    acctdata[i]->mod_type = attrs[i].attrib;
-	    acctdata[i]->mod_values = calloc(2, strlen(attrs[i].value) + 1);
+	    acctdata[i]->mod_values = calloc(2, 2 * sizeof(char *));
 	    ERRNOMEM(acctdata[i]->mod_values);
 	    acctdata[i]->mod_values[0] = attrs[i].value;
         }
@@ -1312,7 +1331,7 @@ LDAPMod **uxds_add_ldapmod(uxds_attr_t * attrs, char *oc[], int modify, int cell
 		acctdata[n]->mod_op = LDAP_MOD_REPLACE;
 		acctdata[n]->mod_type = attrs[i].attrib;
 		acctdata[n]->mod_values =
-		    calloc(2, strlen(attrs[i].value) + 1);
+		    calloc(2, 2 * sizeof(char *));
 		ERRNOMEM(acctdata[n]->mod_values);
 		acctdata[n]->mod_values[0] = attrs[i].value;
 		n++;
@@ -1324,7 +1343,7 @@ LDAPMod **uxds_add_ldapmod(uxds_attr_t * attrs, char *oc[], int modify, int cell
 }
 
 int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
-		 LDAP * ld)
+		 int type, LDAP * ld)
 {
     int mtype;
     char *oper;
@@ -1346,20 +1365,25 @@ int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
     char *_memberuid[] = { user, NULL };
 
     LDAPMod **members;
-
     members = (LDAPMod **) calloc(2, sizeof(LDAPMod *));
     ERRNOMEM(members);
     members[0] = (LDAPMod *) malloc(sizeof(LDAPMod));
     ERRNOMEM(members[0]);
     members[0]->mod_op = mtype;
-    members[0]->mod_type = "memberUid";
+    if (type == 0)
+        members[0]->mod_type = "memberUid";
+    if (type == 1)
+        members[0]->mod_type = "member";
     members[0]->mod_values = _memberuid;
     members[1] = NULL;
-
+    char *result;
+    if (type == 0)
+        result = "memberUid";
+    if (type == 1)
+	result = "member";
     if (ldap_modify_ext_s(ld, grpdn, members, NULL, NULL) != LDAP_SUCCESS) {
-	if (debug)
-	    fprintf(stdout, "Failed to %s memberUid %s using DN: %s\n",
-		    oper, user, grpdn);
+	fprintf(stdout, "Failed to %s %s %s using DN: %s\n",
+		oper, result, user, grpdn);
 #ifdef TOOL_LOG
 	log_event(grpdn, GROUP, MOD,
 		  center(cbuf, oper, " of memberUid FAILED"));
@@ -1368,13 +1392,22 @@ int uxds_grp_mem(int debug, uxds_tool_t op, char *user, char *grpdn,
 	fprintf(stderr, "%s: %s\n", RES, ldap_err2string(rc));
 	return 1;
     }
-    fprintf(stderr, "%s of memberUid %s using POSIX Group DN:\n%s\n",
-	    oper, user, grpdn);
-#ifdef TOOL_LOG
-    log_event(grpdn, GROUP, MOD,
-	      center(cbuf, oper, " of memberUid SUCCESSFUL"));
-#endif				/* TOOL_LOG */
 
+    if (type == 0)
+        fprintf(stderr, "SUCCESSFUL %s of memberUid %s using POSIX Group DN:\n%s\n",
+ 	        oper, user, grpdn);
+    if (type == 1)
+        fprintf(stderr, "SUCCESSFUL %s of member %s using POSIX Group DN:\n%s\n",
+ 	        oper, user, grpdn);
+#ifdef TOOL_LOG
+    if (type == 0)
+        log_event(grpdn, GROUP, MOD,
+         	      center(cbuf, oper, " of memberUid SUCCESSFUL"));
+    if (type == 1)
+        log_event(grpdn, GROUP, MOD,
+         	      center(cbuf, oper, " of member SUCCESSFUL"));
+
+#endif				/* TOOL_LOG */
     return 0;
 }
 
