@@ -1036,8 +1036,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    }
 	    c++;
 	    i = 0;
-	    if(mems)
-		free(mems); 
             mems = calloc(c, strlen(mdata.member) + 1);
   	    ERRNOMEM(mems);
    	    mems[i] = strtok(mdata.member, ",");
@@ -1618,11 +1616,12 @@ struct posixid get_next_pxid(LDAP * ld, LDAPMessage * msg,
 	    fprintf(stderr, "%s: %s\n", RES, ldap_err2string(rc));
 	for (attr = ldap_first_attribute(ld, entry, &ber);
 	     attr != NULL; attr = ldap_next_attribute(ld, entry, ber)) {
-	    if (pxtype == USER)
+	    if (pxtype == USER) {
 		if ((strstr(attr, "uid") != 0)) 
 		    pxid.uidnum = return_idnum(ld, entry, attr);
-	    else if (pxtype == GROUP)
+	    } else if (pxtype == GROUP) {
 		pxid.gidnum = return_idnum(ld, entry, attr);
+	    }
 	    ldap_memfree(attr);
 	}
     }
