@@ -207,7 +207,7 @@ char *base64(char *str, int len)
     BIO_write(b64, str, len);
     BIO_get_mem_ptr(b64, &ossl);
 
-    char *buf = (char *) malloc(ossl->length);
+    char *buf = (char *) malloc(ossl->length + 1);
     memcpy(buf, ossl->data, ossl->length);
     buf[ossl->length] = 0;
 
