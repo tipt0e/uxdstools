@@ -269,7 +269,7 @@ Lastname,Firstname;My Primary Group
 
 -x GECOS
 If this is set then a custom GECOS field is created from a string 
-to the argument.  This is in lieu of the automatic method is this
+to the argument.  This is in lieu of the automatic method if this
 is not selected.
 
 -I description
