@@ -267,9 +267,9 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
     /* perform search */
     if (auth.debug)
 	fprintf(stderr, "final passed filter: %s\n", filter);
-    if (auth.ldif != NULL) {
+    if (auth.ldif != NULL) 
 	attr_mask[0] = NULL;
-    }
+    
     if (ldap_search_ext_s
 	(ld, auth.basedn, LDAP_SCOPE_SUBTREE, filter, attr_mask, 0,
 	 NULL, NULL, NULL, 0, &msg) != LDAP_SUCCESS) {
@@ -1121,11 +1121,10 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #ifdef TOOL_LOG
 	log_event(mod_dn, GROUP, MOD, "SUCCESSFUL");
 #endif				/* TOOL_LOG */
-	if (groupmod) {
+	if (groupmod) 
 	    for (i = 0; groupmod[i] != NULL; i++) {
 		free(groupmod[i]);
 	    }
-	}
     }
     return 0;
 }
@@ -1216,10 +1215,9 @@ int uxds_acct_modrdn(uxds_data_t mdata, char *mod_dn, char *filter,
 	oldgroup[i] = oldgroup[i + 3];
     }
     oldgroup[i] = '\0';
-    if (pts_wrap(PTSGRP, mdata.user, MY_CELL, oldgroup, DEL) != 0) {
+    if (pts_wrap(PTSGRP, mdata.user, MY_CELL, oldgroup, DEL) != 0) 
 	fprintf(stderr, "Failed to DELETE %s from group %s\n",
 		mdata.user, oldgroup);
-    }
     free(oldgroup);
 #endif				/* PTS */
     char *new_dn = calloc(1, strlen(mdata.user) + strlen(mod_dn) + 16);
@@ -1288,9 +1286,8 @@ LDAPMod **uxds_add_ldapmod(uxds_attr_t * attrs, char *oc[], int modify, int cell
     int n;
 
     for (i = 0; attrs[i].attrib != NULL; i++) {
-        if (attrs[i].value != NULL) {
+        if (attrs[i].value != NULL) 
 	    n++;
-	}
     }
     n = n + 2;
 
