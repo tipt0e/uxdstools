@@ -423,9 +423,8 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     filter = realloc(filter, (PG_LEN + 1));
 
     /* XXX GROUP conditional jump */
-    if (pxtype == GROUP) {
+    if (pxtype == GROUP)
 	goto groupstart;
-    }
 
     /* for USER only */
     if (!snprintf(filter, PG_LEN, POSIXGROUP, mdata.group))
@@ -851,9 +850,8 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     char **mems; 
     uxds_tool_t op;
 
-    if (mdata.modrdn == 1) {
+    if (mdata.modrdn == 1) 
 	pxtype = GROUP;
-    }
     
     switch (pxtype) {
     case USER:
@@ -1617,18 +1615,15 @@ struct posixid get_next_pxid(LDAP * ld, LDAPMessage * msg,
     for (entry = ldap_first_entry(ld, msg);
 	 entry != NULL; entry = ldap_next_entry(ld, entry)) {
 	/* XXX ldap_sort_entries is DEPRECATED */
-	if (ldap_sort_entries(ld, &entry, type, strcmp)) {
+	if (ldap_sort_entries(ld, &entry, type, strcmp)) 
 	    ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-	}
-	if (debug) {
+	if (debug)
 	    fprintf(stderr, "%s: %s\n", RES, ldap_err2string(rc));
-	}
 	for (attr = ldap_first_attribute(ld, entry, &ber);
 	     attr != NULL; attr = ldap_next_attribute(ld, entry, ber)) {
 	    if (pxtype == USER) {
-		if ((strstr(attr, "uid") != 0)) {
+		if ((strstr(attr, "uid") != 0)) 
 		    pxid.uidnum = return_idnum(ld, entry, attr);
-		}
 	    } else if (pxtype == GROUP) {
 		pxid.gidnum = return_idnum(ld, entry, attr);
 	    }
