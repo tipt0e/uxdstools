@@ -1621,12 +1621,11 @@ struct posixid get_next_pxid(LDAP * ld, LDAPMessage * msg,
 	    fprintf(stderr, "%s: %s\n", RES, ldap_err2string(rc));
 	for (attr = ldap_first_attribute(ld, entry, &ber);
 	     attr != NULL; attr = ldap_next_attribute(ld, entry, ber)) {
-	    if (pxtype == USER) {
+	    if (pxtype == USER)
 		if ((strstr(attr, "uid") != 0)) 
 		    pxid.uidnum = return_idnum(ld, entry, attr);
-	    } else if (pxtype == GROUP) {
+	    else if (pxtype == GROUP)
 		pxid.gidnum = return_idnum(ld, entry, attr);
-	    }
 	    ldap_memfree(attr);
 	}
     }
