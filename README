@@ -11,7 +11,7 @@ If GSSAPI support is enabled, a kerberos ticket-granting-ticket
 will be obtained with a lifetime of 30 minutes when either of the
 password options (command line or input) are selected.
 
-This project is in alpha but most of the functionality is available:
+This project is in beta and this functionality is avaliable:
 
 lacctparse - lookup user and group (add sudoer if available) attributes
 luseradd - add POSIX user to directory service
@@ -169,6 +169,8 @@ your krb5 default realm information in your local krb5.conf. A context
 is initialized, and along with the password (-p, -P) arguments above
 a kerberos ticket is obtained. The mech is set to be GSSAPI by default,
 so no mech argument (-m) is necessary here.
+This is also used when authenticating with an x509 password via PK-INIT
+to obtain a kerberos ticket (-K) as well as with using a keytab (-T).
 
 -r realm 
 Realm for SASL identity, some callbacks need this.
@@ -251,12 +253,14 @@ that which is used as the argument:
 $ lusermod -D DN -U luser -G newgroup -P
 The memberUid attribute describing the user will be deleted from
 the old primary and added to the new primary group account in LDAP.
+Also, the gidNumber attribute will be changed to reflect the new group, 
+as well as the GECOS field, which will reflect the changed group name.
 
 -f name 
 -l name 
 These are used to create the GECOS field, see below.
 They are required for adds to populate the givenName and
-sn attributes, but you can't make your own custom gecos without
+sn attributes, but you can't make your own custom GECOS without
 patching the code.  The next release may change this.
 Please don't shoot me.
 First name: [givenName]
