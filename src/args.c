@@ -95,10 +95,10 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 			"             [-U <username> -G <primary group> -f <first name> -l <last name> [-N <uidNumber>]]\n");
 #ifdef QMAIL
 		fprintf(stdout,
-			"             [[-S <shell>] [-X <homeDirectory>]] [[-W <email>] [-Q <fqdn>]]\n");
+			"             [[-S <shell>] [-X <homeDirectory>] [-x <GECOS>]] [[-W <email>] [-Q <fqdn>]]\n");
 #else
 		fprintf(stdout,
-			"             [[-S <shell>] [-X <homeDirectory>]]\n");
+			"             [[-S <shell>] [-X <homeDirectory>] [-x <GECOS>]\n");
 #endif				/* QMAIL */
 	    }
 	} else {
