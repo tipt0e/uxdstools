@@ -9,7 +9,7 @@ lusermod [\-H <host URI>] [\-m <SASL mech>] [\-u <authcid>] [\-D <bind DN>] [\-p
 
 [\-U <username> \-G <groupname> \-f <givenName> \-l <sn> [\-S <loginShell>]
 
-[\-X <homeDirectory>] [\-N <uidNumber>]] [-y] [-e]
+[\-X <homeDirectory>] [\-N <uidNumber>] [\-x <GECOS>] [-y] [-e]
 
 .SH DESCRIPTION
 .ul
@@ -113,6 +113,13 @@ Default home directory for user.  Modifies the homeDirectory attr of the POSIX u
 uidNumber
 
 UID number for the user. Modifies the uidNumber attribute of the POSIX user account.
+.TP
+\-x
+.ul
+GECOS
+
+GECOS field. Optional, there is an automatic method to create this field if the last name and of first name fields change, but this can be selected to create a customized string lieu of that facility.  Take care to enclose the string in quotes when setting this argument.
+
 .TP
 -y
 

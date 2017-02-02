@@ -258,11 +258,8 @@ as well as the GECOS field, which will reflect the changed group name.
 
 -f name 
 -l name 
-These are used to create the GECOS field, see below.
-They are required for adds to populate the givenName and
-sn attributes, but you can't make your own custom GECOS without
-patching the code.  The next release may change this.
-Please don't shoot me.
+These are used to create the GECOS field if -x is not selected.
+It is created as follows:
 First name: [givenName]
 Last name: [sn]
 These are combined along with the description attribute of the
@@ -270,9 +267,10 @@ user's primary POSIX group to create the GECOS field like so:
 
 Lastname,Firstname;My Primary Group
 
-This is just to provide some standardiztion. This will be changed
-in the next release to optional and any gecos could be created upon
-an add.
+-x GECOS
+If this is set then a custom GECOS field is created from a string 
+to the argument.  This is in lieu of the automatic method if this
+is not selected.
 
 -I description
 This input is required by 'lgroupadd' and fills the posixGroup

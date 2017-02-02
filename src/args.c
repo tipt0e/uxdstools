@@ -95,10 +95,10 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 			"             [-U <username> -G <primary group> -f <first name> -l <last name> [-N <uidNumber>]]\n");
 #ifdef QMAIL
 		fprintf(stdout,
-			"             [[-S <shell>] [-X <homeDirectory>]] [[-W <email>] [-Q <fqdn>]]\n");
+			"             [[-S <shell>] [-X <homeDirectory>] [-x <GECOS>]] [[-W <email>] [-Q <fqdn>]]\n");
 #else
 		fprintf(stdout,
-			"             [[-S <shell>] [-X <homeDirectory>]]\n");
+			"             [[-S <shell>] [-X <homeDirectory>] [-x <GECOS>]\n");
 #endif				/* QMAIL */
 	    }
 	} else {
@@ -198,6 +198,7 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 		fprintf(stdout, "   -l name    Last name: <name>\n");
 		fprintf(stdout, "   -N uidN    UID Number: <uidN>\n");
 		fprintf(stdout, "   -X path    Home Directory: <path>\n");
+		fprintf(stdout, "   -x string  Custom GECOS field\n");
 		fprintf(stdout, "   -S shell   Shell: <shell>\n");
 #ifdef QMAIL
 		fprintf(stdout,
@@ -339,6 +340,7 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 	mdata->comment = NULL;
 	mdata->uidnum = NULL;
 	mdata->gidnum = NULL;
+	mdata->xgecos = NULL;
 	mdata->homes = NULL;
 	mdata->setpass = NULL;
 #ifdef QMAIL
@@ -691,6 +693,16 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		    i--;
 		    break;
 		}
+		i--;
+		break;
+            case 'x':
+		i++;
+		if (atype != USER) {
+		    optmask("<GECOS>", atype, opts, XACCT);
+		    break;
+		}
+		optmask("<GECOS>", atype, opts, c);
+		mdata->xgecos = strdup(argv[i]);
 		i--;
 		break;
 	    case 'f':

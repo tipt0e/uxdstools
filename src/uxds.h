@@ -173,6 +173,7 @@ typedef struct uxds_data_t {
     char *lastname;		/* sn */
     char *uidnum;		/* uidNumber */
     char *gidnum;		/* gidNumber */
+    char *xgecos;		/* custom gecos */
     char *homes;		/* homeDirectory */
     char *shell;		/* loginShell */
     char *member;		/* memberUid */

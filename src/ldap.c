@@ -392,7 +392,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     char *user_dn = NULL;
     char *group_dn = NULL;
     char *filter = NULL;
-    char *mygecos = NULL;
 
     if (pxtype == USER) {
 	if (mdata.group == NULL) {
@@ -424,9 +423,8 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     filter = realloc(filter, (PG_LEN + 1));
 
     /* XXX GROUP conditional jump */
-    if (pxtype == GROUP) {
+    if (pxtype == GROUP)
 	goto groupstart;
-    }
 
     /* for USER only */
     if (!snprintf(filter, PG_LEN, POSIXGROUP, mdata.group))
@@ -504,10 +502,12 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	mdata.homes = strdup(center(cbuf, "/home/", mdata.user));
     if (mdata.shell == NULL)
 	mdata.shell = strdup("/bin/bash");
-    mygecos = realloc(mygecos, (GC_LEN + 3));
-    if (!snprintf
-	(mygecos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
-	return 1;
+    if (mdata.xgecos == NULL) {
+        mdata.xgecos = realloc(mdata.xgecos, (GC_LEN + 3));
+        if (!snprintf
+	    (mdata.xgecos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
+	    return 1;
+    }	
 #ifdef QMAIL
     if (mdata.mhost != NULL)
 	host = strdup(mdata.mhost);
@@ -533,7 +533,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	{USER, "sn", mdata.lastname},
 	{USER, "uid", mdata.user},
 	{USER, "mail", center(cbuf, mdata.user, AT_EMAIL)},
-	{USER, "gecos", mygecos},
+	{USER, "gecos", mdata.xgecos},
 	{USER, "uidNumber", mdata.uidnum},
 	{USER, "gidNumber", gidnum},
 	{USER, "homeDirectory", mdata.homes},
@@ -584,7 +584,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
 	if (auth.debug)
 	    fprintf(stderr, "user=%s, group=%s, uid=%s, gecos=%s\n",
-		    mdata.user, mdata.group, mdata.uidnum, mygecos);
+		    mdata.user, mdata.group, mdata.uidnum, mdata.xgecos);
 
 	if (ldap_add_ext_s(ld, user_dn, useradd, NULL, NULL) !=
 	    LDAP_SUCCESS) {
@@ -640,7 +640,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		    mdata.user);
 	}
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
-	free(mygecos);
 	if (useradd) {
             for (i = 0; useradd[i] != NULL; i++) {
                 free(useradd[i]);
@@ -846,15 +845,13 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 #endif				/* HAVE_LDAP_SASL */
     char *dn = NULL;
     char *mod_dn = NULL;
-    char *mygecos = NULL;
     char *filter = NULL;
     char *acct_type = NULL;
     char **mems; 
     uxds_tool_t op;
 
-    if (mdata.modrdn == 1) {
+    if (mdata.modrdn == 1) 
 	pxtype = GROUP;
-    }
     
     switch (pxtype) {
     case USER:
@@ -922,13 +919,14 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     if (pxtype == GROUP) {
 	goto groupstart;	/* XXX */
     }
-    if ((mdata.firstname != NULL) || (mdata.lastname != NULL)) {
-	mygecos = build_gecos(mdata, entry, auth.debug, ld);
-	if (!mygecos) {
+    if (mdata.xgecos == NULL) {
+        if ((mdata.firstname != NULL) || (mdata.lastname != NULL)) 
+       	    mdata.xgecos = build_gecos(mdata, entry, auth.debug, ld);
+	if (!mdata.xgecos) {
 	    fprintf(stderr, "FATAL: could not build GECOS attribute\n");
 	    return 1;
 	}
-    }
+    }	
     if (msg)
 	ldap_msgfree(msg);
 #ifdef QMAIL
@@ -948,6 +946,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	{USER, "loginShell", mdata.shell},
 	{USER, "uidNumber", mdata.uidnum},
 	{USER, "gidNumber", mdata.gidnum},
+	{USER, "gecos", mdata.xgecos},
 #ifdef QMAIL
 	{USER, "mailHost", host},
 	{USER, "mailAlternateAddress", addr},
@@ -1021,7 +1020,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    }
 	    free(usermod);
 	}
-	free(mygecos);
 
 	return 0;
     }
@@ -1617,21 +1615,17 @@ struct posixid get_next_pxid(LDAP * ld, LDAPMessage * msg,
     for (entry = ldap_first_entry(ld, msg);
 	 entry != NULL; entry = ldap_next_entry(ld, entry)) {
 	/* XXX ldap_sort_entries is DEPRECATED */
-	if (ldap_sort_entries(ld, &entry, type, strcmp)) {
+	if (ldap_sort_entries(ld, &entry, type, strcmp)) 
 	    ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
-	}
-	if (debug) {
+	if (debug)
 	    fprintf(stderr, "%s: %s\n", RES, ldap_err2string(rc));
-	}
 	for (attr = ldap_first_attribute(ld, entry, &ber);
 	     attr != NULL; attr = ldap_next_attribute(ld, entry, ber)) {
-	    if (pxtype == USER) {
-		if ((strstr(attr, "uid") != 0)) {
+	    if (pxtype == USER)
+		if ((strstr(attr, "uid") != 0)) 
 		    pxid.uidnum = return_idnum(ld, entry, attr);
-		}
-	    } else if (pxtype == GROUP) {
+	    else if (pxtype == GROUP)
 		pxid.gidnum = return_idnum(ld, entry, attr);
-	    }
 	    ldap_memfree(attr);
 	}
     }

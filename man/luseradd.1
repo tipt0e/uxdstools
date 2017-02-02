@@ -9,7 +9,7 @@ luseradd [\-H <host URI>] [\-m <SASL mech>] [\-u <authcid>] [\-D <bind DN>] [\-p
 
 [\-U <username> \-G <groupname> \-f <givenName> \-l <sn> [\-S <loginShell>] 
 
-[\-X <homeDirectory>] [\-N <uidNumber>]] [-y] [-e]
+[\-X <homeDirectory>] [\-N <uidNumber>] [\-x <GECOS>] [-y] [-e]
 
 .SH DESCRIPTION
 .ul
@@ -112,6 +112,12 @@ Default home directory for user.  Optional, defaults to "/home/%uid". Populates 
 uidNumber
 
 UID number for the user.  Optional, there is a search done for the highest uidnumber in the directory, and one is added to this numeric to produce the default uidNumber populated.
+.TP
+\-x
+.ul
+GECOS
+
+GECOS field. Optional, there is an automatic method to create this field, but this can be selected to create a customized string lieu of that facility.  Take care to enclose the string in quotes when setting this argument.
 .TP
 -y
 
