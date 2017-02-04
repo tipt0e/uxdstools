@@ -898,7 +898,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	ldap_value_free_len(vals);
 	if (uxds_acct_modrdn
 	    (mdata, mod_dn, filter, auth.debug, entry, msg, ld)) {
-	    fprintf(stderr, "modrdun procedure FAILED...\n");
+	    fprintf(stderr, "modrdn procedure FAILED...\n");
 	    return 1;
 	}
 
