@@ -217,7 +217,7 @@ krb5_error_code get_tkts(char *user, char *service, uxds_authz_t auth)
 	krb5_errx(context, 1, "Password incorrect");
 	break;
     case KRB5KRB_AP_ERR_V4_REPLY:
-	krb5_errx(context, 1, "Kerberos 4 rejected by KDC policy");
+	krb5_errx(context, 1, "Kerberos 4 reply rejected by KDC policy");
 	break;
     default:
 	krb5_err(context, 1, error, "krb5_get_init_creds");
