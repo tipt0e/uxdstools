@@ -93,13 +93,8 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 	    if (atype == USER) {
 		fprintf(stdout,
 			"             [-U <username> -G <primary group> -f <first name> -l <last name> [-N <uidNumber>]]\n");
-#ifdef QMAIL
-		fprintf(stdout,
-			"             [[-S <shell>] [-X <homeDirectory>] [-x <GECOS>]] [[-W <email>] [-Q <fqdn>]]\n");
-#else
 		fprintf(stdout,
 			"             [[-S <shell>] [-X <homeDirectory>] [-x <GECOS>]\n");
-#endif				/* QMAIL */
 	    }
 	} else {
 	    if (atype == USER) {
@@ -200,12 +195,6 @@ void usage(uxds_usage_t mflag, char *binary, uxds_acct_t atype,
 		fprintf(stdout, "   -X path    Home Directory: <path>\n");
 		fprintf(stdout, "   -x string  Custom GECOS field\n");
 		fprintf(stdout, "   -S shell   Shell: <shell>\n");
-#ifdef QMAIL
-		fprintf(stdout,
-			"   -W email   mailAlternateAddress for Qmail: <email>\n");
-		fprintf(stdout,
-			"   -Q fqdn    mailHost for Qmail: <server>\n");
-#endif				/* QMAIL */
 #ifdef HAVE_LDAP_SASL_GSSAPI
 		fprintf(stdout,
 			"   -y         reset password (krb5Key) to random string\n");
@@ -343,10 +332,6 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 	mdata->xgecos = NULL;
 	mdata->homes = NULL;
 	mdata->setpass = NULL;
-#ifdef QMAIL
-    mdata->mhost = NULL;
-    mdata->altaddr = NULL;
-#endif				/* QMAIL */
     }
     if (argv[1] == NULL) {
 	usage(UXDS_USAGE, argv[0], atype, op);
@@ -806,30 +791,6 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		mdata->shell = strdup(argv[i]);
 		i--;
 		break;
-#ifdef QMAIL
-	    case 'W':
-		i++;
-		if ((atype != USER) || (op == DEL)) {
-		    fprintf(stderr,
-			    "-W only used with POSIX USER ADD or MODIFY\n\n");
-		    usage(UXDS_USAGE, argv[0], atype, op);
-		}
-		optmask("<email>", atype, opts, c);
-		mdata->altaddr = strdup(argv[i]);
-		i--;
-		break;
-	    case 'Q':
-		i++;
-		if ((atype != USER) || (op == DEL)) {
-		    fprintf(stderr,
-			    "-Q only used with POSIX USER ADD or MODIFY\n\n");
-		    usage(UXDS_USAGE, argv[0], atype, op);
-		}
-		optmask("<fqdn>", atype, opts, c);
-		mdata->mhost = strdup(argv[i]);
-		i--;
-		break;
-#endif				/* QMAIL */
 		/* sudoer options */
             case 'B':
                 i++;
