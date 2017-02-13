@@ -165,10 +165,6 @@ typedef struct uxds_data_t {
     char *user;			/* user to add/modify */
     char *group;		/* group to ditto */
     char *ou;			/* ou if selected */
-#ifdef QMAIL
-    char *mhost;		/* mailhost for qmail */
-    char *altaddr;		/* alt mail address for qmail */
-#endif				/* QMAIL */
     char *firstname;		/* givenName */
     char *lastname;		/* sn */
     char *uidnum;		/* uidNumber */

@@ -384,11 +384,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     char *attr = NULL;
     char *dn = NULL;
     char *role = NULL;
-#ifdef QMAIL
-    char *mbx = NULL;
-    char *addr = NULL;
-    char *host = NULL;
-#endif				/* QMAIL */
     char *user_dn = NULL;
     char *group_dn = NULL;
     char *filter = NULL;
@@ -486,9 +481,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	"organizationalPerson",
 	"posixAccount",
 	"shadowAccount",
-#ifdef QMAIL
-	"qmailUser",
-#endif
 #ifdef HDB_LDAP
 	"krb5Principal",
 	"krb5KDCEntry",
@@ -509,16 +501,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    (mdata.xgecos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
 	    return 1;
     }	
-#ifdef QMAIL
-    if (mdata.mhost != NULL)
-	host = strdup(mdata.mhost);
-    else
-	host = "mailhost.com";
-    if (mdata.altaddr != NULL)
-	addr = strdup(mdata.altaddr);
-    else
-	addr = strdup(mbx);
-#endif				/* QMAIL */
 #ifdef HAVE_LDAP_SASL_GSSAPI
     char *principal = center(cbuf, mdata.user, AT_REALM);
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
@@ -546,14 +528,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	{USER, "userPassword", "{SSHA}/nG2BsKmVlI0khfzr7jHKFX2tCFALEVj"},
 #endif				/* HDB_LDAP */
 	{USER, "carLicense", "XxXxXxXxXxXxXxXxX"},
-#ifdef QMAIL
-	{USER, "accountStatus", "active"},
-	{USER, "mailHost", host},
-	{USER, "mailMessageStore", addr},
-	{USER, "mailLocalAddress",
-	 center(cbuf, "/var/qmail/maildirs/", mdata.user)},
-	{USER, "mailAlternateAddress", addr},
-#endif				/* QMAIL */
 #ifdef HDB_LDAP
 	{USER, "krb5PrincipalName", principal},
 	{USER, "krb5MaxLife", "86400"},
@@ -930,25 +904,13 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
     }	
     if (msg)
         ldap_msgfree(msg);
-#ifdef QMAIL
-    char *host = NULL;
-    char *addr = NULL;
-    if (mdata.mhost != NULL) 
-	host = strdup(mdata.mhost);
-    if (mdata.altaddr != NULL) 
-	addr = strdup(mdata.altaddr);
-   }
-#endif
+
     uxds_attr_t moduser_attr[] = {
 	{USER, "homeDirectory", mdata.homes},
 	{USER, "loginShell", mdata.shell},
 	{USER, "uidNumber", mdata.uidnum},
 	{USER, "gidNumber", mdata.gidnum},
 	{USER, "gecos", mdata.xgecos},
-#ifdef QMAIL
-	{USER, "mailHost", host},
-	{USER, "mailAlternateAddress", addr},
-#endif				/* QMAIL */
 	{0, NULL, NULL}
     };
   groupstart:
