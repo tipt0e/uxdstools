@@ -426,9 +426,6 @@ objectClass: posixGroup
 gidNumber: 1111
 memberUid: luser
 
-This again, is __alpha__ software, tested only by me, and it comes with no
-guarantes or warranties. But I hope someone can find it useful.
-
 To Do:
 Support MIT kerberos in addition to Heimdal
 Enable attributes for SAMBA accounts
