@@ -180,7 +180,7 @@ typedef struct uxds_data_t {
 
 /* structure for entry into LDAP tree */
 typedef struct uxds_attr_t {
-    uxds_acct_t type;           /* future use */
+    uxds_acct_t type; 
     char *attrib;
     char *value;
     /* uxds_attr_t *next_attr */
