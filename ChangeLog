@@ -1,3 +1,497 @@
+commit f40b76dfad0003feb6e3d9497ad05cd8ed809618
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Tue Feb 21 00:54:09 2017 -0500
+
+    $GITMSG
+
+commit 5f3631adcd7080ff8429ac76e4676352993b6697
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 20 20:05:53 2017 -0500
+
+    remove accidental add of Makefile.in
+
+commit b022bbd0273d7e289ec322cb044e5cb6d527e997
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 20 20:04:03 2017 -0500
+
+    change date of man pages for 0.8.6
+
+commit efeaf19ec03290d0955b2b0faa47e7bc107ea5fc
+Merge: 4c2ff1a cb7ce61
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 20 19:49:10 2017 -0500
+
+    Merge branch 'devel' of github.com:tipt0e/uxdstools into devel
+
+commit 4c2ff1ac42793a748f47cf159a9bdd69510ee400
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 20 19:47:06 2017 -0500
+
+    bump version to 0.8.6
+
+commit cb7ce6166e43b1e522e002f5f3aefac4b224511e
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 20 19:47:06 2017 -0500
+
+    bumpversion to 0.8.6
+
+commit 5b05a5f68f7b8211cae2dd729b45add8d82691d2
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 20 19:34:31 2017 -0500
+
+    delete unnecessary line
+
+commit 79d97f88db7a57ee7c2250d50b16ff11a0815f55
+Merge: efe7c01 e1aad08
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 20 19:28:08 2017 -0500
+
+    fix segfault in lsudoadd/lusermod and eliminate uneeded symbols
+
+commit e1aad081a533d0cda4ba4ebd3fcbf51c540c78e0
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 20 19:28:08 2017 -0500
+
+    fix segfault in lsudoadd/lusermod and eliminate uneeded symbols
+
+commit efe7c013954ded1cc78a1bbd65b1458dabff67c3
+Merge: 83306a9 7e6fdf5
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Tue Feb 14 17:23:23 2017 -0500
+
+    Merge branch 'devel'
+
+commit 7e6fdf57c68d5948d1c4425ac841531c545e80d5
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Tue Feb 14 17:21:57 2017 -0500
+
+    eliminate comment ass this field had been used for some time
+
+commit 83306a9cd60ed9c54b36b4baada47c61b152996e
+Merge: a42ae71 13a21c3
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Tue Feb 14 06:23:36 2017 -0500
+
+    revise README as this project is in beta
+
+commit 13a21c35ce677d05a7dcdca9779857b352796511
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Tue Feb 14 06:23:36 2017 -0500
+
+    $GITMSG
+
+commit a42ae7164fd2476a1ce1c37ee56e5f65aa119d9d
+Merge: a79e929 baa66ac
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 13 02:21:48 2017 -0500
+
+    eliminate qmail options
+
+commit baa66acc108e9e30739e94ffb87158125498cce2
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 13 02:21:48 2017 -0500
+
+    eliminate qmail options
+
+commit a79e9294eab54c939d58e4af4442b80a0d342cd5
+Merge: ef1cde6 f59b438
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 6 21:54:11 2017 -0500
+
+    revisit clarifying Krb4 reply message
+
+commit f59b438c5ca9ca4a87bb01923cbb3ee900d748f1
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 6 21:54:11 2017 -0500
+
+    revisit clarifying Krb4 reply message
+
+commit ef1cde6dab7afd422a9b0b19a71d9fc7ade2e9f4
+Merge: 8cf0920 323eaf3
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 6 21:52:17 2017 -0500
+
+    change Krb4 message to add clarity
+
+commit 323eaf3977eb47fa676123078607d00cb4e34377
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 6 21:52:17 2017 -0500
+
+    change Krb4 message to add clarity
+
+commit 45c29c5ef51197f79ac3d6dd1d57765c305e6641
+Merge: 5d18a54 38c6fd1
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 6 21:48:07 2017 -0500
+
+    Merge branch 'devel' of github.com:tipt0e/uxdstools into devel
+
+commit 8cf092000ed499315d810e1ef88ba96cdb95a917
+Merge: 38c6fd1 5d18a54
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 6 21:39:21 2017 -0500
+
+    add missing brackets to man pages
+
+commit 5d18a54a4a864dd48af689d3e095d39b84a19dbc
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 6 21:39:21 2017 -0500
+
+    add missing brackets to man pages
+
+commit 38c6fd1047cc69a2f251a6a3ea6fb553eb9b3f94
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Feb 6 21:39:21 2017 -0500
+
+    GITMSG
+
+commit b679ad43888011bae012ddfd9058a18c30ae3f73
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Fri Feb 3 19:54:33 2017 -0500
+
+    fix typo in output
+
+commit 5a4aff8014307c9861e79cbad15d986bbf5c2933
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Fri Feb 3 19:51:40 2017 -0500
+
+    fix memory leak in uxds_add_ldapmod()
+    - for lusermod when changing primary groups
+    - for lgroupadd when creating a new group
+    - eliminated 'cells' argument as all of this is
+      done within the uxds_add_ldapmod() function
+
+commit 943acabb3332538437adfa4fc383f2f0c67eb3cc
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Thu Feb 2 06:15:51 2017 -0500
+
+    add byte for null terminator
+
+commit 610be442b1bcc88665aa60e9b8b2ac6f191fbf57
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Thu Feb 2 05:32:03 2017 -0500
+
+    put parens back to eliminate warning and delete uninitialized variable
+
+commit 0cdd61b2d448c1817d6edeb949b9dd58ecce5c3c
+Merge: beeac4e 6fda668
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Thu Feb 2 04:40:37 2017 -0500
+
+    Merge branch 'devel'
+
+commit 6fda668129a5c60cf95d5214801e42a9b2c3ec86
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Thu Feb 2 04:39:53 2017 -0500
+
+    remove unnecessary parens
+
+commit beeac4e6d87fdf4b603e70bbf3dc13556aecc8fa
+Merge: 5a8e084 a0ed0c9
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Thu Feb 2 04:24:32 2017 -0500
+
+    Remove unecessary parens
+
+commit a0ed0c98c5c20ce1386bd54f38bb9fd2860563b6
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Thu Feb 2 04:21:48 2017 -0500
+
+    remove unnecessary parens
+
+commit 46b275c974895eb474a24fbbaab7b26b86d258f8
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Thu Feb 2 04:15:13 2017 -0500
+
+    remove unnecessary parens
+
+commit bfe800acaf727a94672b4e55607dd2fb2688c6a3
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Thu Feb 2 04:01:08 2017 -0500
+
+    fix typo
+
+commit 0dbe1025c811a7c9a052a14768326e58c2cf6aca
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Wed Feb 1 22:45:24 2017 -0500
+
+    fix README to refect custom GECOS facility is active
+
+commit 6c594e6533a223ab2d6a05f5fa2b209b36b58d1e
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Wed Feb 1 22:24:54 2017 -0500
+
+    add custom GECOS facility to documentation and help arguments
+
+commit 1a00052536a2f6fc21f60f0040c7efd6a7c15fdd
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Wed Feb 1 22:07:00 2017 -0500
+
+    add custom GECO field functionality to lusermod
+
+commit c17a415ccbe9810918db580d21f80115985ccb37
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Wed Feb 1 21:35:05 2017 -0500
+
+    add argument to luseradd to customize GECOS field in lieu of the automatic facility
+
+commit 5a8e0841a360eceea6f8dd89334b47911bf777f8
+Merge: 7f5765e 4a07db5
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Wed Feb 1 20:21:20 2017 -0500
+
+    Merge branch 'devel'
+
+commit 4a07db599d2a66aa5d0c260dd1db2256a453e61a
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Wed Feb 1 20:11:26 2017 -0500
+
+    add information to README
+
+commit 7f5765eda83c9e5a28986a89a51ec823d5f6d51a
+Merge: 880fa28 1f62263
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Wed Feb 1 18:10:59 2017 -0500
+
+    Merge branch 'devel'
+
+commit 1f622630047801e79aa8954e9e470bdd19c57be1
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Wed Feb 1 18:10:15 2017 -0500
+
+    bump up solib version to 0.8.5
+
+commit 880fa28140fc3682b3fd1177cd0b56ee0e57e973
+Merge: aae0163 bb7aa8b
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Wed Feb 1 18:06:46 2017 -0500
+
+    Merge branch 'devel'
+
+commit bb7aa8b473fc90572ecb33bb3dcd30d8535a1f77
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Wed Feb 1 18:05:29 2017 -0500
+
+    bump up copyright notices to (c) 2017
+
+commit aae01635ae52a6ff67d075caecb13e0952cbdf56
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Wed Feb 1 18:00:40 2017 -0500
+
+    bump up copyright notices to (c) 2017
+
+commit 14a9a3b88b8b4827a15a806f7844f42d64d95323
+Merge: 1543546 a8368a5
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Wed Feb 1 17:24:44 2017 -0500
+
+    Merge branch 'devel'
+
+commit a8368a573f9bc90c02d3b5b7fbe70c26877c5a03
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Wed Feb 1 17:23:00 2017 -0500
+
+    fix uxds_grp_mem() argument name in header
+
+commit 1543546be3da8e383668acbd1fbd200e7fec795a
+Merge: 518bfff b3422ae
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Tue Jan 31 21:12:10 2017 -0500
+
+    Merge branch 'devel'
+
+commit b3422ae0628ef441e22c32e8b62347e9de1a7d60
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Tue Jan 31 21:09:55 2017 -0500
+
+    reduce uxds_add_ldapmod() arguments to four
+    no longer need arguments were eliminated
+
+commit 518bfff0d03386e4e18bb332cfc7711246c8b1f9
+Merge: ab7e142 fe5e516
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Tue Jan 31 19:44:11 2017 -0500
+
+    Merge branch 'devel'
+
+commit fe5e516cda9d99562f7c2447eaccdd3da124a540
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Tue Jan 31 19:41:41 2017 -0500
+
+    Add rfc2307bis schema functionality
+    Add groupOfNames objectclass to lgroupadd and member attribute to
+    lgroupadd and lgroupmod as well asluser add to add these to
+    the target group when a user is created
+    Some memory cleanup - in progress
+
+commit ab7e142873c351b4aed0a9b6a180c2e6b5c2d369
+Merge: 1ea046e 766933f
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Jan 30 15:07:11 2017 -0500
+
+    Merge branch 'devel'
+
+commit 766933f475745e83b53f62c25dae0df1c5f53b88
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Jan 30 15:02:47 2017 -0500
+
+    eliminate arguments that are no longer needed from uxds_add_ldapmod()
+      * set count for calloc when adding/deleting multiple users from/to a
+    group
+
+commit 1ea046e04f4bf8099478d75685f9154c005c3ceb
+Merge: 6493cde d4c1921
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Jan 30 13:55:33 2017 -0500
+
+    Merge branch 'devel'
+
+commit d4c192180171478bb2fdadbc8f6a81925460913c
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Jan 30 13:53:48 2017 -0500
+
+    fix adding/deleting users from groups (memberUid attributes) and
+    elimiate unused realmtodn()
+
+commit 6493cde4240cb38b7c805f3694da22fda921250f
+Merge: c9ff8b8 575a3ae
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Jan 30 00:12:43 2017 -0500
+
+    Merge branch 'devel'
+
+commit 575a3ae4ca9fd8c8a66e6e71029ad7014704c654
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Mon Jan 30 00:10:29 2017 -0500
+
+    use uxds_add_ldapmod() to perform gidNumber modification
+
+commit c9ff8b89ba9c3e8091192d020dfec333fdafa2ae
+Merge: b061900 ba7acde
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Sun Jan 29 23:16:13 2017 -0500
+
+    Merge branch 'devel'
+
+commit ba7acdea838956b6b1cdd9eed91851710e322ee9
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Sun Jan 29 23:15:07 2017 -0500
+
+    delete #if 0 commented blocks
+
+commit b06190042901818ff048c5a535ed5b052be66bfe
+Merge: 9cabb6e 0b1ea35
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Sun Jan 29 23:11:00 2017 -0500
+
+    Merge branch 'devel'
+
+commit 0b1ea35e37ccb81f162b75bf97d7700ca0a43b26
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Sun Jan 29 23:08:40 2017 -0500
+
+    incorporate uxds_add_ldapmod() in to lusermod and lgroupmod for modify
+    operations
+
+commit 9cabb6e54ae64e4e7752dcd79b6012f756fcbe68
+Merge: 8738604 fd06595
+Author: tipt0e <ronin.crip@gmail.com>
+Date:   Sat Jan 28 17:36:28 2017 -0500
+
+    Merge branch 'devel'
+
+commit fd06595bb6b0bee0168e3e4bd8832e7deda45329
+Author: tipt0e <ronin.crip@gmail.com>
+Date:   Sat Jan 28 17:35:04 2017 -0500
+
+    free() LDAPMod struct
+
+commit 20dad27d1697809702a62a7ac28417535e8b8a88
+Author: tipt0e <ronin.crip@gmail.com>
+Date:   Sat Jan 28 17:15:52 2017 -0500
+
+    change encap_moddata() to uxds_add_ldapmod()
+
+commit 8738604772cbfad683eff4df86c8398b5ecae215
+Author: tipt0e <ronin.crip@gmail.com>
+Date:   Sat Jan 28 17:15:52 2017 -0500
+
+    ange encap_moddata() to uxds_add_ldapmod()
+
+commit 1549a8402abbcb8183c7efc0baae7ef6261dceac
+Author: tipt0e <ronin.crip@gmail.com>
+Date:   Sat Jan 28 15:44:13 2017 -0500
+
+    clean up encap_moddata() and add to lgroupadd
+
+commit 75fcf660fdc118bb9b0f3ca3a22f903430fb9018
+Author: tipt0e <ronin.crip@gmail.com>
+Date:   Sat Jan 28 07:50:05 2017 -0500
+
+    add function encap_moddata() to populate LDAPMod structs
+
+commit 8c5e747f971c5ca569335c68c1efc5ca989472f9
+Merge: 4971f6d 3f5dcc9
+Author: tipt0e <ronin.crip@gmail.com>
+Date:   Sat Jan 28 07:40:42 2017 -0500
+
+    Merge branch 'devel'
+
+commit 3f5dcc9734a26ccd76fed76d0398c68a820d73e6
+Author: tipt0e <ronin.crip@gmail.com>
+Date:   Sat Jan 28 07:37:13 2017 -0500
+
+    eliminate invalid free()'s in uxds_acct_add()
+
+commit 4971f6d159007139a9f40b68f4d095120f913e41
+Merge: 5686db7 8c194c1
+Author: tipt0e <ronin.crip@gmail.com>
+Date:   Fri Jan 27 23:46:19 2017 -0500
+
+    Merge branch 'devel'
+
+commit 8c194c12744b93e5b1b47c3295a53b435fffaac1
+Author: tipt0e <ronin.crip@gmail.com>
+Date:   Fri Jan 27 23:40:03 2017 -0500
+
+    eliminate free() of invalid struct pointer
+
+commit 5686db709a9d3a9ff28c56ba6625914329a9be31
+Merge: b5e0809 ba3fe71
+Author: tipt0e <ronin.crip@gmail.com>
+Date:   Thu Jan 26 21:24:08 2017 -0800
+
+    Merge branch 'devel'
+
+commit ba3fe7145d95add9ba499b1cc2062f4e15455029
+Author: tipt0e <ronin.crip@gmail.com>
+Date:   Thu Jan 26 21:18:59 2017 -0800
+
+    rename 'res' define to 'RES' to appease gcc
+
+commit b5e0809319ab92e6cd86c413f234d6e6ae470a94
+Merge: e637090 49f61f9
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Thu Oct 15 19:11:36 2015 -0700
+
+    Merge pull request #2 from tipt0e/devel
+    
+    provide Todd Miller's licence
+
+commit 49f61f9a88814ac8b0c53b73edf3db107a666c61
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Thu Oct 15 19:09:25 2015 -0700
+
+    provide Todd Miller's licence
+    
+    - this was an oversight
+
+commit e6370905b3ed66de33f52f65744e2a98ef4f7f44
+Author: tipt0e <tipt0e.mjb@gmail.com>
+Date:   Sun Sep 13 19:58:47 2015 +0000
+
+    update ChangeLog
+
 commit 474484f6030ec8f679b1e9c76b8a1f55d491fe49
 Author: tipt0e <tipt0e.mjb@gmail.com>
 Date:   Sun Sep 13 19:54:38 2015 +0000
@@ -1184,8 +1678,8 @@ Date:   Mon Oct 11 17:30:27 2010 -0700
     Merge branch 'devel' of ssh://192.168.13.9/repos/uxdstools into devel
     
     Conflicts:
-    	src/ldap_c_32bit.diff
-    	src/sudoldap_c_32bit.diff
+            src/ldap_c_32bit.diff
+            src/sudoldap_c_32bit.diff
 
 commit e69e6e9b011b019fbf9169af661f792665d7f66a
 Author: Michael Brown <topo2@pacbell.net>
@@ -1748,8 +2242,8 @@ Date:   Thu Sep 2 10:18:24 2010 -0700
     Merge branch 'devel' of ssh://192.168.13.9/home/mikal/uxdstools into devel
     
     Conflicts:
-    	ldap_c_32bit.diff
-    	sudoldap_c_32bit.diff
+            ldap_c_32bit.diff
+            sudoldap_c_32bit.diff
 
 commit 9960386ae8de6a22a6305742059c38f2f8968df7
 Author: Michael Brown <topo2@pacbell.net>
