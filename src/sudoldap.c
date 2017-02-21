@@ -74,20 +74,12 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	"sudoRole",
 	NULL
     };
-    cmds = calloc(1, strlen(su->cmd) + 1);
-    ERRNOMEM(cmds);
-    a = 5;
-    i = 0;
-    cmds[i] = strtok(su->cmd, ",");
-    i++;
-    while ((cmds[i] = strtok(NULL, ",")) != NULL) {
-	i++;
-    }
-    cmds[i++] = NULL;
-    a++;
-    opts = tokenize_options(su->opt);
-    hosts = tokenize_options(su->host);    
-    if (hosts == NULL) {
+    if (su->cmd != NULL)
+        cmds = tokenize_options(su->cmd);
+    if (su->opt != NULL) 
+       opts = tokenize_options(su->opt);
+    hosts = tokenize_options(su->host);
+    if (su->host == NULL) {
        hosts = calloc(2, sizeof(char *)); 
        ERRNOMEM(hosts);
        hosts[0] = "ALL";
@@ -110,7 +102,7 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     while (sudo_attr[i].value != NULL) {
 	i++;
     }
-    i = i + 1;
+    i++;
 
     LDAPMod **sudoadd;
     sudoadd = (LDAPMod **) calloc(i, sizeof(LDAPMod *));
@@ -120,6 +112,8 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	ERRNOMEM(sudoadd[i]);
 	sudoadd[i]->mod_op = LDAP_MOD_ADD;
 	sudoadd[i]->mod_type = sudo_attr[i].attrib;
+	sudoadd[i]->mod_values = calloc(2, sizeof(char));
+	ERRNOMEM(sudoadd[i]->mod_values);
 	/* XXX */
 	if (!strcmp(sudoadd[i]->mod_type, "objectClass")) {
 	    sudoadd[i]->mod_values = sudo_oc;
@@ -133,16 +127,13 @@ int uxds_sudo_add(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
             && (opts)) {
 	    sudoadd[i]->mod_values = opts;
 	} else {
-	    sudoadd[i]->mod_values =
-		calloc(2, strlen(sudo_attr[i].value) + 1);
-	    ERRNOMEM(sudoadd[i]->mod_values);
 	    sudoadd[i]->mod_values[0] = sudo_attr[i].value;
             if (!strcmp(sudoadd[i]->mod_values[0], "dummy")) {
                 break; /* XXX foe sho */
             }
 	}
     }
-    sudoadd[i] = NULL;
+    sudoadd[i++] = NULL;
 
     if (auth.basedn == NULL) {
 	auth.basedn = UXDS_POSIX_OU;
@@ -244,7 +235,6 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     LDAPMessage *msg;
     LDAPMessage *entry;
 
-    int c;
     char *su_dn;
     char **hosts = NULL;
     char **cmds = NULL;
@@ -279,17 +269,17 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     }
     if ((dn = ldap_get_dn(ld, entry)) != NULL) 
 	fprintf(stderr, "SUDOer matched DN: %s\n", dn);
-    a = 1;
+    i = 1;
     hosts = tokenize_options(su->host);
     if (hosts)
-        a++;
+        i++;
     cmds = tokenize_options(su->cmd);
     if (cmds)
-        a++;
+        i++;
     opts = tokenize_options(su->opt);
     if (opts)
-        a++;
-    a = a + 3;
+        i++;
+    a = i + 3;
 
     LDAPMod **sudomod;
     sudomod = (LDAPMod **) calloc(a, sizeof(LDAPMod *));
@@ -304,24 +294,24 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	}
     }
 
-    c = 0;
+    i = 0;
     if (su->host != NULL) {
-        sudomod[c]->mod_type = "sudoHost";
-        sudomod[c]->mod_values = hosts;
-        c++;
+        sudomod[i]->mod_type = "sudoHost";
+        sudomod[i]->mod_values = hosts;
+        i++;
     }
     if (su->cmd != NULL) {
-	sudomod[c]->mod_type = "sudoCommand";
-	sudomod[c]->mod_values = cmds;
-	c++;
+	sudomod[i]->mod_type = "sudoCommand";
+	sudomod[i]->mod_values = cmds;
+	i++;
     }
     if (su->opt != NULL) {
-	sudomod[c]->mod_type = "sudoOption";
-	sudomod[c]->mod_values = opts;
-	c++;
-	sudomod[c] = NULL;
+	sudomod[i]->mod_type = "sudoOption";
+	sudomod[i]->mod_values = opts;
+	i++;
+	//sudomod[i] = NULL;
     } else {
-	sudomod[c] = NULL;
+	sudomod[i] = NULL;
     }
     if (auth.basedn == NULL)
 	auth.basedn = strdup(UXDS_POSIX_OU);
@@ -365,14 +355,15 @@ char **tokenize_options(char *option)
 
     i = 0;
     if (option != NULL) {
-        tokens = calloc(1, strlen(option) + 1);
+        tokens = calloc(5, strlen(option) + 1);
         ERRNOMEM(tokens);
         tokens[i] = strtok(option, ",");
         i++;
-        while ((tokens[i] = strtok(NULL, ",")) != NULL) {
-            i++;
-        }
-        tokens[i++] = NULL;
+	while ((tokens[i] = strtok(NULL, ",")) != NULL) {
+	    i++;
+	}
+        tokens[i] = NULL;
     }
+    
     return tokens;
 }
