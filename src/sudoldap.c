@@ -309,7 +309,6 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
 	sudomod[i]->mod_type = "sudoOption";
 	sudomod[i]->mod_values = opts;
 	i++;
-	//sudomod[i] = NULL;
     } else {
 	sudomod[i] = NULL;
     }
