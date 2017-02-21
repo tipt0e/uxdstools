@@ -236,7 +236,6 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     LDAPMessage *entry;
 
     char *su_dn;
-    char **hosts = NULL;
     char **cmds = NULL;
     char **opts = NULL;
     char *filter = (char *) calloc(1, (SU_LEN + 1));
@@ -269,22 +268,27 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
     }
     if ((dn = ldap_get_dn(ld, entry)) != NULL) 
 	fprintf(stderr, "SUDOer matched DN: %s\n", dn);
-    i = 1;
-    hosts = tokenize_options(su->host);
-    if (hosts)
-        i++;
-    cmds = tokenize_options(su->cmd);
-    if (cmds)
-        i++;
-    opts = tokenize_options(su->opt);
-    if (opts)
-        i++;
-    a = i + 3;
+
+    if (su->cmd != NULL) 
+        cmds = tokenize_options(su->cmd);
+    if (su->opt != NULL) 
+        opts = tokenize_options(su->opt);
+
+    uxds_attr_t smod_attr[] = {
+	{SUDOER, "sudoCommand", "dummy"},
+	{SUDOER, "sudoOption", "dummy"},
+	{0, NULL, NULL}
+    };
+    i = 0;
+    while (smod_attr[i].value != NULL) {
+	i++;
+    }
+    i++;
 
     LDAPMod **sudomod;
-    sudomod = (LDAPMod **) calloc(a, sizeof(LDAPMod *));
+    sudomod = (LDAPMod **) calloc(i, sizeof(LDAPMod *));
     ERRNOMEM(sudomod);
-    for (i = 0; i < a; i++) {
+    for (i = 0; smod_attr[i].value != NULL; i++) {
 	sudomod[i] = (LDAPMod *) malloc(sizeof(LDAPMod));
 	ERRNOMEM(sudomod[i]);
 	if (su->tool == DEL) {
@@ -292,26 +296,25 @@ int uxds_sudo_mod(uxds_authz_t auth, uxds_sudo_t * su, LDAP * ld)
         } else {
 	    sudomod[i]->mod_op = LDAP_MOD_ADD;
 	}
+	sudomod[i]->mod_type = smod_attr[i].attrib;
+	sudomod[i]->mod_values = calloc(2, sizeof(char));
+	ERRNOMEM(sudomod[i]->mod_values);
+	/* XXX */
+	if (!strcmp(sudomod[i]->mod_type, "sudoCommand")
+            && (cmds)) {
+	    sudomod[i]->mod_values = cmds;
+	} else if (!strcmp(sudomod[i]->mod_type, "sudoOption")
+            && (opts)) {
+	    sudomod[i]->mod_values = opts;
+	} else {
+	    sudomod[i]->mod_values[0] = smod_attr[i].value;
+            if (!strcmp(sudomod[i]->mod_values[0], "dummy")) {
+                break; /* XXX foe sho */
+            }
+	}
     }
+    sudomod[i++] = NULL;
 
-    i = 0;
-    if (su->host != NULL) {
-        sudomod[i]->mod_type = "sudoHost";
-        sudomod[i]->mod_values = hosts;
-        i++;
-    }
-    if (su->cmd != NULL) {
-	sudomod[i]->mod_type = "sudoCommand";
-	sudomod[i]->mod_values = cmds;
-	i++;
-    }
-    if (su->opt != NULL) {
-	sudomod[i]->mod_type = "sudoOption";
-	sudomod[i]->mod_values = opts;
-	i++;
-    } else {
-	sudomod[i] = NULL;
-    }
     if (auth.basedn == NULL)
 	auth.basedn = strdup(UXDS_POSIX_OU);
     su_dn = calloc(1, strlen(su->sudoer) + strlen(auth.basedn) + 16);
