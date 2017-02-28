@@ -554,7 +554,6 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		case SELF:
 		    if ((auth->acct == GROUP) || (auth->acct == SUDOER))
 			c = XBOTH;
-		    //optmask("<username>", atype, opts, c);
 		    auth->acct = USER;
 		    if ((argv[i] != NULL) && (argv[i][0] != '-')) {
 			auth->pxacct = strdup(argv[i]);
@@ -605,7 +604,6 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		    if (atype == SELF) {
 			if ((auth->acct == USER) || (auth->acct == SUDOER))
 			    c = XBOTH;
-			//optmask("<group>", atype, opts, c);
 			auth->acct = GROUP;
 			if ((argv[i] != NULL) && (argv[i][0] != '-')) {
 			    auth->pxacct = strdup(argv[i]);
@@ -772,7 +770,6 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		if (atype == SELF) {
 		    if ((auth->acct == USER) || (auth->acct == GROUP))
 			c = XBOTH;
-		    //optmask("<sudoer>", atype, opts, c);
 		    auth->acct = SUDOER;
 		    if ((argv[i] != NULL) && (argv[i][0] != '-')) {
 			auth->pxacct = strdup(argv[i]);
@@ -786,8 +783,6 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		}
 		optmask("<shell>", atype, opts, c);
 		mdata->shell = (char *) malloc(strlen(argv[i] + 2));
-		//snprintf(mdata->shell,strlen(argv[i] + 1),"%s",argv[i]);
-		/* I know this is _bad_ but I don't get truncation */
 		mdata->shell = strdup(argv[i]);
 		i--;
 		break;
