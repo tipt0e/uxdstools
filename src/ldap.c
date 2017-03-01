@@ -19,7 +19,6 @@ struct berval **vals;
 int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
 {
     int proto;
-    int authmethod = 0;
     char *sasl_mech = NULL;
     unsigned sasl_flags = 0;
 
@@ -29,19 +28,16 @@ int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
 		"(0 = SASL/GSSAPI, 1 = KINIT)\n");
 	fprintf(stderr, "LDAP host URI is: %s\n", auth.uri);
     }
-    if ((sflag == GSSAPI) || (sflag == KINIT) || (auth.pkcert)) {
-	authmethod = LDAP_AUTH_SASL;
-	sasl_mech = auth.saslmech;
-	if (auth.verb == 1)
-	    sasl_flags = LDAP_SASL_INTERACTIVE;	/* [-V] some mechs need? */
-	else
-	    sasl_flags = LDAP_SASL_QUIET;	/* default */
-	if (sflag == GSSAPI) {
-	    if (auth.debug)
-		fprintf(stderr,
-			"used GSSAPI -> credentials cache is: %s\n",
-			auth.credcache);
-	}
+    sasl_mech = auth.saslmech;
+    if (auth.verb == 1)
+        sasl_flags = LDAP_SASL_INTERACTIVE;	/* [-V] some mechs need? */
+    else
+	sasl_flags = LDAP_SASL_QUIET;	/* default */
+    if (sflag == GSSAPI) {
+	if (auth.debug)
+            fprintf(stderr,
+		"used GSSAPI -> credentials cache is: %s\n",
+		auth.credcache);
     }
     proto = LDAP_VERSION3;
 
@@ -51,23 +47,21 @@ int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
 		proto);
 	return 1;
     }
-    if ((sflag == GSSAPI) || (sflag == KINIT) || (auth.pkcert)) {
-	if (sflag == GSSAPI) {
-	    if (auth.credcache != NULL) {
-		auth.credcache =
-		    center(cbuf, "KRB5CCNAME=", auth.credcache);
-		if (auth.debug)
-		    fprintf(stderr, "'%s' exported\n", auth.credcache);
-		if (putenv(auth.credcache)) {
-		    fprintf(stderr, "putenv() call failed\n");
-		    return 1;
-		}
-	    }
+    if (sflag == GSSAPI) {
+	if (auth.credcache != NULL) {
+            auth.credcache =
+	    center(cbuf, "KRB5CCNAME=", auth.credcache);
+	    if (auth.debug)
+		fprintf(stderr, "'%s' exported\n", auth.credcache);
+	    if (putenv(auth.credcache)) {
+		fprintf(stderr, "putenv() call failed\n");
+		return 1;
+            }
+	}
 	if (auth.binddn != NULL) {
 	    if (auth.debug)
 		fprintf(stderr, "selected dn: %s\n", auth.binddn);
-	    }
-        }
+	}
 	rc = ldap_sasl_interactive_bind_s(ld, auth.binddn,
 					  sasl_mech, NULL, NULL,
 					  sasl_flags, uxds_sasl_interact,
