@@ -948,6 +948,7 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 			strlen(auth->password->bv_val);
 		}
 #endif				/* HAVE_LDAP_SASL_GSSAPI */
+		i--;
 		break;
 	    default:		/* bucket for all other switches */
 		fprintf(stderr, "-%c is NOT a recognized option\n\n",
