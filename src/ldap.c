@@ -2,12 +2,8 @@
 
 #include "uxds.h"
 #include "uxds_strings.h"
-#ifdef HAVE_LDAP_SASL
 #include "uxds_sasl.h"
-#ifdef HAVE_LDAP_SASL_GSSAPI
 #include "uxds_krb5.h"
-#endif				/* HAVE_LDAP_SASL_GSSAPI */
-#endif				/* HAVE_LDAP_SASL */
 #ifdef PTS
 #include "uxds_afs.h"
 #endif				/* PTS */
@@ -24,10 +20,8 @@ int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
 {
     int proto;
     int authmethod = 0;
-#ifdef HAVE_LDAP_SASL
     char *sasl_mech = NULL;
     unsigned sasl_flags = 0;
-#endif				/* HAVE_LDAP_SASL */
 
     if (auth.debug) {
 	fprintf(stderr, "sflag value is %i -> ", sflag);
@@ -35,33 +29,20 @@ int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
 		"(0 = SIMPLE, 1 = SASL non GSSAPI, 2 = SASL/GSSAPI)\n");
 	fprintf(stderr, "LDAP host URI is: %s\n", auth.uri);
     }
-#ifdef HAVE_LDAP_SASL
-/* SASL authentication chosen */
-    if ((sflag > SIMPLE) || (auth.pkcert)) {
+    if ((sflag == GSSAPI) || (auth.pkcert)) {
 	authmethod = LDAP_AUTH_SASL;
 	sasl_mech = auth.saslmech;
 	if (auth.verb == 1)
 	    sasl_flags = LDAP_SASL_INTERACTIVE;	/* [-V] some mechs need? */
 	else
 	    sasl_flags = LDAP_SASL_QUIET;	/* default */
-#ifdef HAVE_LDAP_SASL_GSSAPI
 	if (sflag == GSSAPI) {
 	    if (auth.debug)
 		fprintf(stderr,
 			"used GSSAPI -> credentials cache is: %s\n",
 			auth.credcache);
 	}
-#endif				/* HAVE_LDAP_SASL_GSSAPI */
     }
-#endif				/* HAVE_LDAP_SASL */
-    /* simple authentication chosen */
-#ifdef HAVE_LDAP_SASL_GSSAPI
-    if ((sflag == SIMPLE) && (!auth.pkcert))
-#else
-    if (sflag == SIMPLE)
-#endif				/* HAVE_LDAP_SASL_GSSAPI */
-	authmethod = LDAP_AUTH_SIMPLE;
-
     proto = LDAP_VERSION3;
 
     if (ldap_set_option(ld, LDAP_OPT_PROTOCOL_VERSION, &proto) !=
@@ -71,10 +52,7 @@ int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
 	return 1;
     }
 
-    switch (authmethod) {
-#ifdef HAVE_LDAP_SASL
-    case LDAP_AUTH_SASL:
-#ifdef HAVE_LDAP_SASL_GSSAPI
+    if (authmethod == LDAP_AUTH_SASL) {
 	if (sflag == GSSAPI) {
 	    if (auth.credcache != NULL) {
 		auth.credcache =
@@ -87,7 +65,6 @@ int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
 		}
 	    }
 	}
-#endif				/* HAVE_LDAP_SASL_GSSAPI */
 	if (auth.binddn != NULL) {
 	    if (auth.debug)
 		fprintf(stderr, "selected dn: %s\n", auth.binddn);
@@ -96,23 +73,11 @@ int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
 					  sasl_mech, NULL, NULL,
 					  sasl_flags, uxds_sasl_interact,
 					  &auth);
-	break;
-#endif				/* HAVE_LDAP_SASL */
-    case LDAP_AUTH_SIMPLE:
-    default:
 	if (auth.password->bv_val != NULL) {
 	    auth.password->bv_len = strlen(auth.password->bv_val);
 	    rc = ldap_sasl_bind_s(ld, auth.binddn, NULL, auth.password,
 				  NULL, NULL, NULL);
-	} else {
-	    /* XXX */
-	    fprintf(stderr,
-		    "FATAL: need to fix in args.c - exiting with no SIMPLE BIND passwd\n");
-	    fprintf(stderr, "Need [-p <password>] or [-P] option\n");
-
-	    return 1;
 	}
-	break;
     }
 
     if (rc != LDAP_SUCCESS) {
@@ -123,7 +88,6 @@ int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
     }
     if (auth.debug)
 	fprintf(stdout, "SUCCESSFUL bind using URI %s\n", auth.uri);
-#ifdef HAVE_LDAP_SASL
     /* get SASL SSF factor - debug */
     if (auth.debug) {
 	sasl_ssf_t ssf;
@@ -133,7 +97,6 @@ int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
 	}
 	fprintf(stderr, "SSF level is: %lu\n", val);
     }
-#endif				/* HAVE_LDAP_SASL */
     if (auth.debug) {
 	ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &rc);
 	fprintf(stderr, "%s: %s\n", RES, ldap_err2string(rc));
@@ -160,9 +123,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
     int all = 0;
     char *dn = NULL;
     char *attr = NULL;
-#ifdef HAVE_LDAP_SASL
     char *fbuf = NULL;
-#endif				/* HAVE_LDAP_SASL */
     char *accttype = NULL;
     /* only pull these values */
     char *attr_mask[] = { "cn",
@@ -194,9 +155,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
     char *filter =
 	(char *) calloc(1, strlen(SUDOUSER) + strlen(auth.pxacct) + 1);
     ERRNOMEM(filter);
-#ifdef HAVE_LDAP_SASL_GSSAPI
     char *kuser = NULL;
-#endif				/* HAVE_LDAP_SASL_GSSAPI */
     if (auth.debug)
 	fprintf(stderr, "account type vars: account = %i\n", auth.acct);
     if (strchr(auth.pxacct, '*') != NULL)
@@ -210,14 +169,12 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	    if (auth.debug)
 		fprintf(stderr, "search filter string: %s\n", filter);
 	    break;
-#ifdef HAVE_LDAP_SASL
 	case SASL:
 	    if (!filter)
 		filter = center(fbuf, "uid=", auth.username);
 	    if (auth.debug)
 		fprintf(stderr, "search filter string: %s\n", filter);
 	    break;
-#ifdef HAVE_LDAP_SASL_GSSAPI
 	case GSSAPI:
 	    kuser = get_krbname(auth, FALSE);
 	    if (auth.debug)
@@ -228,8 +185,6 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	    if (auth.debug)
 		fprintf(stderr, "search filter string: %s\n", filter);
 	    break;
-#endif				/* HAVE_LDAP_SASL_GSSAPI */
-#endif				/* HAVE_LDAP_SASL */
 	default:
 	    break;
 	}
@@ -349,12 +304,10 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 			fprintf(stdout, "%s: %s\n", attr, vals[i]->bv_val);
 		    }
 		} else {
-#ifdef HAVE_LDAP_SASL_GSSAPI
 		    if (strcmp(attr, "krb5Key") == 0)
 			vals[i]->bv_val =
 			    base64(vals[i]->bv_val,
 				   strlen(vals[i]->bv_val));
-#endif				/* HAVE_LDAP_SASL_GSSAPI */
 		    fprintf(stdout, "%s: %s\n", attr, vals[i]->bv_val);
 		    fp = fopen(auth.ldif, "a");
 		    fprintf(fp, "%s: %s\n", attr, vals[i]->bv_val);
@@ -501,9 +454,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    (mdata.xgecos, GC_LEN, MY_GECOS, mdata.firstname, mdata.lastname, role))
 	    return 1;
     }	
-#ifdef HAVE_LDAP_SASL_GSSAPI
     char *principal = center(cbuf, mdata.user, AT_REALM);
-#endif				/* HAVE_LDAP_SASL_GSSAPI */
     /*
      * XXX because objectClass is already an array, we 
      * put dummy values for user_attr[0] so we can start
@@ -587,7 +538,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	if ((uxds_grp_mem(auth.debug, ADD, user_dn, group_dn, 1, ld))
             != 0)
 	    fprintf(stderr, "adding member FAILED\n");
-#ifdef HAVE_LDAP_SASL_GSSAPI
 	if ((mdata.cpw == 1) || (mdata.setpass)) {
 	    char *name = get_krbname(auth, FALSE);
 	    if (putenv(center(cbuf, "KRB5CCNAME=/tmp/kacache_", name))) {
@@ -606,7 +556,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    fprintf(stdout, "Password for %s EXPIRED to 12-31-1999\n",
 		    mdata.user);
 	}
-#endif				/* HAVE_LDAP_SASL_GSSAPI */
 	if (useradd) {
             for (i = 0; useradd[i] != NULL; i++) {
                 free(useradd[i]);
@@ -807,9 +756,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 
     static uxds_authz_t auth;
 
-#ifdef HAVE_LDAP_SASL
     char *cbuf = NULL;
-#endif				/* HAVE_LDAP_SASL */
     char *mod_dn = NULL;
     char *filter = NULL;
     char *acct_type = NULL;
@@ -919,7 +866,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	LDAPMod **usermod;
 	usermod = uxds_add_ldapmod(moduser_attr, NULL, LDAP_MOD_REPLACE);
 
-#ifdef HAVE_LDAP_SASL_GSSAPI
 	if ((!mdata.cpw) && (!mdata.exp) && (!mdata.setpass)) {
 	    if (!usermod[0]) {
 		fprintf(stderr,
@@ -948,7 +894,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	if (!usermod[0])
 	    return 0;
 
-#endif				/* HAVE_LDAP_SASL_GSSAPI */
 	if (ldap_modify_ext_s(ld, mod_dn, usermod, NULL, NULL) !=
 	    LDAP_SUCCESS) {
 	    fprintf(stdout, "Attempted DN: %s, len %lu\n", mod_dn,

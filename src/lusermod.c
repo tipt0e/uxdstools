@@ -30,12 +30,12 @@ int main(int argc, char *argv[])
     uxds_authz_t auth;
     uxds_data_t mdata;
     char *bin = argv[0];
-    sflag = parse_args(argc, argv, USER, MOD, 6, &auth, &mdata, bin);
+    sflag = parse_args(argc, argv, USER, MOD, 4, &auth, &mdata, bin);
 
 #ifdef HAVE_LDAP_SASL_GSSAPI
-    if ((auth.pkcert) && (argc < 8)) {
+    if ((auth.pkcert) && (argc < 6)) {
 #else
-    if (argc < 6) {
+    if (argc < 4) {
 #endif		/* HAVE_LDAP_SASL_GSSAPI */
 	if ((!mdata.exp) || (!mdata.cpw)) {
 	    fprintf(stderr,

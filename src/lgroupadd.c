@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     uxds_authz_t auth;
     uxds_data_t mdata;
     char *bin = argv[0];
-    sflag = parse_args(argc, argv, GROUP, ADD, 7, &auth, &mdata, bin);
+    sflag = parse_args(argc, argv, GROUP, ADD, 5, &auth, &mdata, bin);
 
     /* initialize LDAP context */
     rc = ldap_initialize(&ld, auth.uri);
