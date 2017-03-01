@@ -135,7 +135,7 @@ typedef struct uxds_authz_t {
 typedef enum { UXDS_USAGE, UXDS_HELP, UXDS_VERSION } uxds_usage_t;
 typedef enum { ADD, MOD, DEL, EYE } uxds_tool_t;
 typedef enum { XARGS, XACCT, XBOTH, XBIND } uxds_flag_t;
-typedef enum { SIMPLE, SASL, GSSAPI, KINIT } uxds_bind_t;
+typedef enum { GSSAPI, KINIT } uxds_bind_t;
 
 /* options to parse cmd line input and process output :*/
 struct cmdopts {

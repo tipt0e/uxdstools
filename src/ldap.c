@@ -26,10 +26,10 @@ int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
     if (auth.debug) {
 	fprintf(stderr, "sflag value is %i -> ", sflag);
 	fprintf(stderr,
-		"(0 = SIMPLE, 1 = SASL non GSSAPI, 2 = SASL/GSSAPI)\n");
+		"(0 = SASL/GSSAPI, 1 = KINIT)\n");
 	fprintf(stderr, "LDAP host URI is: %s\n", auth.uri);
     }
-    if ((sflag == GSSAPI) || (auth.pkcert)) {
+    if ((sflag == GSSAPI) || (sflag == KINIT) || (auth.pkcert)) {
 	authmethod = LDAP_AUTH_SASL;
 	sasl_mech = auth.saslmech;
 	if (auth.verb == 1)
@@ -164,17 +164,7 @@ int uxds_acct_parse(uxds_bind_t bind, uxds_authz_t auth, LDAP * ld)
 	/* if user/group/sudoer argument not selected - then do who am i? */
     case SELF:
 	switch (bind) {
-	case SIMPLE:
-	    filter = strtok(auth.binddn, ",");
-	    if (auth.debug)
-		fprintf(stderr, "search filter string: %s\n", filter);
-	    break;
-	case SASL:
-	    if (!filter)
-		filter = center(fbuf, "uid=", auth.username);
-	    if (auth.debug)
-		fprintf(stderr, "search filter string: %s\n", filter);
-	    break;
+	case KINIT:
 	case GSSAPI:
 	    kuser = get_krbname(auth, FALSE);
 	    if (auth.debug)
@@ -840,7 +830,10 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
        	        mdata.xgecos = build_gecos(mdata, entry, auth.debug, ld);
 	    } 
 	    if (!mdata.xgecos) {
-	        fprintf(stderr, "FATAL: could not build GECOS attribute\n");
+                if ((mdata.cpw) || (mdata.exp) || (mdata.setpass))
+		    goto groupstart;
+		else
+	            fprintf(stderr, "FATAL: could not build GECOS attribute\n");
 	        return 1;
 	    }
 	} else {
@@ -863,8 +856,16 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
   groupstart:
     if (pxtype == USER) {
 
-	LDAPMod **usermod;
-	usermod = uxds_add_ldapmod(moduser_attr, NULL, LDAP_MOD_REPLACE);
+	LDAPMod **usermod;	
+
+/* XXX */
+	if ((mdata.homes != NULL) ||
+            (mdata.shell != NULL) ||
+            (mdata.uidnum != NULL) ||
+            (mdata.gidnum != NULL))  
+	    usermod = uxds_add_ldapmod(moduser_attr, NULL, LDAP_MOD_REPLACE);
+        else 
+	    usermod = NULL;
 
 	if ((!mdata.cpw) && (!mdata.exp) && (!mdata.setpass)) {
 	    if (!usermod[0]) {
@@ -881,8 +882,12 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    }
 	    if (mdata.cpw == 1)
 		mdata.setpass = randstr(PASSLEN);
-	    if (setpwd(mdata.user, mdata.setpass) != 0)
+	    if (setpwd(mdata.user, mdata.setpass) != 0) {
 		fprintf(stderr, "Password not set for %s\n", mdata.user);
+	        if (!usermod[0])
+		    return 1;
+            }
+
 	}
 	if (mdata.exp == 1) {
 	    if ((uxds_user_expire(0, mod_dn, ld)) != 0)
@@ -891,7 +896,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    fprintf(stdout, "Password for %s EXPIRED to 12-31-1999\n",
 		    mdata.user);
 	}
-	if (!usermod[0])
+	if (!usermod)
 	    return 0;
 
 	if (ldap_modify_ext_s(ld, mod_dn, usermod, NULL, NULL) !=
@@ -905,6 +910,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    fprintf(stderr, "%s: %s\n", RES, ldap_err2string(rc));
 	    return 1;
 	}
+	printf("got here...\n");
 	fprintf(stdout,
 		"POSIX User Account Modification of %s SUCCESSFUL.\n",
 		mdata.user);

@@ -391,10 +391,11 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		break;
 	    case 'u':		/* SASL authentication identity */
 		i++;
-		if (((auth->saslmech == NULL)) || (auth->pkcert != NULL) 
-		    || (auth->keytab != NULL)) {
+		if (((auth->password != NULL)) || (auth->pkcert != NULL) 
+		    || (auth->keytab != NULL))
 		    sflag = KINIT;
-		}
+		else
+		    sflag = GSSAPI;
 		optmask("<username>", atype, opts, c);
 		auth->username = strdup(argv[i]);
 		i--;
@@ -431,6 +432,7 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		fprintf(stdout, "Using PK-INIT with x509 cert: %s\n",
 			auth->pkcert);
 		i--;
+		sflag = KINIT;
 		break;
             case 'T':           /* keytab authentication */
                 i++;
@@ -797,10 +799,10 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		}
 		fprintf(stdout,
 		    "KINIT with SASL/GSSAPI Bind selected.\n");
-		auth->password->bv_val =
-		strdup(getpwd(auth->username));
-	        auth->password->bv_len =
-		strlen(auth->password->bv_val);
+		auth->password->bv_val = strdup(getpwd(auth->username));
+	        auth->password->bv_len = strlen(auth->password->bv_val);
+		printf("pass is %s\n", auth->password->bv_val);
+		sflag = KINIT;
 		break;
             default:		/* bucket for all other switches */
 		if (argv[1][1] == '-') {
