@@ -51,8 +51,7 @@ int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
 		proto);
 	return 1;
     }
-
-    if (authmethod == LDAP_AUTH_SASL) {
+    if ((sflag == GSSAPI) || (sflag == KINIT) || (auth.pkcert)) {
 	if (sflag == GSSAPI) {
 	    if (auth.credcache != NULL) {
 		auth.credcache =
@@ -64,20 +63,15 @@ int uxds_user_authz(uxds_bind_t sflag, uxds_authz_t auth, LDAP * ld)
 		    return 1;
 		}
 	    }
-	}
 	if (auth.binddn != NULL) {
 	    if (auth.debug)
 		fprintf(stderr, "selected dn: %s\n", auth.binddn);
-	}
+	    }
+        }
 	rc = ldap_sasl_interactive_bind_s(ld, auth.binddn,
 					  sasl_mech, NULL, NULL,
 					  sasl_flags, uxds_sasl_interact,
 					  &auth);
-	if (auth.password->bv_val != NULL) {
-	    auth.password->bv_len = strlen(auth.password->bv_val);
-	    rc = ldap_sasl_bind_s(ld, auth.binddn, NULL, auth.password,
-				  NULL, NULL, NULL);
-	}
     }
 
     if (rc != LDAP_SUCCESS) {

@@ -801,11 +801,11 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 		    "KINIT with SASL/GSSAPI Bind selected.\n");
 		auth->password->bv_val = strdup(getpwd(auth->username));
 	        auth->password->bv_len = strlen(auth->password->bv_val);
-		printf("pass is %s\n", auth->password->bv_val);
 		sflag = KINIT;
-		i++;
+		i--;
 		break;
             default:		/* bucket for all other switches */
+		i++;
 		if (argv[1][1] == '-') {
 		    if (argv[1][2] == 'v') 
                         usage(UXDS_VERSION, argv[0], atype, op);    
