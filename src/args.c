@@ -803,6 +803,7 @@ uxds_bind_t parse_args(int argc, char **argv, uxds_acct_t atype,
 	        auth->password->bv_len = strlen(auth->password->bv_val);
 		printf("pass is %s\n", auth->password->bv_val);
 		sflag = KINIT;
+		i++;
 		break;
             default:		/* bucket for all other switches */
 		if (argv[1][1] == '-') {
