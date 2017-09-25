@@ -412,10 +412,8 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	"organizationalPerson",
 	"posixAccount",
 	"shadowAccount",
-#ifdef HDB_LDAP
 	"krb5Principal",
 	"krb5KDCEntry",
-#endif				/* HDB_LDAP */
 #ifdef SSH_LPK
 	"ldapPublicKey",
 #endif				/* SSH_LPK */
@@ -450,14 +448,8 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	{USER, "gidNumber", gidnum},
 	{USER, "homeDirectory", mdata.homes},
 	{USER, "loginShell", mdata.shell},
-#ifdef HDB_LDAP
 	{USER, "userPassword", "{K5KEY}"},
-#else
-	/* hell0 */
-	{USER, "userPassword", "{SSHA}/nG2BsKmVlI0khfzr7jHKFX2tCFALEVj"},
-#endif				/* HDB_LDAP */
 	{USER, "carLicense", "XxXxXxXxXxXxXxXxX"},
-#ifdef HDB_LDAP
 	{USER, "krb5PrincipalName", principal},
 	{USER, "krb5MaxLife", "86400"},
 	{USER, "krb5MaxRenew", "604800"},
@@ -465,7 +457,6 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	{USER, "krb5KeyVersionNumber", "0"},
 	{USER, "krb5PasswordEnd", "20071231235959Z"},
 	{USER, "krb5Key", "0"},
-#endif				/* HDB_LDAP */
 #ifdef SSH_LPK
 	{USER, "sshPublicKey", "0"},
 #endif				/* SSH_LPK */
