@@ -872,8 +872,7 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 		mdata.setpass = randstr(PASSLEN);
 	    if (setpwd(mdata.user, mdata.setpass) != 0) {
 		fprintf(stderr, "Password not set for %s\n", mdata.user);
-	        if (!usermod[0])
-		    return 1;
+		return 1;
             }
 
 	}
