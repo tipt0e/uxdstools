@@ -538,7 +538,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	{USER, "krb5Key", "0"},
 #endif				/* HDB_LDAP */
 #ifdef SSH_LPK
-	{USER, "sshPublicKey", "0"},
+	{USER, "sshPublicKey", "ssh-rsa"},
 #endif				/* SSH_LPK */
 	{0, NULL, NULL}
     };
