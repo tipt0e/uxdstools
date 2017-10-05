@@ -1,4 +1,4 @@
-/* src/config.h.in.  Generated from configure.in by autoheader.  */
+/* src/config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Define to 1 if you have the `BIO_ctrl' function. */
 #undef HAVE_BIO_CTRL
@@ -60,6 +60,9 @@
 /* Define to 1 if you have the `krb5_free_context' function. */
 #undef HAVE_KRB5_FREE_CONTEXT
 
+/* Define to 1 if you have the `krb5_get_init_creds_keytab' function. */
+#undef HAVE_KRB5_GET_INIT_CREDS_KEYTAB
+
 /* Define to 1 if you have the `krb5_get_init_creds_opt_alloc' function. */
 #undef HAVE_KRB5_GET_INIT_CREDS_OPT_ALLOC
 
@@ -74,6 +77,10 @@
    function. */
 #undef HAVE_KRB5_GET_INIT_CREDS_OPT_SET_PA_PASSWORD
 
+/* Define to 1 if you have the `krb5_get_init_creds_opt_set_pkinit' function.
+   */
+#undef HAVE_KRB5_GET_INIT_CREDS_OPT_SET_PKINIT
+
 /* Define to 1 if you have the `krb5_get_init_creds_opt_set_tkt_life'
    function. */
 #undef HAVE_KRB5_GET_INIT_CREDS_OPT_SET_TKT_LIFE
@@ -86,6 +93,12 @@
 
 /* Define to 1 if you have the `krb5_init_context' function. */
 #undef HAVE_KRB5_INIT_CONTEXT
+
+/* Define to 1 if you have the `krb5_kt_close' function. */
+#undef HAVE_KRB5_KT_CLOSE
+
+/* Define to 1 if you have the `krb5_kt_resolve' function. */
+#undef HAVE_KRB5_KT_RESOLVE
 
 /* Define to 1 if you have the `krb5_parse_name' function. */
 #undef HAVE_KRB5_PARSE_NAME
@@ -171,6 +184,9 @@
 /* Define to 1 if you have the `ldap_value_free_len' function. */
 #undef HAVE_LDAP_VALUE_FREE_LEN
 
+/* Define to 1 if you have the `crypto' library (-lcrypto). */
+#undef HAVE_LIBCRYPTO
+
 /* Define to 1 if you have the `krb5' library (-lkrb5). */
 #undef HAVE_LIBKRB5
 
@@ -195,12 +211,6 @@
 
 /* Define to 1 if you have the `putenv' function. */
 #undef HAVE_PUTENV
-
-/* Define to 1 if you have the `sasl_client_init' function. */
-#undef HAVE_SASL_CLIENT_INIT
-
-/* Define to 1 if you have the `sasl_done' function. */
-#undef HAVE_SASL_DONE
 
 /* Define to 1 if you have the <sasl.h> header file. */
 #undef HAVE_SASL_H
@@ -273,12 +283,6 @@
 
 /* OpenAFS pts binary path */
 #undef PTS_BIN
-
-/* enable Qmail attributes */
-#undef QMAIL
-
-/* enable openssh-lpk stuff */
-#undef SSH_LPK
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
