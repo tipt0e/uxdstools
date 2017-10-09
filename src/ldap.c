@@ -414,6 +414,9 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	"shadowAccount",
 	"krb5Principal",
 	"krb5KDCEntry",
+#ifdef SSH_LPK
+        "ldapPublicKey",
+#endif                         /* SSH_LPK */
 	NULL
     };
 
@@ -454,6 +457,9 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	{USER, "krb5KeyVersionNumber", "0"},
 	{USER, "krb5PasswordEnd", "20071231235959Z"},
 	{USER, "krb5Key", "0"},
+#ifdef SSH_LPK
+	{USER, "sshPublicKey", "ssh-rsa"},
+#endif                         /* SSH_LPK */
 	{0, NULL, NULL}
     };
 
