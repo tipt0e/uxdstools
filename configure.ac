@@ -2,7 +2,7 @@ dnl                                               -*- Autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(uxdstools,0.9-dev-GSSAPI-only,mikal@bytepimps.net) 
+AC_INIT(uxdstools,0.9-dev-GSSAPI-only,mikal@bytepimps.nett) 
 
 AC_CONFIG_SRCDIR([src/krb5.c])
 AC_CONFIG_HEADER([src/config.h])
@@ -64,6 +64,24 @@ AC_ARG_ENABLE(mail,
                           enables mail attrs with selected maildomain],
     [MAIL="$enableval"]
 )
+AC_ARG_ENABLE(qmail,
+[  --enable-qmail[=domain.tld]
+                          enables Qmail attrs with selected maildomain
+			  requires qmail.schema loaded in your ldap server],
+
+    [QMAIL="yes"
+    AC_DEFINE(QMAIL, 1, [enable Qmail attributes])]
+)
+AC_ARG_ENABLE(sshlpk,
+[  --enable-sshlpk
+                          enables ldapPublicKey objectclass and 
+			  sshPublicKey attribute for ssh pubkey storage
+			  requires lpk.schema loaded in your ldap server],
+
+    [SSH="yes"
+    AC_DEFINE(SSH_LPK, 1, [enable openssh-lpk stuff])]
+)
+    
 AC_ARG_ENABLE(sudoers,
 [  --enable-sudoers[=ou_location]
                           build sudoer admin tools (with OU location) i.e. * ou=sudoers *
