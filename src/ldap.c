@@ -629,7 +629,7 @@ int uxds_acct_add(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    {GROUP, "cn", mdata.group},
 	    {GROUP, "gidNumber", mdata.gidnum},
 	    {GROUP, "description", mdata.comment},
-	    {GROUP, "member", "uid=dummy,cn=dummy,ou=unix,dc=bytepimps,dc=net"},
+	    {GROUP, "member", "uid=dummy,cn=dummy," UXDS_POSIX_OU},
 	    {0, NULL, NULL}
 	};
         
