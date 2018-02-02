@@ -883,7 +883,6 @@ int uxds_acct_mod(uxds_acct_t pxtype, uxds_data_t mdata, LDAP * ld)
 	    fprintf(stderr, "%s: %s\n", RES, ldap_err2string(rc));
 	    return 1;
 	}
-	printf("got here...\n");
 	fprintf(stdout,
 		"POSIX User Account Modification of %s SUCCESSFUL.\n",
 		mdata.user);
