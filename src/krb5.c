@@ -342,14 +342,14 @@ krb5_error_code setpwd(char *user, char *passwd)
     }
     /* success - ripped from heimdal kpasswd.c */
     if (result_code != 0) {
-	printf("%s%s%.*s\n",
+	fprintf(stdout, "%s%s%.*s\n",
 	       krb5_passwd_result_to_string(context, result_code),
 	       result_string.length > 0 ? " : " : "",
 	       (int) result_string.length,
 	       result_string.length >
 	       0 ? (char *) result_string.data : "");
     }
-    printf("%s's Password set to \"%s\"\n", user, passwd);
+    fprintf(stdout, "%s's Password set to \"%s\"\n", user, passwd);
 
     krb5_data_free(&result_code_string);
     krb5_data_free(&result_string);
