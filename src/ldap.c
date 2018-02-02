@@ -1243,7 +1243,7 @@ LDAPMod **uxds_add_ldapmod(uxds_attr_t * attrs, char *oc[], int modify)
 	acctdata[0]->mod_type = "objectClass";
 	acctdata[0]->mod_values = oc;
 
-	printf("Importing attributes...\n");
+	fprintf(stdout, "Importing attributes...\n");
 
 	for (i = 1; attrs[i].value != NULL; i++) {
 	    acctdata[i] = (LDAPMod *) calloc(2, sizeof(LDAPMod));
